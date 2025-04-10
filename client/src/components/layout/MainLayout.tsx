@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useSidebar } from "@/hooks/use-sidebar";
+import { motion } from "framer-motion";
 
 interface MainLayoutProps {
   children: React.ReactNode;
@@ -11,18 +12,33 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { collapsed } = useSidebar();
   
   return (
-    <div className="flex min-h-screen text-slate-800">
+    <div className="flex min-h-screen text-slate-800 overflow-x-hidden">
       <Sidebar />
-      <main 
-        className={`flex-1 transition-all duration-300 ${
+      <motion.main 
+        className={`flex-1 ${
           collapsed ? 'ml-16' : 'ml-64'
         }`}
+        initial={false}
+        animate={{
+          marginLeft: collapsed ? "4rem" : "16rem"
+        }}
+        transition={{
+          type: "spring",
+          stiffness: 300,
+          damping: 30
+        }}
       >
-        <Header />
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.3 }}
+        >
+          <Header />
+        </motion.div>
         <div className="px-6 py-4">
           {children}
         </div>
-      </main>
+      </motion.main>
     </div>
   );
 }

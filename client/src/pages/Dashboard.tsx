@@ -12,6 +12,7 @@ import SLAPerformance from "@/components/dashboard/SLAPerformance";
 import IntegrationStatus from "@/components/dashboard/IntegrationStatus";
 import TicketsTable from "@/components/dashboard/TicketsTable";
 import ImpactedServices from "@/components/dashboard/ImpactedServices";
+import { motion } from "framer-motion";
 
 export default function Dashboard() {
   const { statCards: allStatCards, isLoading: statsLoading } = useStatistics();
