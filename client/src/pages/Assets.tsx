@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { PlusCircle, Search, Server, AlertTriangle, ArrowUpRight, TicketPlus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import AssetsCollapsibleList from "@/components/assets/AssetsCollapsibleList";
 
 export default function Assets() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -140,6 +141,11 @@ export default function Assets() {
           <PlusCircle className="mr-2 h-4 w-4" />
           Novo Ativo
         </Button>
+      </div>
+
+      {/* Lista Completa de Ativos (Colapsável) */}
+      <div className="mb-6">
+        <AssetsCollapsibleList />
       </div>
 
       {/* Ativos com mais alertas */}
