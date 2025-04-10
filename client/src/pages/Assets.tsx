@@ -222,16 +222,16 @@ export default function Assets() {
       <motion.div 
         className="card overflow-hidden mb-6" 
         variants={itemVariants}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+        transition={{ delay: 0.1, duration: 0.2, ease: "easeOut" }}
       >
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
           <motion.div 
             className="flex items-center"
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3, duration: 0.3 }}
+            transition={{ delay: 0.15, duration: 0.2, ease: "easeOut" }}
           >
             <div className="bg-red-50 p-2 rounded-lg mr-3">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -291,8 +291,8 @@ export default function Assets() {
                           <TooltipTrigger asChild>
                             <motion.button 
                               className="h-8 w-8 rounded-md inline-flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                              whileHover={{ scale: 1.15 }}
-                              whileTap={{ scale: 0.95 }}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.98 }}
                             >
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">Detalhes</span>
@@ -309,8 +309,8 @@ export default function Assets() {
                           <TooltipTrigger asChild>
                             <motion.button
                               className="h-8 w-8 rounded-md inline-flex items-center justify-center text-green-600 hover:text-green-800 hover:bg-green-50"
-                              whileHover={{ scale: 1.15 }}
-                              whileTap={{ scale: 0.95 }}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.98 }}
                             >
                               <BarChart3 className="h-4 w-4" />
                               <span className="sr-only">Monitoramento</span>
@@ -327,8 +327,8 @@ export default function Assets() {
                           <TooltipTrigger asChild>
                             <motion.button
                               className="h-8 w-8 rounded-md inline-flex items-center justify-center text-purple-600 hover:text-purple-800 hover:bg-purple-50"
-                              whileHover={{ scale: 1.15 }}
-                              whileTap={{ scale: 0.95 }}
+                              whileHover={{ scale: 1.05 }}
+                              whileTap={{ scale: 0.98 }}
                             >
                               <Code className="h-4 w-4" />
                               <span className="sr-only">Scripts</span>
@@ -352,16 +352,16 @@ export default function Assets() {
       <motion.div 
         className="card overflow-hidden"
         variants={itemVariants}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
+        transition={{ delay: 0.2, duration: 0.2, ease: "easeOut" }}
       >
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
           <motion.div 
             className="flex items-center"
-            initial={{ opacity: 0, x: -20 }}
+            initial={{ opacity: 0, x: -8 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5, duration: 0.3 }}
+            transition={{ delay: 0.25, duration: 0.2, ease: "easeOut" }}
           >
             <div className="bg-yellow-50 p-2 rounded-lg mr-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
@@ -412,8 +412,8 @@ export default function Assets() {
                   <TableCell>{alert.time}</TableCell>
                   <TableCell className="text-right">
                     <motion.div
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                     >
                       <Button 
                         size="sm" 
