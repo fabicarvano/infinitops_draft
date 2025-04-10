@@ -146,13 +146,12 @@ export default function Sidebar() {
             </div>
             <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
           </motion.div>
-          <motion.button 
+          <button 
             onClick={toggleSidebar}
             className="bg-white/20 text-white hover:bg-white/30 p-1 rounded-md"
-            whileTap={{ scale: 0.9 }}
           >
             {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-          </motion.button>
+          </button>
         </div>
         
         {/* Navigation */}

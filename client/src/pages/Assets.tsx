@@ -22,6 +22,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import AssetsCollapsibleList from "@/components/assets/AssetsCollapsibleList";
+import { motion } from "framer-motion";
 
 export default function Assets() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -142,9 +143,55 @@ export default function Assets() {
     }
   };
 
+  // Variantes de animação
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        when: "beforeChildren"
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 300,
+        damping: 25
+      }
+    }
+  };
+
+  const tableRowVariants = {
+    hidden: { opacity: 0, x: -5 },
+    visible: (i: number) => ({
+      opacity: 1,
+      x: 0,
+      transition: {
+        delay: i * 0.05,
+        duration: 0.2
+      }
+    })
+  };
+
+  const buttonVariants = {
+    hover: { scale: 1.05 },
+    tap: { scale: 0.95 }
+  };
+
   return (
-    <div>
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <motion.div
+      initial="hidden"
+      animate="visible"
+      variants={containerVariants}
+    >
+      <motion.div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4" variants={itemVariants}>
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
           <Input
@@ -154,33 +201,56 @@ export default function Assets() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <Button className="w-full sm:w-auto bg-green-700 hover:bg-green-800">
-          <PlusCircle className="mr-2 h-4 w-4" />
-          Novo Ativo
-        </Button>
-      </div>
+        <motion.div
+          variants={buttonVariants}
+          whileHover="hover"
+          whileTap="tap"
+        >
+          <Button className="w-full sm:w-auto bg-green-700 hover:bg-green-800">
+            <PlusCircle className="mr-2 h-4 w-4" />
+            Novo Ativo
+          </Button>
+        </motion.div>
+      </motion.div>
 
       {/* Lista Completa de Ativos (Colapsável) */}
-      <div className="mb-6">
+      <motion.div className="mb-6" variants={itemVariants}>
         <AssetsCollapsibleList />
-      </div>
+      </motion.div>
 
       {/* Ativos com mais alertas */}
-      <div className="card overflow-hidden mb-6">
+      <motion.div 
+        className="card overflow-hidden mb-6" 
+        variants={itemVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+      >
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-          <div className="flex items-center">
+          <motion.div 
+            className="flex items-center"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3, duration: 0.3 }}
+          >
             <div className="bg-red-50 p-2 rounded-lg mr-3">
               <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
             <h3 className="title text-lg">Ativos com Mais Alertas</h3>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+          </motion.div>
+          <motion.div
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
-            Ver todos
-          </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+            >
+              Ver todos
+            </Button>
+          </motion.div>
         </div>
         <div className="overflow-x-auto">
           <Table>
@@ -195,8 +265,16 @@ export default function Assets() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {assetsWithAlerts.map((asset) => (
-                <TableRow key={asset.id} className="border-b border-slate-100 hover:bg-slate-50">
+              {assetsWithAlerts.map((asset, i) => (
+                <motion.tr
+                  key={asset.id}
+                  custom={i}
+                  variants={tableRowVariants}
+                  className="border-b border-slate-100 hover:bg-slate-50"
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.8)" }}
+                >
                   <TableCell className="font-medium">{asset.name}</TableCell>
                   <TableCell>{asset.type}</TableCell>
                   <TableCell>{asset.client}</TableCell>
@@ -211,10 +289,14 @@ export default function Assets() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50">
+                            <motion.button 
+                              className="h-8 w-8 rounded-md inline-flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                              whileHover={{ scale: 1.15 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">Detalhes</span>
-                            </Button>
+                            </motion.button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Ver detalhes</p>
@@ -225,10 +307,14 @@ export default function Assets() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-50">
+                            <motion.button
+                              className="h-8 w-8 rounded-md inline-flex items-center justify-center text-green-600 hover:text-green-800 hover:bg-green-50"
+                              whileHover={{ scale: 1.15 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
                               <BarChart3 className="h-4 w-4" />
                               <span className="sr-only">Monitoramento</span>
-                            </Button>
+                            </motion.button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Dados de monitoramento (Zabbix)</p>
@@ -239,10 +325,14 @@ export default function Assets() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-50">
+                            <motion.button
+                              className="h-8 w-8 rounded-md inline-flex items-center justify-center text-purple-600 hover:text-purple-800 hover:bg-purple-50"
+                              whileHover={{ scale: 1.15 }}
+                              whileTap={{ scale: 0.95 }}
+                            >
                               <Code className="h-4 w-4" />
                               <span className="sr-only">Scripts</span>
-                            </Button>
+                            </motion.button>
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Scripts configurados (ping, traceroute, etc)</p>
@@ -251,29 +341,46 @@ export default function Assets() {
                       </TooltipProvider>
                     </div>
                   </TableCell>
-                </TableRow>
+                </motion.tr>
               ))}
             </TableBody>
           </Table>
         </div>
-      </div>
+      </motion.div>
 
       {/* Últimos alertas gerados */}
-      <div className="card overflow-hidden">
+      <motion.div 
+        className="card overflow-hidden"
+        variants={itemVariants}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.4 }}
+      >
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-          <div className="flex items-center">
+          <motion.div 
+            className="flex items-center"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5, duration: 0.3 }}
+          >
             <div className="bg-yellow-50 p-2 rounded-lg mr-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
             </div>
             <h3 className="title text-lg">Últimos Alertas Gerados</h3>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+          </motion.div>
+          <motion.div
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
           >
-            Ver todos
-          </Button>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+            >
+              Ver todos
+            </Button>
+          </motion.div>
         </div>
         <div className="overflow-x-auto">
           <Table>
@@ -288,43 +395,56 @@ export default function Assets() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {recentAlerts.map((alert) => (
-                <TableRow key={alert.id} className="border-b border-slate-100 hover:bg-slate-50">
+              {recentAlerts.map((alert, i) => (
+                <motion.tr
+                  key={alert.id}
+                  custom={i}
+                  variants={tableRowVariants}
+                  className="border-b border-slate-100 hover:bg-slate-50"
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.8)" }}
+                >
                   <TableCell className="font-medium">{alert.asset}</TableCell>
                   <TableCell>{alert.client}</TableCell>
                   <TableCell>{alert.message}</TableCell>
                   <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                   <TableCell>{alert.time}</TableCell>
                   <TableCell className="text-right">
-                    <Button 
-                      size="sm" 
-                      variant={alert.ticketId ? "outline" : "default"}
-                      className={
-                        alert.ticketId 
-                          ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
-                          : "bg-green-700 hover:bg-green-800"
-                      }
-                      onClick={() => handleGoToTicket(alert.ticketId)}
+                    <motion.div
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                     >
-                      {alert.ticketId ? (
-                        <>
-                          <ArrowUpRight className="mr-1 h-4 w-4" />
-                          Chamado #{alert.ticketId}
-                        </>
-                      ) : (
-                        <>
-                          <TicketPlus className="mr-1 h-4 w-4" />
-                          Criar Chamado
-                        </>
-                      )}
-                    </Button>
+                      <Button 
+                        size="sm" 
+                        variant={alert.ticketId ? "outline" : "default"}
+                        className={
+                          alert.ticketId 
+                            ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
+                            : "bg-green-700 hover:bg-green-800"
+                        }
+                        onClick={() => handleGoToTicket(alert.ticketId)}
+                      >
+                        {alert.ticketId ? (
+                          <>
+                            <ArrowUpRight className="mr-1 h-4 w-4" />
+                            Chamado #{alert.ticketId}
+                          </>
+                        ) : (
+                          <>
+                            <TicketPlus className="mr-1 h-4 w-4" />
+                            Criar Chamado
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
                   </TableCell>
-                </TableRow>
+                </motion.tr>
               ))}
             </TableBody>
           </Table>
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
   );
 }
