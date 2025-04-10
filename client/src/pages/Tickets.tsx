@@ -1,11 +1,106 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, PlusCircle, TicketPlus, Clock, CheckCircle2, User2 } from "lucide-react";
+import { Search, Filter, PlusCircle, TicketPlus, Clock, CheckCircle2, User2, AlertTriangle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 export default function Tickets() {
   const [searchTerm, setSearchTerm] = useState("");
+
+  // Dados de exemplo para chamados
+  const tickets = [
+    {
+      id: 1001,
+      title: "Servidor não responde a ping",
+      status: "open",
+      priority: "critical",
+      client: "Empresa ABC",
+      asset: "SRV-WEB-01",
+      assignee: "Técnico 1",
+      createdAt: "09/04/2023 08:30",
+      slaExpiration: "2h restantes"
+    },
+    {
+      id: 1002,
+      title: "Lentidão no acesso ao banco de dados",
+      status: "in_progress",
+      priority: "high",
+      client: "Empresa XYZ",
+      asset: "DB-SQL-03",
+      assignee: "Técnico 2",
+      createdAt: "08/04/2023 14:45",
+      slaExpiration: "4h restantes"
+    },
+    {
+      id: 1003,
+      title: "Firewall apresentando logs de erro",
+      status: "open",
+      priority: "medium",
+      client: "Empresa DEF",
+      asset: "FW-MAIN-01",
+      assignee: null,
+      createdAt: "09/04/2023 10:15",
+      slaExpiration: "12h restantes"
+    },
+    {
+      id: 1004,
+      title: "Backup não completado",
+      status: "open",
+      priority: "high",
+      client: "Empresa GHI",
+      asset: "STORAGE-01",
+      assignee: "Técnico 3",
+      createdAt: "09/04/2023 07:00",
+      slaExpiration: "3h restantes"
+    },
+    {
+      id: 1005,
+      title: "Switch com porta em erro",
+      status: "open",
+      priority: "low",
+      client: "Empresa JKL",
+      asset: "SW-FLOOR-02",
+      assignee: null,
+      createdAt: "08/04/2023 16:30",
+      slaExpiration: "24h restantes"
+    }
+  ];
+
+  // Chamados com SLA próximo (prioridade crítica ou alta)
+  const slaExpiringTickets = tickets.filter(
+    ticket => ticket.priority === "critical" || ticket.priority === "high"
+  );
+
+  const getPriorityBadge = (priority: string) => {
+    switch (priority) {
+      case "critical":
+        return <Badge className="bg-red-100 text-red-700">Crítico</Badge>;
+      case "high":
+        return <Badge className="bg-orange-100 text-orange-700">Alto</Badge>;
+      case "medium":
+        return <Badge className="bg-yellow-100 text-yellow-700">Médio</Badge>;
+      case "low":
+        return <Badge className="bg-green-100 text-green-700">Baixo</Badge>;
+      default:
+        return <Badge className="bg-slate-100">Indefinido</Badge>;
+    }
+  };
+
+  const getStatusBadge = (status: string) => {
+    switch (status) {
+      case "open":
+        return <Badge className="bg-blue-100 text-blue-700">Aberto</Badge>;
+      case "in_progress":
+        return <Badge className="bg-yellow-100 text-yellow-700">Em Andamento</Badge>;
+      case "resolved":
+        return <Badge className="bg-green-100 text-green-700">Resolvido</Badge>;
+      case "closed":
+        return <Badge className="bg-slate-100 text-slate-700">Fechado</Badge>;
+      default:
+        return <Badge className="bg-slate-100">Indefinido</Badge>;
+    }
+  };
 
   return (
     <div>
@@ -80,78 +175,122 @@ export default function Tickets() {
         </div>
       </div>
       
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 card overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="bg-yellow-50 p-2 rounded-lg mr-3">
-                <TicketPlus className="h-5 w-5 text-yellow-600" />
-              </div>
-              <h3 className="title text-lg">Chamados Recentes</h3>
+      {/* Tabela de Chamados Recentes */}
+      <div className="card overflow-hidden mb-6">
+        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="bg-yellow-50 p-2 rounded-lg mr-3">
+              <TicketPlus className="h-5 w-5 text-yellow-600" />
             </div>
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="text-green-700 hover:text-green-800 hover:bg-green-50 -mr-2"
-            >
-              Ver todos
-            </Button>
+            <h3 className="title text-lg">Chamados Recentes</h3>
           </div>
-          <div className="p-5">
-            <div className="flex items-center justify-center h-64">
-              <p className="text-slate-500">
-                Lista de chamados em desenvolvimento...
-              </p>
-            </div>
-          </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+          >
+            Ver todos
+          </Button>
         </div>
-        
-        <div className="card overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100">
-            <h3 className="title text-lg">Integrações</h3>
-          </div>
-          <div className="p-5">
-            <div className="flex flex-col gap-3">
-              <div className="p-3 rounded-lg border border-slate-200 flex items-center">
-                <div className="h-8 w-8 rounded-md bg-blue-100 flex items-center justify-center mr-3">
-                  <span className="text-blue-700 font-bold text-sm">Z</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Zabbix</p>
-                  <p className="text-xs text-slate-500">Monitoramento</p>
-                </div>
-                <Button variant="ghost" size="sm" className="ml-auto">
-                  Configurar
-                </Button>
-              </div>
-              
-              <div className="p-3 rounded-lg border border-slate-200 flex items-center">
-                <div className="h-8 w-8 rounded-md bg-purple-100 flex items-center justify-center mr-3">
-                  <span className="text-purple-700 font-bold text-sm">G</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">GLPI</p>
-                  <p className="text-xs text-slate-500">Gerenciamento de ativos</p>
-                </div>
-                <Button variant="ghost" size="sm" className="ml-auto">
-                  Configurar
-                </Button>
-              </div>
-              
-              <div className="p-3 rounded-lg border border-slate-200 flex items-center">
-                <div className="h-8 w-8 rounded-md bg-green-100 flex items-center justify-center mr-3">
-                  <span className="text-green-700 font-bold text-sm">N</span>
-                </div>
-                <div>
-                  <p className="text-sm font-medium">N8N</p>
-                  <p className="text-xs text-slate-500">Automação</p>
-                </div>
-                <Button variant="ghost" size="sm" className="ml-auto">
-                  Configurar
-                </Button>
-              </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-b border-slate-200">
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">ID</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Título</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Prioridade</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Data</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {tickets.map((ticket) => (
+                <TableRow key={ticket.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <TableCell className="font-medium">#{ticket.id}</TableCell>
+                  <TableCell>{ticket.title}</TableCell>
+                  <TableCell>{ticket.client}</TableCell>
+                  <TableCell>{ticket.asset}</TableCell>
+                  <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
+                  <TableCell>{getStatusBadge(ticket.status)}</TableCell>
+                  <TableCell>{ticket.createdAt}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                    >
+                      Detalhes
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </div>
+      
+      {/* Chamados com SLA próximo */}
+      <div className="card overflow-hidden mb-6">
+        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+          <div className="flex items-center">
+            <div className="bg-red-50 p-2 rounded-lg mr-3">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
+            <h3 className="title text-lg">Chamados com SLA Próximo</h3>
           </div>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+          >
+            Ver todos
+          </Button>
+        </div>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-b border-slate-200">
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">ID</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Título</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Prioridade</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">SLA</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Atribuído</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {slaExpiringTickets.map((ticket) => (
+                <TableRow key={ticket.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <TableCell className="font-medium">#{ticket.id}</TableCell>
+                  <TableCell>{ticket.title}</TableCell>
+                  <TableCell>{ticket.client}</TableCell>
+                  <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
+                  <TableCell>{getStatusBadge(ticket.status)}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center">
+                      <Clock className="h-4 w-4 text-red-500 mr-1" />
+                      <span className="text-sm text-red-500">{ticket.slaExpiration}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{ticket.assignee || "Não atribuído"}</TableCell>
+                  <TableCell className="text-right">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="text-blue-600 border-blue-200 hover:text-blue-800 hover:bg-blue-50"
+                    >
+                      Assumir
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         </div>
       </div>
     </div>

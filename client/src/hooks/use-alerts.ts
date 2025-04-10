@@ -9,6 +9,7 @@ export interface Alert {
   asset: string;
   message: string;
   time: string;
+  ticketId?: number;
 }
 
 // This is a temporary function to provide sample data
@@ -22,6 +23,7 @@ const getMockAlerts = (): Alert[] => {
       asset: "SRV-DB01",
       message: "Disco crítico (98%)",
       time: "12m atrás",
+      ticketId: 1001
     },
     {
       id: 2,
@@ -30,6 +32,7 @@ const getMockAlerts = (): Alert[] => {
       asset: "RTR-EDGE-03",
       message: "Tráfego acima do normal",
       time: "27m atrás",
+      ticketId: 1002
     },
     {
       id: 3,
@@ -38,6 +41,7 @@ const getMockAlerts = (): Alert[] => {
       asset: "SRV-WEB02",
       message: "Serviço Apache indisponível",
       time: "43m atrás",
+      // Sem ticketId, para mostrar a opção de criar chamado
     },
     {
       id: 4,
@@ -46,6 +50,7 @@ const getMockAlerts = (): Alert[] => {
       asset: "NAS-BACKUP",
       message: "Falha no backup noturno",
       time: "1h 12m atrás",
+      ticketId: 1004
     },
     {
       id: 5,
@@ -54,6 +59,7 @@ const getMockAlerts = (): Alert[] => {
       asset: "RTR-CORE-01",
       message: "Latência elevada",
       time: "1h 38m atrás",
+      // Sem ticketId, para mostrar a opção de criar chamado
     },
   ];
 };
@@ -62,22 +68,7 @@ export const useAlerts = () => {
   // In a real app, this would be a proper API call
   const query = useQuery<Alert[]>({
     queryKey: ["/api/alerts"],
-    queryFn: async () => {
-      try {
-        // In development, use mock data to simulate API response
-        if (process.env.NODE_ENV === "development") {
-          return getMockAlerts();
-        }
-
-        // In production, this would make a real API call
-        const response = await fetch("/api/alerts");
-        if (!response.ok) throw new Error("Failed to fetch alerts");
-        return await response.json();
-      } catch (error) {
-        console.error("Error fetching alerts:", error);
-        return [];
-      }
-    },
+    initialData: getMockAlerts(),
   });
 
   return query;
