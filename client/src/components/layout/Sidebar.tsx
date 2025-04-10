@@ -71,7 +71,7 @@ export default function Sidebar() {
             <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-green-700 font-bold">
               CCO
             </div>
-            <span className="font-semibold text-lg text-white">CCOCORE</span>
+            <span className="font-semibold text-lg text-white">Controle Operacional</span>
           </div>
           <button 
             onClick={toggleSidebar}
