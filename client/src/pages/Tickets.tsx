@@ -71,7 +71,8 @@ export default function Tickets() {
       createdAt: "09/04/2023 08:30",
       slaExpiration: "2h restantes",
       serviceLevel: "vip" as ServiceLevelType,
-      hasNotification: true
+      hasNotification: true,
+      slaNearExpiration: true
     },
     {
       id: 1002,
@@ -84,7 +85,8 @@ export default function Tickets() {
       createdAt: "08/04/2023 14:45",
       slaExpiration: "4h restantes",
       serviceLevel: "premium" as ServiceLevelType,
-      hasNotification: false
+      hasNotification: false,
+      slaNearExpiration: true
     },
     {
       id: 1003,
@@ -97,7 +99,8 @@ export default function Tickets() {
       createdAt: "09/04/2023 10:15",
       slaExpiration: "12h restantes",
       serviceLevel: "standard" as ServiceLevelType,
-      hasNotification: false
+      hasNotification: false,
+      slaNearExpiration: false
     },
     {
       id: 1004,
@@ -110,7 +113,8 @@ export default function Tickets() {
       createdAt: "09/04/2023 07:00",
       slaExpiration: "3h restantes",
       serviceLevel: "vip" as ServiceLevelType,
-      hasNotification: true
+      hasNotification: true,
+      slaNearExpiration: true
     },
     {
       id: 1005,
@@ -123,7 +127,8 @@ export default function Tickets() {
       createdAt: "08/04/2023 16:30",
       slaExpiration: "24h restantes",
       serviceLevel: "standard" as ServiceLevelType,
-      hasNotification: false
+      hasNotification: false,
+      slaNearExpiration: false
     }
   ];
   
@@ -299,13 +304,13 @@ export default function Tickets() {
         
         <div className="card p-5">
           <div className="flex justify-between items-center mb-4">
-            <div className="bg-green-50 p-2 rounded-lg">
-              <CheckCircle2 className="h-5 w-5 text-green-600" />
+            <div className="bg-red-50 p-2 rounded-lg">
+              <AlertTriangle className="h-5 w-5 text-red-600" />
             </div>
-            <Badge className="bg-green-100 text-green-700 hover:bg-green-200">12</Badge>
+            <Badge className="bg-red-100 text-red-700 hover:bg-red-200">3</Badge>
           </div>
-          <h3 className="title text-lg mb-1">Resolvidos</h3>
-          <p className="caption">Chamados concluídos</p>
+          <h3 className="title text-lg mb-1">SLA Próximo</h3>
+          <p className="caption">Chamados com prazo crítico</p>
         </div>
         
         <div className="card p-5">
@@ -431,7 +436,25 @@ export default function Tickets() {
               {tickets.map((ticket) => (
                 <TableRow key={ticket.id} className="border-b border-slate-100 hover:bg-slate-50">
                   <TableCell className="font-medium">#{ticket.id}</TableCell>
-                  <TableCell>{ticket.title}</TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {ticket.slaNearExpiration && (
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-block">
+                                <Clock className="h-4 w-4 text-red-500" />
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>SLA: {ticket.slaExpiration}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
+                      )}
+                      {ticket.title}
+                    </div>
+                  </TableCell>
                   <TableCell>{ticket.client}</TableCell>
                   <TableCell>{ticket.asset}</TableCell>
                   <TableCell>{getServiceLevelBadge(ticket.serviceLevel)}</TableCell>
@@ -476,108 +499,7 @@ export default function Tickets() {
         </div>
       </div>
       
-      {/* Chamados com SLA próximo */}
-      <div className="card overflow-hidden mb-6">
-        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-          <div className="flex items-center">
-            <div className="bg-red-50 p-2 rounded-lg mr-3">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-            </div>
-            <h3 className="title text-lg">Chamados com SLA Próximo</h3>
-          </div>
-          <Button 
-            variant="outline" 
-            size="sm" 
-            className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
-          >
-            Ver todos
-          </Button>
-        </div>
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-b border-slate-200">
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">ID</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Título</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Nível</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Prioridade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">SLA</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Atribuído</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {slaExpiringTickets.map((ticket) => (
-                <TableRow 
-                  key={ticket.id} 
-                  className={`border-b border-slate-100 hover:bg-slate-50 ${
-                    ticket.serviceLevel === "vip" ? "bg-purple-50" : ""
-                  }`}
-                >
-                  <TableCell className="font-medium">#{ticket.id}</TableCell>
-                  <TableCell>{ticket.title}</TableCell>
-                  <TableCell>{ticket.client}</TableCell>
-                  <TableCell>{getServiceLevelBadge(ticket.serviceLevel)}</TableCell>
-                  <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
-                  <TableCell>{getStatusBadge(ticket.status)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center">
-                      <Clock className="h-4 w-4 text-red-500 mr-1" />
-                      <span className="text-sm text-red-500">{ticket.slaExpiration}</span>
-                    </div>
-                  </TableCell>
-                  <TableCell>{ticket.assignee || "Não atribuído"}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50">
-                              <Eye className="h-4 w-4" />
-                              <span className="sr-only">Detalhes</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Ver detalhes</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-50">
-                              <Phone className="h-4 w-4" />
-                              <span className="sr-only">Ligar</span>
-                            </Button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Ligar para cliente</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className={`${
-                          ticket.serviceLevel === "vip"
-                            ? "text-purple-600 border-purple-200 hover:text-purple-800 hover:bg-purple-50 font-semibold"
-                            : "text-blue-600 border-blue-200 hover:text-blue-800 hover:bg-blue-50"
-                        }`}
-                      >
-                        Assumir
-                      </Button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+
     </div>
   );
 }
