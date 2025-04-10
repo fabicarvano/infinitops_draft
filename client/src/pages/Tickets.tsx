@@ -16,7 +16,10 @@ import {
   Eye, 
   List,
   Building,
-  FileText
+  FileText,
+  Terminal,
+  BarChart3,
+  Code
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -487,6 +490,20 @@ export default function Tickets() {
                           </TooltipTrigger>
                           <TooltipContent>
                             <p>Ligar para cliente</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-50">
+                              <Terminal className="h-4 w-4" />
+                              <span className="sr-only">Acesso SSH</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Acesso SSH ao ativo</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>

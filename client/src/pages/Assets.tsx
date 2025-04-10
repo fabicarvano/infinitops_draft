@@ -1,9 +1,26 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Search, Server, AlertTriangle, ArrowUpRight, TicketPlus } from "lucide-react";
+import { 
+  PlusCircle, 
+  Search, 
+  Server, 
+  AlertTriangle, 
+  ArrowUpRight, 
+  TicketPlus, 
+  Eye, 
+  BarChart3, 
+  Terminal, 
+  Code 
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import AssetsCollapsibleList from "@/components/assets/AssetsCollapsibleList";
 
 export default function Assets() {
@@ -189,15 +206,50 @@ export default function Assets() {
                     </Badge>
                   </TableCell>
                   <TableCell>{getCriticalityBadge(asset.criticality)}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                    >
-                      <ArrowUpRight className="mr-1 h-4 w-4" />
-                      Detalhes
-                    </Button>
+                  <TableCell>
+                    <div className="flex items-center justify-end gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50">
+                              <Eye className="h-4 w-4" />
+                              <span className="sr-only">Detalhes</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ver detalhes</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-50">
+                              <BarChart3 className="h-4 w-4" />
+                              <span className="sr-only">Monitoramento</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Dados de monitoramento (Zabbix)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-50">
+                              <Code className="h-4 w-4" />
+                              <span className="sr-only">Scripts</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Scripts configurados (ping, traceroute, etc)</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
