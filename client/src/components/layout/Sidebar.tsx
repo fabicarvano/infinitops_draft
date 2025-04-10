@@ -42,7 +42,8 @@ export default function Sidebar() {
     { 
       path: "/chamados", 
       name: "Chamados", 
-      icon: TicketPlus 
+      icon: TicketPlus,
+      notification: 5
     },
     { 
       path: "/configuracoes", 
