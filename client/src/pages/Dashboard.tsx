@@ -4,12 +4,14 @@ import { useActivities } from "@/hooks/use-activities";
 import { useSLA } from "@/hooks/use-sla";
 import { useIntegrations } from "@/hooks/use-integrations";
 import { useTickets } from "@/hooks/use-tickets";
+import { useImpactedServices } from "@/hooks/use-impacted-services";
 import StatCard from "@/components/dashboard/StatCard";
 import AlertTable from "@/components/dashboard/AlertTable";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import SLAPerformance from "@/components/dashboard/SLAPerformance";
 import IntegrationStatus from "@/components/dashboard/IntegrationStatus";
 import TicketsTable from "@/components/dashboard/TicketsTable";
+import ImpactedServices from "@/components/dashboard/ImpactedServices";
 
 export default function Dashboard() {
   const { statCards: allStatCards, isLoading: statsLoading } = useStatistics();
@@ -19,6 +21,7 @@ export default function Dashboard() {
   const { data: integrationsData, isLoading: integrationsLoading } = useIntegrations();
   const { data: recentTicketsData, isLoading: recentTicketsLoading } = useTickets("recent");
   const { data: slaTicketsData, isLoading: slaTicketsLoading } = useTickets("sla-expiring");
+  const { data: impactedServicesData, isLoading: impactedServicesLoading } = useImpactedServices();
   
   // Filtrar apenas os cards de alertas críticos e chamados abertos
   const filteredStatCards = allStatCards.filter(card => 
@@ -54,6 +57,14 @@ export default function Dashboard() {
             loading={integrationsLoading} 
           />
         </div>
+      </div>
+
+      {/* Serviços Impactados */}
+      <div className="mb-8">
+        <ImpactedServices
+          services={impactedServicesData?.services || []}
+          loading={impactedServicesLoading}
+        />
       </div>
 
       {/* Chamados com SLA próximo & Feed de Atividades */}
