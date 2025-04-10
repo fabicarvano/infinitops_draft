@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import Sidebar from "./Sidebar";
 import Header from "./Header";
 import { useSidebar } from "@/hooks/use-sidebar";
@@ -11,7 +11,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
   const { collapsed } = useSidebar();
   
   return (
-    <div className="flex min-h-screen bg-dark-900 text-slate-100">
+    <div className="flex min-h-screen text-slate-800">
       <Sidebar />
       <main 
         className={`flex-1 transition-all duration-300 ${
@@ -19,7 +19,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }`}
       >
         <Header />
-        <div className="p-6">
+        <div className="px-6 py-4">
           {children}
         </div>
       </main>

@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -7,7 +9,51 @@
     @apply border-border;
   }
 
+  :root {
+    --color-green: rgb(25, 97, 39);
+    --color-green-light: rgb(100, 163, 111);
+    --color-yellow: rgb(242, 192, 55);
+    --color-red: rgb(220, 53, 69);
+    --color-blue: rgb(13, 110, 253);
+  }
+
   body {
-    @apply font-sans antialiased bg-background text-foreground;
+    @apply font-sans antialiased text-slate-800;
+    background: linear-gradient(180deg, rgb(240, 255, 244) 0%, white 100%);
+    font-family: 'Inter', sans-serif;
+  }
+}
+
+@layer components {
+  .card {
+    @apply bg-white rounded-2xl p-4 shadow-md border border-slate-100;
+  }
+  
+  .status-normal {
+    @apply text-green-600 bg-green-50 border-green-200;
+  }
+  
+  .status-warning {
+    @apply text-yellow-600 bg-yellow-50 border-yellow-200;
+  }
+  
+  .status-critical {
+    @apply text-red-600 bg-red-50 border-red-200;
+  }
+  
+  .status-info {
+    @apply text-blue-600 bg-blue-50 border-blue-200;
+  }
+  
+  .title {
+    @apply font-semibold text-slate-800;
+  }
+  
+  .subtitle {
+    @apply font-medium text-slate-600;
+  }
+  
+  .caption {
+    @apply font-normal text-slate-500 text-sm;
   }
 }
