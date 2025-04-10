@@ -145,37 +145,38 @@ export default function Assets() {
 
   // Variantes de animação (mais sutis)
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 0.9 }, // Começar quase visível
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.03, // Reduzido de 0.1 para 0.03
-        when: "beforeChildren"
+        staggerChildren: 0.01, // Reduzido ainda mais
+        when: "beforeChildren",
+        duration: 0.15 // Transição mais rápida
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 8, opacity: 0 }, // Reduzido de y: 20 para y: 8
+    hidden: { y: 3, opacity: 0.8 }, // Valores ainda menores
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        type: "tween", // Trocado de "spring" para "tween"
-        duration: 0.25, // Duração explícita mais curta
-        ease: "easeOut" // Easing suave
+        type: "tween",
+        duration: 0.15, // Duração ainda mais curta
+        ease: "easeOut" 
       }
     }
   };
 
   const tableRowVariants = {
-    hidden: { opacity: 0, x: -2 }, // Reduzido de x: -5 para x: -2
+    hidden: { opacity: 0.9, x: -1 }, // Valores mínimos
     visible: (i: number) => ({
       opacity: 1,
       x: 0,
       transition: {
-        delay: i * 0.02, // Reduzido de 0.05 para 0.02
-        duration: 0.15 // Reduzido de 0.2 para 0.15
+        delay: i * 0.01, // Delay mínimo 
+        duration: 0.1 // Duração muito curta
       }
     })
   };
@@ -222,16 +223,16 @@ export default function Assets() {
       <motion.div 
         className="card overflow-hidden mb-6" 
         variants={itemVariants}
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0.9, y: 3 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1, duration: 0.2, ease: "easeOut" }}
+        transition={{ delay: 0.05, duration: 0.15, ease: "easeOut" }}
       >
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
           <motion.div 
             className="flex items-center"
-            initial={{ opacity: 0, x: -8 }}
+            initial={{ opacity: 0.9, x: -3 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.15, duration: 0.2, ease: "easeOut" }}
+            transition={{ delay: 0.08, duration: 0.15, ease: "easeOut" }}
           >
             <div className="bg-red-50 p-2 rounded-lg mr-3">
               <AlertTriangle className="h-5 w-5 text-red-600" />
@@ -273,7 +274,7 @@ export default function Assets() {
                   className="border-b border-slate-100 hover:bg-slate-50"
                   initial="hidden"
                   animate="visible"
-                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.8)" }}
+                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
                 >
                   <TableCell className="font-medium">{asset.name}</TableCell>
                   <TableCell>{asset.type}</TableCell>
@@ -352,16 +353,16 @@ export default function Assets() {
       <motion.div 
         className="card overflow-hidden"
         variants={itemVariants}
-        initial={{ opacity: 0, y: 8 }}
+        initial={{ opacity: 0.9, y: 3 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2, duration: 0.2, ease: "easeOut" }}
+        transition={{ delay: 0.05, duration: 0.15, ease: "easeOut" }}
       >
         <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
           <motion.div 
             className="flex items-center"
-            initial={{ opacity: 0, x: -8 }}
+            initial={{ opacity: 0.9, x: -3 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.25, duration: 0.2, ease: "easeOut" }}
+            transition={{ delay: 0.08, duration: 0.15, ease: "easeOut" }}
           >
             <div className="bg-yellow-50 p-2 rounded-lg mr-3">
               <AlertTriangle className="h-5 w-5 text-yellow-600" />
@@ -403,7 +404,7 @@ export default function Assets() {
                   className="border-b border-slate-100 hover:bg-slate-50"
                   initial="hidden"
                   animate="visible"
-                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.8)" }}
+                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
                 >
                   <TableCell className="font-medium">{alert.asset}</TableCell>
                   <TableCell>{alert.client}</TableCell>
