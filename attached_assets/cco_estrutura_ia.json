@@ -1,0 +1,117 @@
+{
+  "nome": "CCOCORE – Centro de Controle de Operações",
+  "visao_sistema": "Sistema de gestão e automação de NOC, com foco na centralização de dados operacionais, integração com ferramentas de backend (GLPI, Zabbix, N8N) e inteligência própria no frontend (CCOCORE).",
+  "proposta_valor": [
+    "Centralização em uma única interface",
+    "Redução de custos e licenças",
+    "Automação de abertura de chamados e notificações",
+    "Integrações via API com backend externo",
+    "Padronização e escalabilidade da operação técnica"
+  ],
+  "transformacao": {
+    "antes": [
+      "Fragmentação",
+      "Múltiplas ferramentas",
+      "Dificuldade de controle",
+      "Baixa visibilidade"
+    ],
+    "depois": [
+      "Centralização",
+      "Controle único",
+      "Automação inteligente",
+      "Dados para decisão comercial"
+    ]
+  },
+  "modulos": [
+    "Painel de Controle",
+    "Clientes & Contratos",
+    "Ativos",
+    "Alertas",
+    "Chamados",
+    "Configurações"
+  ],
+  "rotas": [
+    "/login",
+    "/painel",
+    "/clientes",
+    "/clientes/:id/contratos/:id/{escopo|renovacao}",
+    "/ativos/:id/{matriz|sla|historico}",
+    "/alertas",
+    "/chamados/:id",
+    "/configuracoes/{usuarios|integracoes|automacoes|notificacoes}"
+  ],
+  "modulo_detalhes": {
+    "Clientes & Contratos": {
+      "regras": [
+        "Cliente só pode ser inativado sem contratos ativos",
+        "Contrato exige responsável técnico e comercial",
+        "Escopo técnico obrigatório antes de ativar",
+        "3 tipos de renovação com destino específico"
+      ],
+      "automacoes": [
+        "Criação de ID automático (cliente/contrato)",
+        "Alerta e tarefa conforme tipo de renovação",
+        "Histórico automático de alterações de contrato"
+      ]
+    },
+    "Ativos": {
+      "regras": [
+        "Obrigatório vínculo com cliente e contrato",
+        "Cadastro exige matriz completa",
+        "Bloqueios se houver campos incompletos",
+        "Não pode ser excluído com chamados/SLA ativo",
+        "Verificação de criticidade e duplicidade"
+      ],
+      "automacoes": [
+        "Consulta ao Zabbix em tempo real",
+        "Visualização combinada",
+        "Contagem automática de SLA",
+        "Gatilho de escalonamento por criticidade",
+        "Notificações internas"
+      ]
+    },
+    "Alertas": {
+      "regras": [
+        "Necessita origem válida",
+        "Deve estar vinculado a um ativo",
+        "Evita duplicidade",
+        "Ignora se ativo sem SLA ou inativo"
+      ],
+      "automacoes": [
+        "Geração automática de chamado com dados da matriz",
+        "Classificação automática do alerta",
+        "Notificação interna se SLA vencendo ou alerta sem chamado"
+      ]
+    },
+    "Chamados": {
+      "regras": [
+        "Gerido pelo CCO, backend no GLPI",
+        "Status e ciclo de vida controlados pelo CCO",
+        "Chamado exige vínculo com ativo/contrato",
+        "Encerramento validado via GLPI + fim do SLA"
+      ],
+      "automacoes": [
+        "Criação automática por alerta",
+        "Ligação via PABX gera chamado",
+        "SLA gerido 100% pelo CCO",
+        "Monitoramento e escalonamento automático"
+      ]
+    },
+    "Configurações": {
+      "usuarios": [
+        "Perfis com controle de acesso por módulo",
+        "Autenticação padrão + futura via SSO"
+      ],
+      "integracoes": [
+        "Configuração de endpoints e tokens",
+        "Status de conexão com teste",
+        "Logs e ativação/desativação individual"
+      ],
+      "n8n": [
+        "Fluxos criados no n8n e disparados pelo CCO",
+        "Execuções com log, retorno e notificações",
+        "Permissões de criação e execução por perfil"
+      ]
+    }
+  }
+}
