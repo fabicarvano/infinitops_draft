@@ -1,5 +1,4 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { LucideIcon } from "lucide-react";
+import { LucideIcon, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface StatCardProps {
@@ -25,40 +24,40 @@ export default function StatCard({
   iconBgColor,
 }: StatCardProps) {
   return (
-    <Card className="bg-slate-800 border-slate-700">
-      <CardContent className="p-5">
+    <div className="card bg-white">
+      <div className="p-5">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-slate-400 text-sm">{title}</p>
-            <h3 className="text-2xl font-semibold mt-1">{value}</h3>
+            <p className="caption text-slate-500 font-medium">{title}</p>
+            <h3 className="title text-2xl font-semibold mt-1 text-slate-800">{value}</h3>
           </div>
-          <div className={cn("p-3 rounded-full", iconBgColor)}>
+          <div className={cn("p-3 rounded-xl shadow-sm", iconBgColor)}>
             <Icon className={cn("h-5 w-5", iconColor)} />
           </div>
         </div>
         {(trend || description) && (
-          <div className="mt-3 flex items-center text-xs">
+          <div className="mt-4 flex items-center text-xs">
             {trend && (
-              <span
+              <div
                 className={cn(
-                  "flex items-center",
-                  trend.positive ? "text-emerald-500" : "text-red-500"
+                  "flex items-center gap-1 rounded-full px-2 py-1",
+                  trend.positive ? "bg-green-50 text-green-600" : "bg-red-50 text-red-600"
                 )}
               >
-                <i
-                  className={`fas fa-arrow-${
-                    trend.positive ? "up" : "down"
-                  } mr-1`}
-                ></i>
-                {trend.value}
-              </span>
+                {trend.positive ? (
+                  <TrendingUp className="h-3 w-3" />
+                ) : (
+                  <TrendingDown className="h-3 w-3" />
+                )}
+                <span className="font-medium">{trend.value}</span>
+              </div>
             )}
             {description && (
-              <span className="text-slate-400 ml-2">{description}</span>
+              <span className="caption ml-2">{description}</span>
             )}
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

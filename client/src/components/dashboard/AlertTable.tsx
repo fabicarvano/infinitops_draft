@@ -2,8 +2,7 @@ import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { ExternalLink } from "lucide-react";
+import { ExternalLink, ArrowRight } from "lucide-react";
 
 type AlertSeverity = "critical" | "medium" | "low";
 
@@ -25,78 +24,79 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
   const getSeverityBadgeStyle = (severity: AlertSeverity) => {
     switch (severity) {
       case "critical":
-        return "bg-red-500/20 hover:bg-red-500/30 text-red-500";
+        return "status-critical border";
       case "medium":
-        return "bg-amber-500/20 hover:bg-amber-500/30 text-amber-500";
+        return "status-warning border";
       case "low":
-        return "bg-blue-500/20 hover:bg-blue-500/30 text-blue-500";
+        return "status-info border";
       default:
-        return "bg-blue-500/20 hover:bg-blue-500/30 text-blue-500";
+        return "status-info border";
     }
   };
 
   return (
-    <Card className="bg-slate-800 border-slate-700">
-      <CardHeader className="border-b border-slate-700 px-4 py-3">
-        <CardTitle className="text-base font-semibold">Alertas Recentes</CardTitle>
-      </CardHeader>
-      <CardContent className="p-0">
-        <div className="overflow-x-auto">
-          <Table>
-            <TableHeader>
-              <TableRow className="border-slate-700 hover:bg-transparent">
-                <TableHead className="text-xs text-slate-400 uppercase">Status</TableHead>
-                <TableHead className="text-xs text-slate-400 uppercase">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-400 uppercase">Ativo</TableHead>
-                <TableHead className="text-xs text-slate-400 uppercase">Mensagem</TableHead>
-                <TableHead className="text-xs text-slate-400 uppercase">Tempo</TableHead>
-                <TableHead className="text-xs text-slate-400 uppercase">Ação</TableHead>
+    <div className="card overflow-hidden">
+      <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+        <h3 className="title text-lg">Alertas Recentes</h3>
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="text-green-700 hover:text-green-800 hover:bg-green-50 -mr-2"
+        >
+          Ver todos
+          <ArrowRight className="ml-1 h-4 w-4" />
+        </Button>
+      </div>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent border-b border-slate-200">
+              <TableHead className="text-xs text-slate-500 uppercase font-medium px-4">Status</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativo</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium">Tempo</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium">Ação</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4 text-slate-500">
+                  Carregando alertas...
+                </TableCell>
               </TableRow>
-            </TableHeader>
-            <TableBody>
-              {loading ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4">
-                    Carregando alertas...
+            ) : alerts.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={6} className="text-center py-4 text-slate-500">
+                  Nenhum alerta encontrado
+                </TableCell>
+              </TableRow>
+            ) : (
+              alerts.map((alert) => (
+                <TableRow key={alert.id} className="border-b border-slate-100 hover:bg-slate-50">
+                  <TableCell className="px-4">
+                    <Badge className={getSeverityBadgeStyle(alert.status)}>
+                      {alert.status === "critical" && "Crítico"}
+                      {alert.status === "medium" && "Médio"}
+                      {alert.status === "low" && "Baixo"}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-sm font-medium text-slate-700">{alert.client}</TableCell>
+                  <TableCell className="text-sm text-slate-600">{alert.asset}</TableCell>
+                  <TableCell className="text-sm text-slate-600">{alert.message}</TableCell>
+                  <TableCell className="text-sm text-slate-500">{alert.time}</TableCell>
+                  <TableCell className="text-sm">
+                    <Button size="icon" variant="ghost" className="text-slate-400 hover:text-green-700 hover:bg-green-50 h-8 w-8">
+                      <ExternalLink className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
-              ) : alerts.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} className="text-center py-4">
-                    Nenhum alerta encontrado
-                  </TableCell>
-                </TableRow>
-              ) : (
-                alerts.map((alert) => (
-                  <TableRow key={alert.id} className="border-slate-700">
-                    <TableCell>
-                      <Badge variant="outline" className={getSeverityBadgeStyle(alert.status)}>
-                        {alert.status === "critical" && "Crítico"}
-                        {alert.status === "medium" && "Médio"}
-                        {alert.status === "low" && "Baixo"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-sm">{alert.client}</TableCell>
-                    <TableCell className="text-sm">{alert.asset}</TableCell>
-                    <TableCell className="text-sm">{alert.message}</TableCell>
-                    <TableCell className="text-sm">{alert.time}</TableCell>
-                    <TableCell className="text-sm">
-                      <Button size="icon" variant="ghost" className="text-primary-500 hover:text-primary-400">
-                        <ExternalLink className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </div>
-        <div className="mt-4 text-center pb-4">
-          <Button variant="link" className="text-primary-500 text-sm hover:text-primary-400">
-            Ver todos os alertas
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </div>
   );
 }
