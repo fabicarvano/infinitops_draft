@@ -1,7 +1,23 @@
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, PlusCircle, TicketPlus, Clock, CheckCircle2, User2, AlertTriangle, Crown, Bell } from "lucide-react";
+import { 
+  Search, 
+  Filter, 
+  PlusCircle, 
+  TicketPlus, 
+  Clock, 
+  CheckCircle2, 
+  User2, 
+  AlertTriangle, 
+  Crown, 
+  Bell, 
+  Phone, 
+  Eye, 
+  List,
+  Building,
+  FileText
+} from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { 
@@ -10,6 +26,24 @@ import {
   AlertTitle,
 } from "@/components/ui/alert";
 import { useToast } from "@/hooks/use-toast";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Definição do tipo para nível de atendimento
 type ServiceLevelType = "standard" | "premium" | "vip";
@@ -303,6 +337,81 @@ export default function Tickets() {
             Ver todos
           </Button>
         </div>
+        
+        {/* Filtros para chamados recentes */}
+        <div className="px-5 py-3 border-b border-slate-100 flex flex-wrap gap-3 items-center">
+          <div className="flex items-center">
+            <List className="h-4 w-4 text-slate-500 mr-2" />
+            <span className="text-xs text-slate-500 mr-2">Filtros:</span>
+          </div>
+          
+          <div className="flex items-center flex-grow flex-wrap gap-2">
+            {/* Filtro por Número do Chamado */}
+            <div className="relative min-w-[140px] max-w-[200px]">
+              <Search className="absolute left-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Input
+                placeholder="Nº do Chamado"
+                className="pl-8 py-1 h-8 text-sm"
+              />
+            </div>
+            
+            {/* Filtro por Cliente */}
+            <div className="min-w-[180px] max-w-[250px]">
+              <Select>
+                <SelectTrigger className="h-8 text-sm border-slate-200">
+                  <div className="flex items-center">
+                    <Building className="h-3.5 w-3.5 text-slate-500 mr-2" />
+                    <SelectValue placeholder="Cliente" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os clientes</SelectItem>
+                  <SelectItem value="empresa-abc">Empresa ABC</SelectItem>
+                  <SelectItem value="empresa-xyz">Empresa XYZ</SelectItem>
+                  <SelectItem value="empresa-def">Empresa DEF</SelectItem>
+                  <SelectItem value="empresa-ghi">Empresa GHI</SelectItem>
+                  <SelectItem value="empresa-jkl">Empresa JKL</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Filtro por Contrato */}
+            <div className="min-w-[180px] max-w-[250px]">
+              <Select>
+                <SelectTrigger className="h-8 text-sm border-slate-200">
+                  <div className="flex items-center">
+                    <FileText className="h-3.5 w-3.5 text-slate-500 mr-2" />
+                    <SelectValue placeholder="Contrato" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="todos">Todos os contratos</SelectItem>
+                  <SelectItem value="suporte">Suporte 24x7</SelectItem>
+                  <SelectItem value="monitoramento">Monitoramento</SelectItem>
+                  <SelectItem value="backup">Backup & Recovery</SelectItem>
+                  <SelectItem value="consultoria">Consultoria</SelectItem>
+                  <SelectItem value="infraestrutura">Infraestrutura</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            {/* Botão de Aplicar Filtros */}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="h-8 text-xs px-3 border-slate-200 text-slate-600"
+            >
+              Aplicar
+            </Button>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-8 text-xs px-3 text-slate-500"
+            >
+              Limpar
+            </Button>
+          </div>
+        </div>
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>
@@ -329,14 +438,36 @@ export default function Tickets() {
                   <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
                   <TableCell>{getStatusBadge(ticket.status)}</TableCell>
                   <TableCell>{ticket.createdAt}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                    >
-                      Detalhes
-                    </Button>
+                  <TableCell>
+                    <div className="flex items-center justify-end gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50">
+                              <Eye className="h-4 w-4" />
+                              <span className="sr-only">Detalhes</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ver detalhes</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-50">
+                              <Phone className="h-4 w-4" />
+                              <span className="sr-only">Ligar</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ligar para cliente</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
@@ -398,18 +529,48 @@ export default function Tickets() {
                     </div>
                   </TableCell>
                   <TableCell>{ticket.assignee || "Não atribuído"}</TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className={`${
-                        ticket.serviceLevel === "vip"
-                          ? "text-purple-600 border-purple-200 hover:text-purple-800 hover:bg-purple-50 font-semibold"
-                          : "text-blue-600 border-blue-200 hover:text-blue-800 hover:bg-blue-50"
-                      }`}
-                    >
-                      Assumir
-                    </Button>
+                  <TableCell>
+                    <div className="flex items-center justify-end gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50">
+                              <Eye className="h-4 w-4" />
+                              <span className="sr-only">Detalhes</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ver detalhes</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-50">
+                              <Phone className="h-4 w-4" />
+                              <span className="sr-only">Ligar</span>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ligar para cliente</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={`${
+                          ticket.serviceLevel === "vip"
+                            ? "text-purple-600 border-purple-200 hover:text-purple-800 hover:bg-purple-50 font-semibold"
+                            : "text-blue-600 border-blue-200 hover:text-blue-800 hover:bg-blue-50"
+                        }`}
+                      >
+                        Assumir
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))}
