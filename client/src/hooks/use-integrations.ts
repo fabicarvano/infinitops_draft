@@ -22,8 +22,8 @@ export const useIntegrations = () => {
         },
         {
           id: 3,
-          name: "N8N",
-          type: "Automação",
+          name: "PABX",
+          type: "Telefonia",
           status: "disconnected",
           lastCheck: "2023-04-08T15:45:12Z"
         }
