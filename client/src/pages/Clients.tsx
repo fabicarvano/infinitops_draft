@@ -1,12 +1,36 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { PlusCircle, Search, Building2, CalendarClock, Users } from "lucide-react";
+import { 
+  PlusCircle, 
+  Search, 
+  Building2, 
+  CalendarClock, 
+  Users,
+  AlertTriangle,
+  AlertCircle 
+} from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 export default function Clients() {
   const [searchTerm, setSearchTerm] = useState("");
+  
+  // Data atual para cálculo do vencimento dos contratos
+  const currentDate = new Date("2025-04-10"); // Usando a data atual do sistema
+  
+  // Função para calcular dias até o vencimento
+  const getDaysUntilExpiration = (endDateStr: string) => {
+    // Formato de data brasileiro: DD/MM/YYYY
+    const [day, month, year] = endDateStr.split('/').map(num => parseInt(num));
+    const endDate = new Date(year, month - 1, day); // Mês é 0-indexed em JavaScript
+    
+    const diffTime = endDate.getTime() - currentDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    return diffDays;
+  };
 
   // Dados de exemplo para clientes
   const clients = [
@@ -17,13 +41,13 @@ export default function Clients() {
     { id: 5, name: "Data Systems", contracts: 4, assets: 15, status: "active" },
   ];
 
-  // Dados de exemplo para contratos
+  // Dados de exemplo para contratos com datas próximas de vencimento
   const contracts = [
-    { id: 101, name: "Suporte 24x7", client: "Empresa ABC", startDate: "01/01/2023", endDate: "31/12/2023", status: "active" },
-    { id: 102, name: "Monitoramento", client: "Tech Solutions", startDate: "15/03/2023", endDate: "14/03/2024", status: "active" },
-    { id: 103, name: "Backup & Recovery", client: "Empresa XYZ", startDate: "10/02/2023", endDate: "09/02/2024", status: "active" },
-    { id: 104, name: "Consultoria", client: "Global Services", startDate: "05/05/2023", endDate: "04/11/2023", status: "inactive" },
-    { id: 105, name: "Infraestrutura", client: "Data Systems", startDate: "20/04/2023", endDate: "19/04/2024", status: "active" },
+    { id: 101, name: "Suporte 24x7", client: "Empresa ABC", startDate: "01/01/2023", endDate: "13/04/2025", status: "active" }, // Vence em 3 dias
+    { id: 102, name: "Monitoramento", client: "Tech Solutions", startDate: "15/03/2023", endDate: "14/03/2024", status: "active" }, // Já vencido
+    { id: 103, name: "Backup & Recovery", client: "Empresa XYZ", startDate: "10/02/2023", endDate: "08/07/2025", status: "active" }, // Vence em 89 dias
+    { id: 104, name: "Consultoria", client: "Global Services", startDate: "05/05/2023", endDate: "04/11/2023", status: "inactive" }, // Já vencido
+    { id: 105, name: "Infraestrutura", client: "Data Systems", startDate: "20/04/2023", endDate: "19/04/2024", status: "active" }, // Já vencido
   ];
 
   return (
@@ -136,33 +160,90 @@ export default function Clients() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {contracts.map((contract) => (
-                <TableRow key={contract.id} className="border-b border-slate-100 hover:bg-slate-50">
-                  <TableCell className="font-medium">#{contract.id}</TableCell>
-                  <TableCell>{contract.name}</TableCell>
-                  <TableCell>{contract.client}</TableCell>
-                  <TableCell>{contract.startDate}</TableCell>
-                  <TableCell>{contract.endDate}</TableCell>
-                  <TableCell>
-                    <Badge className={
-                      contract.status === "active" 
-                        ? "bg-green-100 text-green-700" 
-                        : "bg-slate-100 text-slate-700"
-                    }>
-                      {contract.status === "active" ? "Ativo" : "Inativo"}
-                    </Badge>
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                    >
-                      Detalhes
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {contracts.map((contract) => {
+                const daysUntilExpiration = getDaysUntilExpiration(contract.endDate);
+                
+                // Determina o ícone de alerta baseado nos dias até o vencimento
+                let expirationAlert = null;
+                let expirationTooltip = "";
+                
+                if (daysUntilExpiration <= 3 && daysUntilExpiration > 0) {
+                  // Vence em 3 dias ou menos: ícone vermelho
+                  expirationAlert = (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <AlertCircle className="h-5 w-5 text-red-500 ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Contrato vence em {daysUntilExpiration} {daysUntilExpiration === 1 ? 'dia' : 'dias'}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                } else if (daysUntilExpiration <= 90 && daysUntilExpiration > 3) {
+                  // Vence entre 4 e 90 dias: ícone laranja
+                  expirationAlert = (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <AlertTriangle className="h-5 w-5 text-orange-500 ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Contrato vence em {daysUntilExpiration} dias</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                } else if (daysUntilExpiration <= 0) {
+                  // Contrato já vencido: ícone vermelho com aviso
+                  expirationAlert = (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <AlertCircle className="h-5 w-5 text-red-600 ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Contrato vencido há {Math.abs(daysUntilExpiration)} {Math.abs(daysUntilExpiration) === 1 ? 'dia' : 'dias'}</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  );
+                }
+                
+                return (
+                  <TableRow key={contract.id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <TableCell className="font-medium">#{contract.id}</TableCell>
+                    <TableCell>
+                      <div className="flex items-center">
+                        {contract.name}
+                        {expirationAlert}
+                      </div>
+                    </TableCell>
+                    <TableCell>{contract.client}</TableCell>
+                    <TableCell>{contract.startDate}</TableCell>
+                    <TableCell>{contract.endDate}</TableCell>
+                    <TableCell>
+                      <Badge className={
+                        contract.status === "active" 
+                          ? "bg-green-100 text-green-700" 
+                          : "bg-slate-100 text-slate-700"
+                      }>
+                        {contract.status === "active" ? "Ativo" : "Inativo"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                      >
+                        Detalhes
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </div>
