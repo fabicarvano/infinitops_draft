@@ -14,7 +14,8 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
   const [collapsed, setCollapsed] = useState(false);
 
   const toggleSidebar = () => {
-    setCollapsed(!collapsed);
+    console.log("Toggle sidebar called. Current state:", collapsed);
+    setCollapsed(prevState => !prevState);
   };
 
   return (

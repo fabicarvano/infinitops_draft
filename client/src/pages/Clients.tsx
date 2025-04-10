@@ -251,7 +251,7 @@ export default function Clients() {
                 
                 return (
                   <TableRow key={contract.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <TableCell className="font-medium">#{contract.id}</TableCell>
+                    <TableCell className="font-medium">CTR{contract.id.toString().padStart(6, '0')}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         {contract.name}
