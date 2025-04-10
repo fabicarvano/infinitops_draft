@@ -181,8 +181,8 @@ export default function Assets() {
   };
 
   const buttonVariants = {
-    hover: { scale: 1.02 }, // Reduzido de 1.05 para 1.02
-    tap: { scale: 0.98 } // Aumentado de 0.95 para 0.98
+    hover: { scale: 1.01 }, // Reduzido para apenas 1% de aumento
+    tap: { scale: 0.99 } // Reduzido para apenas 1% de diminuição
   };
 
   return (
@@ -291,8 +291,8 @@ export default function Assets() {
                           <TooltipTrigger asChild>
                             <motion.button 
                               className="h-8 w-8 rounded-md inline-flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.98 }}
+                              whileHover={{ scale: 1.01 }}
+                              whileTap={{ scale: 0.99 }}
                             >
                               <Eye className="h-4 w-4" />
                               <span className="sr-only">Detalhes</span>
@@ -309,8 +309,8 @@ export default function Assets() {
                           <TooltipTrigger asChild>
                             <motion.button
                               className="h-8 w-8 rounded-md inline-flex items-center justify-center text-green-600 hover:text-green-800 hover:bg-green-50"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.98 }}
+                              whileHover={{ scale: 1.01 }}
+                              whileTap={{ scale: 0.99 }}
                             >
                               <BarChart3 className="h-4 w-4" />
                               <span className="sr-only">Monitoramento</span>
@@ -327,8 +327,8 @@ export default function Assets() {
                           <TooltipTrigger asChild>
                             <motion.button
                               className="h-8 w-8 rounded-md inline-flex items-center justify-center text-purple-600 hover:text-purple-800 hover:bg-purple-50"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.98 }}
+                              whileHover={{ scale: 1.01 }}
+                              whileTap={{ scale: 0.99 }}
                             >
                               <Code className="h-4 w-4" />
                               <span className="sr-only">Scripts</span>
@@ -412,8 +412,8 @@ export default function Assets() {
                   <TableCell>{alert.time}</TableCell>
                   <TableCell className="text-right">
                     <motion.div
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
                     >
                       <Button 
                         size="sm" 
