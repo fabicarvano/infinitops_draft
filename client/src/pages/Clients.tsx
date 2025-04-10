@@ -41,13 +41,51 @@ export default function Clients() {
     { id: 5, name: "Data Systems", contracts: 4, assets: 15, status: "active" },
   ];
 
+  // Níveis de atendimento possíveis
+  type ServiceLevelType = "standard" | "premium" | "vip";
+
   // Dados de exemplo para contratos com datas próximas de vencimento
   const contracts = [
-    { id: 101, name: "Suporte 24x7", client: "Empresa ABC", startDate: "01/01/2023", endDate: "13/04/2025", status: "active" }, // Vence em 3 dias
-    { id: 102, name: "Monitoramento", client: "Tech Solutions", startDate: "15/03/2023", endDate: "14/03/2024", status: "active" }, // Já vencido
-    { id: 103, name: "Backup & Recovery", client: "Empresa XYZ", startDate: "10/02/2023", endDate: "08/07/2025", status: "active" }, // Vence em 89 dias
-    { id: 104, name: "Consultoria", client: "Global Services", startDate: "05/05/2023", endDate: "04/11/2023", status: "inactive" }, // Já vencido
-    { id: 105, name: "Infraestrutura", client: "Data Systems", startDate: "20/04/2023", endDate: "19/04/2024", status: "active" }, // Já vencido
+    { 
+      id: 101, 
+      name: "Suporte 24x7", 
+      client: "Empresa ABC", 
+      endDate: "13/04/2025", 
+      status: "active",
+      serviceLevel: "vip" as ServiceLevelType  // Nível VIP
+    }, // Vence em 3 dias
+    { 
+      id: 102, 
+      name: "Monitoramento", 
+      client: "Tech Solutions", 
+      endDate: "14/03/2024", 
+      status: "active",
+      serviceLevel: "premium" as ServiceLevelType  // Nível Premium
+    }, // Já vencido
+    { 
+      id: 103, 
+      name: "Backup & Recovery", 
+      client: "Empresa XYZ", 
+      endDate: "08/07/2025", 
+      status: "active",
+      serviceLevel: "standard" as ServiceLevelType  // Nível Standard
+    }, // Vence em 89 dias
+    { 
+      id: 104, 
+      name: "Consultoria", 
+      client: "Global Services", 
+      endDate: "04/11/2023", 
+      status: "inactive",
+      serviceLevel: "standard" as ServiceLevelType  // Nível Standard
+    }, // Já vencido
+    { 
+      id: 105, 
+      name: "Infraestrutura", 
+      client: "Data Systems", 
+      endDate: "19/04/2024", 
+      status: "active",
+      serviceLevel: "premium" as ServiceLevelType  // Nível Premium
+    }, // Já vencido
   ];
 
   return (
@@ -153,8 +191,8 @@ export default function Clients() {
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">ID</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Início</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Término</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Nível</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
               </TableRow>
@@ -221,8 +259,22 @@ export default function Clients() {
                       </div>
                     </TableCell>
                     <TableCell>{contract.client}</TableCell>
-                    <TableCell>{contract.startDate}</TableCell>
                     <TableCell>{contract.endDate}</TableCell>
+                    <TableCell>
+                      <Badge className={
+                        contract.serviceLevel === "vip" 
+                          ? "bg-purple-100 text-purple-700"
+                          : contract.serviceLevel === "premium"
+                          ? "bg-blue-100 text-blue-700" 
+                          : "bg-slate-100 text-slate-700"
+                      }>
+                        {contract.serviceLevel === "vip" 
+                          ? "VIP" 
+                          : contract.serviceLevel === "premium" 
+                          ? "Premium" 
+                          : "Standard"}
+                      </Badge>
+                    </TableCell>
                     <TableCell>
                       <Badge className={
                         contract.status === "active" 
