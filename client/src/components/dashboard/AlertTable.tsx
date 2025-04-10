@@ -1,8 +1,7 @@
-import { useState } from "react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ExternalLink, ArrowRight } from "lucide-react";
+import { ArrowRight, AlertTriangle, TicketPlus, ArrowUpRight } from "lucide-react";
 
 type AlertSeverity = "critical" | "medium" | "low";
 
@@ -13,6 +12,7 @@ interface Alert {
   asset: string;
   message: string;
   time: string;
+  ticketId?: number;
 }
 
 interface AlertTableProps {
@@ -24,20 +24,33 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
   const getSeverityBadgeStyle = (severity: AlertSeverity) => {
     switch (severity) {
       case "critical":
-        return "status-critical border";
+        return "bg-red-100 text-red-700 hover:bg-red-200";
       case "medium":
-        return "status-warning border";
+        return "bg-yellow-100 text-yellow-700 hover:bg-yellow-200";
       case "low":
-        return "status-info border";
+        return "bg-blue-100 text-blue-700 hover:bg-blue-200";
       default:
-        return "status-info border";
+        return "bg-slate-100 text-slate-700 hover:bg-slate-200";
+    }
+  };
+
+  const handleGoToTicket = (ticketId?: number) => {
+    if (ticketId) {
+      alert(`Redirecionando para o chamado #${ticketId}`);
+    } else {
+      alert("Criando um novo chamado para este alerta");
     }
   };
 
   return (
     <div className="card overflow-hidden">
       <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-        <h3 className="title text-lg">Alertas Recentes</h3>
+        <div className="flex items-center">
+          <div className="bg-red-50 p-2 rounded-lg mr-3">
+            <AlertTriangle className="h-5 w-5 text-red-600" />
+          </div>
+          <h3 className="title text-lg">Alertas Ativos</h3>
+        </div>
         <Button 
           variant="ghost" 
           size="sm" 
@@ -56,7 +69,7 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
               <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativo</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium">Tempo</TableHead>
-              <TableHead className="text-xs text-slate-500 uppercase font-medium">Ação</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ação</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -86,9 +99,28 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
                   <TableCell className="text-sm text-slate-600">{alert.asset}</TableCell>
                   <TableCell className="text-sm text-slate-600">{alert.message}</TableCell>
                   <TableCell className="text-sm text-slate-500">{alert.time}</TableCell>
-                  <TableCell className="text-sm">
-                    <Button size="icon" variant="ghost" className="text-slate-400 hover:text-green-700 hover:bg-green-50 h-8 w-8">
-                      <ExternalLink className="h-4 w-4" />
+                  <TableCell className="text-sm text-right">
+                    <Button 
+                      size="sm" 
+                      variant={alert.ticketId ? "outline" : "default"}
+                      className={
+                        alert.ticketId 
+                          ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
+                          : "bg-green-700 hover:bg-green-800"
+                      }
+                      onClick={() => handleGoToTicket(alert.ticketId)}
+                    >
+                      {alert.ticketId ? (
+                        <>
+                          <ArrowUpRight className="mr-1 h-4 w-4" />
+                          Chamado #{alert.ticketId}
+                        </>
+                      ) : (
+                        <>
+                          <TicketPlus className="mr-1 h-4 w-4" />
+                          Criar Chamado
+                        </>
+                      )}
                     </Button>
                   </TableCell>
                 </TableRow>
