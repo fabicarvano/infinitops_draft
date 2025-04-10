@@ -57,7 +57,7 @@ export default function Sidebar() {
     return location === path;
   };
 
-  // Variantes de animação
+  // Variantes de animação com efeitos mais sutis
   const sidebarVariants = {
     expanded: { width: "16rem" },
     collapsed: { width: "4rem" }
@@ -71,7 +71,7 @@ export default function Sidebar() {
     },
     collapsed: { 
       opacity: 0,
-      x: -10,
+      x: -5, // Reduzido de -10 para -5
       transitionEnd: { display: "none" }
     }
   };
@@ -81,13 +81,13 @@ export default function Sidebar() {
       opacity: 1, 
       x: 0,
       transition: {
-        delay: i * 0.05,
-        duration: 0.2
+        delay: i * 0.02, // Reduzido de 0.05 para 0.02
+        duration: 0.15  // Reduzido de 0.2 para 0.15
       }
     }),
     collapsed: {
       opacity: 0,
-      x: -10
+      x: -5  // Reduzido de -10 para -5
     }
   };
   
@@ -99,19 +99,19 @@ export default function Sidebar() {
     },
     collapsed: { 
       opacity: 0, 
-      x: -10,
+      x: -5,  // Reduzido de -10 para -5
       transitionEnd: { display: "none" }
     }
   };
   
   const notificationVariants = {
-    initial: { scale: 0.8 },
+    initial: { scale: 0.9 }, // Aumentado de 0.8 para 0.9 (menos diferença)
     animate: { 
       scale: 1,
       transition: {
         type: "spring",
-        stiffness: 500,
-        damping: 20
+        stiffness: 300, // Reduzido de 500 para 300
+        damping: 25    // Aumentado de 20 para 25 (mais amortecimento)
       }
     }
   };

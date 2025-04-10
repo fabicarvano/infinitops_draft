@@ -29,26 +29,26 @@ export default function Dashboard() {
     card.title === "Alertas Críticos" || card.title === "Chamados Abertos"
   );
 
-  // Variantes de animações para os componentes
+  // Variantes de animações para os componentes (mais sutis)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
+        staggerChildren: 0.05 // Reduzido de 0.1 para 0.05
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 10, opacity: 0 }, // Reduzido de y: 20 para y: 10
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 30
+        type: "tween", // Alterado de "spring" para "tween" (mais suave)
+        duration: 0.3, // Adicionado duração explícita
+        ease: "easeOut" // Adicionado easing suave
       }
     }
   };
@@ -72,10 +72,10 @@ export default function Dashboard() {
           filteredStatCards.map((stat, index) => (
             <motion.div 
               key={index}
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: index * 0.1, duration: 0.3 }}
-              whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
+              transition={{ delay: index * 0.05, duration: 0.25 }}
+              whileHover={{ scale: 1.01, transition: { duration: 0.15 } }}
             >
               <StatCard {...stat} />
             </motion.div>
@@ -87,9 +87,9 @@ export default function Dashboard() {
       <motion.div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8" variants={itemVariants}>
         <motion.div 
           className="col-span-1 xl:col-span-2"
-          initial={{ opacity: 0, x: -20 }}
+          initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2, duration: 0.4 }}
+          transition={{ delay: 0.1, duration: 0.25, ease: "easeOut" }}
         >
           <TicketsTable 
             tickets={recentTicketsData?.tickets || []} 
@@ -98,9 +98,9 @@ export default function Dashboard() {
         </motion.div>
         <motion.div 
           className="col-span-1"
-          initial={{ opacity: 0, x: 20 }}
+          initial={{ opacity: 0, x: 10 }}
           animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3, duration: 0.4 }}
+          transition={{ delay: 0.15, duration: 0.25, ease: "easeOut" }}
         >
           <IntegrationStatus 
             integrations={integrationsData?.integrations || []} 
@@ -113,9 +113,9 @@ export default function Dashboard() {
       <motion.div 
         className="mb-8" 
         variants={itemVariants}
-        initial={{ opacity: 0, y: 20 }}
+        initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4, duration: 0.4 }}
+        transition={{ delay: 0.2, duration: 0.3, ease: "easeOut" }}
       >
         <ImpactedServices
           services={impactedServicesData?.services || []}

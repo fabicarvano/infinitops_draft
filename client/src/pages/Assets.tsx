@@ -143,46 +143,46 @@ export default function Assets() {
     }
   };
 
-  // Variantes de animação
+  // Variantes de animação (mais sutis)
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1,
+        staggerChildren: 0.03, // Reduzido de 0.1 para 0.03
         when: "beforeChildren"
       }
     }
   };
 
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
+    hidden: { y: 8, opacity: 0 }, // Reduzido de y: 20 para y: 8
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 25
+        type: "tween", // Trocado de "spring" para "tween"
+        duration: 0.25, // Duração explícita mais curta
+        ease: "easeOut" // Easing suave
       }
     }
   };
 
   const tableRowVariants = {
-    hidden: { opacity: 0, x: -5 },
+    hidden: { opacity: 0, x: -2 }, // Reduzido de x: -5 para x: -2
     visible: (i: number) => ({
       opacity: 1,
       x: 0,
       transition: {
-        delay: i * 0.05,
-        duration: 0.2
+        delay: i * 0.02, // Reduzido de 0.05 para 0.02
+        duration: 0.15 // Reduzido de 0.2 para 0.15
       }
     })
   };
 
   const buttonVariants = {
-    hover: { scale: 1.05 },
-    tap: { scale: 0.95 }
+    hover: { scale: 1.02 }, // Reduzido de 1.05 para 1.02
+    tap: { scale: 0.98 } // Aumentado de 0.95 para 0.98
   };
 
   return (
