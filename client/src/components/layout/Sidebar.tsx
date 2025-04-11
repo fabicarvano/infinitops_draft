@@ -16,7 +16,7 @@ import {
 
 export default function Sidebar() {
   const [location] = useLocation();
-  const { collapsed, toggleSidebar } = useSidebar();
+  const { collapsed, toggleSidebar, isSmallScreen } = useSidebar();
 
   // Define navigation items
   const navItems = [

@@ -9,23 +9,24 @@ interface MainLayoutProps {
 }
 
 export default function MainLayout({ children }: MainLayoutProps) {
-  const { collapsed } = useSidebar();
+  const { collapsed, isSmallScreen } = useSidebar();
   
   return (
     <div className="flex min-h-screen text-slate-800 overflow-x-hidden">
       <Sidebar />
       <motion.main 
-        className={`flex-1 ${
-          collapsed ? 'ml-16' : 'ml-64'
-        }`}
+        className="flex-1"
         initial={false}
         animate={{
-          marginLeft: collapsed ? "4rem" : "16rem"
+          // Em telas pequenas, quando o menu estiver expandido, não mudamos a margem
+          // para que o conteúdo fique embaixo do menu (sobreposição)
+          marginLeft: (isSmallScreen && !collapsed) ? "0" : 
+                     collapsed ? "4rem" : "16rem"
         }}
         transition={{
-          type: "spring",
-          stiffness: 300,
-          damping: 30
+          type: "tween",
+          duration: 0.3,
+          ease: "easeOut"
         }}
       >
         <motion.div 
