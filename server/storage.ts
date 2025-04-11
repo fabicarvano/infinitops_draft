@@ -43,6 +43,7 @@ export interface IStorage {
   // Alertas
   getAlerts(): Promise<Alert[]>;
   getAlertsByAsset(assetId: number): Promise<Alert[]>;
+  getAlert(id: number): Promise<Alert | undefined>;
   createAlert(alert: InsertAlert): Promise<Alert>;
   
   // Chamados
@@ -360,6 +361,10 @@ export class MemStorage implements IStorage {
     return Array.from(this.alerts.values()).filter(
       (alert) => alert.assetId === assetId
     );
+  }
+  
+  async getAlert(id: number): Promise<Alert | undefined> {
+    return this.alerts.get(id);
   }
   
   async createAlert(alert: InsertAlert): Promise<Alert> {

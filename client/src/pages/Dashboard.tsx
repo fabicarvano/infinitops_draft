@@ -5,6 +5,7 @@ import { useSLA } from "@/hooks/use-sla";
 import { useIntegrations } from "@/hooks/use-integrations";
 import { useTickets } from "@/hooks/use-tickets";
 import { useImpactedServices } from "@/hooks/use-impacted-services";
+import { useWebSocket } from "@/hooks/use-websocket";
 import StatCard from "@/components/dashboard/StatCard";
 import AlertTable from "@/components/dashboard/AlertTable";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
@@ -12,6 +13,8 @@ import SLAPerformance from "@/components/dashboard/SLAPerformance";
 import IntegrationStatus from "@/components/dashboard/IntegrationStatus";
 import TicketsTable from "@/components/dashboard/TicketsTable";
 import ImpactedServices from "@/components/dashboard/ImpactedServices";
+import { RealTimeNotifications } from "@/components/live/RealTimeNotifications";
+import { SLAMonitor } from "@/components/live/SLAMonitor";
 import { motion } from "framer-motion";
 
 export default function Dashboard() {
@@ -178,6 +181,27 @@ export default function Dashboard() {
             chartData={slaData?.chartData || []} 
             loading={slaLoading} 
           />
+        </motion.div>
+      </motion.div>
+
+      {/* Tempo Real: Notificações e SLA Monitor */}
+      <motion.div 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4" 
+        variants={itemVariants}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9, duration: 0.3, ease: "easeOut" }}
+        >
+          <RealTimeNotifications />
+        </motion.div>
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.0, duration: 0.3, ease: "easeOut" }}
+        >
+          <SLAMonitor />
         </motion.div>
       </motion.div>
     </motion.div>

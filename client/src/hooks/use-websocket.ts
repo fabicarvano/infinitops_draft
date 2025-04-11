@@ -100,13 +100,19 @@ export function useWebSocket() {
     }
   }, [toast]);
 
-  // Reconhecer um alerta
+  // Reconhecer um alerta (enviar comando de reconhecimento)
   const acknowledgeAlert = useCallback((alertId: number) => {
-    return sendMessage({
-      type: 'alert_ack',
+    const result = sendMessage({
+      type: 'acknowledge_alert',
       alertId,
       timestamp: new Date().toISOString()
     });
+    
+    if (result) {
+      console.log(`Enviando reconhecimento para alerta #${alertId}`);
+    }
+    
+    return result;
   }, [sendMessage]);
 
   // Atualizar status de um chamado

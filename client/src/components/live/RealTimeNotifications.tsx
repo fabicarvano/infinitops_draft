@@ -39,7 +39,7 @@ export function RealTimeNotifications() {
             Notificações em Tempo Real
           </CardTitle>
           <Badge
-            variant={isConnected ? 'outline' : 'destructive'}
+            variant={isConnected ? 'default' : 'destructive'}
             className={`${isConnected ? 'bg-green-50 text-green-700 hover:bg-green-100' : ''}`}
           >
             {isConnected ? 'Conectado' : 'Desconectado'}
@@ -65,7 +65,7 @@ export function RealTimeNotifications() {
                   return (
                     <Alert
                       key={`alert-${index}`}
-                      variant={severity === 'critical' ? 'destructive' : severity === 'high' ? 'default' : 'outline'}
+                      variant={severity === 'critical' ? 'destructive' : 'default'}
                       className="relative"
                     >
                       <div className="flex items-start gap-2">

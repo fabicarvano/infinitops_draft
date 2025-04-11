@@ -254,8 +254,7 @@ export function SLAMonitor() {
                         
                         <Progress 
                           value={item.percentage} 
-                          className="h-2 bg-slate-200" 
-                          indicatorClassName={progressColor}
+                          className={`h-2 bg-slate-200 [&>div]:${progressColor}`}
                         />
                         
                         <div className="mt-3 flex justify-end">
