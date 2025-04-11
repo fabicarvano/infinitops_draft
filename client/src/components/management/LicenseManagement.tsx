@@ -38,6 +38,7 @@ interface License {
   expirationDate: string;
   quantity: number;
   status: "active" | "expired" | "pending";
+  renewalType?: "client" | "internal" | "business";
   notes?: string;
 }
 
@@ -70,6 +71,7 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             expirationDate: "2025-12-31T23:59:59Z",
             quantity: 10,
             status: "active",
+            renewalType: "client",
             notes: "Licenças para servidores virtuais"
           },
           {
@@ -80,7 +82,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             key: "M365-ENTERPRISE-X123456",
             expirationDate: "2025-10-15T23:59:59Z",
             quantity: 50,
-            status: "active"
+            status: "active",
+            renewalType: "business"
           },
           {
             id: 3,
@@ -90,7 +93,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             key: "SQL-ENT-ABCDEF-78901",
             expirationDate: "2024-12-31T23:59:59Z",
             quantity: 5,
-            status: "active"
+            status: "active",
+            renewalType: "internal"
           },
           {
             id: 4,
@@ -100,7 +104,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             key: "AV-CORP-XYZ78901234",
             expirationDate: "2025-01-15T23:59:59Z",
             quantity: 100,
-            status: "active"
+            status: "active",
+            renewalType: "client"
           }
         ];
         
@@ -313,6 +318,22 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="renewalType" className="text-right text-sm font-medium">
+                Tipo de Renovação
+              </label>
+              <Select>
+                <SelectTrigger className="col-span-3">
+                  <SelectValue placeholder="Selecione o tipo de renovação" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="client">Cliente</SelectItem>
+                  <SelectItem value="internal">Interna</SelectItem>
+                  <SelectItem value="business">Negócio</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
               <label htmlFor="notes" className="text-right text-sm font-medium">
                 Observações
               </label>
@@ -383,6 +404,19 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
                     : selectedLicense.status === "expired"
                     ? <Badge className="bg-red-100 text-red-700">Vencida</Badge>
                     : <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>}
+                </div>
+              </div>
+              
+              <div className="grid grid-cols-3 gap-2">
+                <div className="text-sm font-medium text-slate-500">Tipo de Renovação:</div>
+                <div className="col-span-2">
+                  {selectedLicense.renewalType === "client"
+                    ? "Cliente"
+                    : selectedLicense.renewalType === "business"
+                    ? "Negócio"
+                    : selectedLicense.renewalType === "internal"
+                    ? "Interna"
+                    : "Não especificado"}
                 </div>
               </div>
               
