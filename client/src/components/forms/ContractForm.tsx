@@ -155,8 +155,8 @@ export default function ContractForm({ open, onOpenChange, onContractCreated }: 
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[600px]">
+    <Dialog open={open} onOpenChange={onOpenChange} modal>
+      <DialogContent className="sm:max-w-[600px] z-50">
         <DialogHeader>
           <DialogTitle>Novo Contrato</DialogTitle>
           <DialogDescription>
