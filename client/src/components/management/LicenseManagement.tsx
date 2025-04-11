@@ -262,7 +262,7 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
 
       {/* Modal para adicionar nova licença */}
       <Dialog open={isAddLicenseOpen} onOpenChange={setIsAddLicenseOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="sm:max-w-[550px] bg-white shadow-lg border">
           <DialogHeader>
             <DialogTitle>Adicionar Nova Licença</DialogTitle>
             <DialogDescription>
@@ -354,7 +354,7 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
 
       {/* Modal para visualizar detalhes da licença */}
       <Dialog open={isDetailsOpen} onOpenChange={setIsDetailsOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="sm:max-w-[550px] bg-white shadow-lg border">
           <DialogHeader>
             <DialogTitle>Detalhes da Licença</DialogTitle>
             <DialogDescription>
