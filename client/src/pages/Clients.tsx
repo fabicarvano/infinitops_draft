@@ -8,18 +8,26 @@ import {
   CalendarClock, 
   Users,
   AlertTriangle,
-  AlertCircle 
+  AlertCircle,
+  Eye,
+  FileText
 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import ClientForm from "@/components/forms/ClientForm";
 import ContractForm from "@/components/forms/ContractForm";
+import ClientDetails from "@/components/details/ClientDetails";
+import ContractDetails from "@/components/details/ContractDetails";
 
 export default function Clients() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isClientFormOpen, setIsClientFormOpen] = useState(false);
   const [isContractFormOpen, setIsContractFormOpen] = useState(false);
+  const [isClientDetailsOpen, setIsClientDetailsOpen] = useState(false);
+  const [isContractDetailsOpen, setIsContractDetailsOpen] = useState(false);
+  const [selectedClientId, setSelectedClientId] = useState<number | undefined>(undefined);
+  const [selectedContractId, setSelectedContractId] = useState<number | undefined>(undefined);
   
   // Data atual para cálculo do vencimento dos contratos
   const currentDate = new Date("2025-04-10"); // Usando a data atual do sistema
@@ -160,13 +168,20 @@ export default function Clients() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                      >
-                        Detalhes
-                      </Button>
+                      <div className="flex space-x-1 justify-end">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                          onClick={() => {
+                            setSelectedClientId(client.id);
+                            setIsClientDetailsOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4 mr-1" />
+                          Detalhes
+                        </Button>
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))}
