@@ -210,34 +210,7 @@ export default function Tickets() {
 
   return (
     <div>
-      {/* Alertas para chamados VIP */}
-      {notifications.length > 0 && (
-        <div className="mb-6">
-          {notifications
-            .filter(notification => !closedNotifications.includes(notification.id))
-            .map((notification) => (
-              <Alert key={notification.id} variant="destructive" className="mb-2 relative pr-10">
-                <Bell className="h-4 w-4 mr-2" />
-                <AlertTitle className="flex items-center gap-2">
-                  Chamado VIP Aberto
-                  {getServiceLevelBadge(notification.serviceLevel)}
-                </AlertTitle>
-                <AlertDescription>
-                  Cliente {notification.client}: {notification.title}
-                </AlertDescription>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="absolute top-2 right-2 h-6 w-6 p-0 rounded-full hover:bg-red-800"
-                  onClick={() => closeNotification(notification.id)}
-                >
-                  <span className="sr-only">Fechar</span>
-                  <span aria-hidden>×</span>
-                </Button>
-              </Alert>
-            ))}
-        </div>
-      )}
+      {/* Alertas removidos - agora são mostrados apenas via toast e SLA Monitor */}
       
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
         <div className="relative w-full sm:w-80">
