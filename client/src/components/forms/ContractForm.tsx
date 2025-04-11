@@ -55,9 +55,7 @@ const contractFormSchema = z.object({
   end_date: z.date({
     required_error: "Data de término é obrigatória.",
   }),
-  renewal_type: z.enum(["client", "internal", "business"], {
-    required_error: "Tipo de renovação é obrigatório.",
-  }),
+  // Campo de tipo de renovação removido, será vinculado ao cadastro de licenças
   technical_contact: z.string().min(3, {
     message: "Responsável técnico é obrigatório.",
   }),
@@ -109,7 +107,6 @@ export default function ContractForm({ open, onOpenChange, onContractCreated }: 
       client_id: "",
       start_date: new Date(),
       end_date: new Date(new Date().setMonth(new Date().getMonth() + 12)), // 12 meses
-      renewal_type: "internal",
       technical_contact: "",
       commercial_contact: "",
       service_level: "standard",
@@ -288,35 +285,7 @@ export default function ContractForm({ open, onOpenChange, onContractCreated }: 
                 )}
               />
               
-              {/* Tipo de Renovação */}
-              <FormField
-                control={form.control}
-                name="renewal_type"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Tipo de Renovação</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o tipo" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="client">Cliente</SelectItem>
-                        <SelectItem value="internal">Interna</SelectItem>
-                        <SelectItem value="business">Empresarial</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      Define quem é o responsável pela renovação
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* O campo Tipo de Renovação foi removido, será vinculado ao cadastro de licenças */}
               
               {/* Nível de Serviço */}
               <FormField

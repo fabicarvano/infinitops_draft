@@ -185,11 +185,11 @@ export default function Clients() {
               <h3 className="title text-lg">Lista de Contratos</h3>
             </div>
             <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+              className="bg-green-700 hover:bg-green-800"
+              size="sm"
               onClick={() => setIsContractFormOpen(true)}
             >
+              <PlusCircle className="mr-2 h-4 w-4" />
               Novo Contrato
             </Button>
           </div>
