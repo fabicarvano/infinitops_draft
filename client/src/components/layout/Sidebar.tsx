@@ -1,6 +1,7 @@
 import { Link, useLocation } from "wouter";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { motion, AnimatePresence } from "framer-motion";
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   Building2, 
@@ -62,6 +63,16 @@ export default function Sidebar() {
     expanded: { width: "16rem" },
     collapsed: { width: "4rem" }
   };
+  
+  // Verificar se estamos em um dispositivo de tela pequena
+  const isMobile = window.innerWidth <= 1366; // Detecta telas de notebook (13-14")
+  
+  // Se for mobile, garantir que a barra lateral comece recolhida
+  useEffect(() => {
+    if (isMobile && !collapsed) {
+      toggleSidebar();
+    }
+  }, [isMobile, collapsed, toggleSidebar]);
   
   const logoVariants = {
     expanded: { 

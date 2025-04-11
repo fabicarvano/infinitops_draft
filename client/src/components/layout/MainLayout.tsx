@@ -35,7 +35,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         >
           <Header />
         </motion.div>
-        <div className="px-6 py-4">
+        <div className="px-2 sm:px-4 md:px-6 py-3 md:py-4 overflow-x-auto">
           {children}
         </div>
       </motion.main>

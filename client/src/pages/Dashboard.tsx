@@ -60,7 +60,7 @@ export default function Dashboard() {
       variants={containerVariants}
     >
       {/* Stats Overview - apenas Alertas Críticos e Chamados Abertos */}
-      <motion.div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8" variants={itemVariants}>
+      <motion.div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 mb-6 md:mb-8" variants={itemVariants}>
         {statsLoading ? (
           Array.from({ length: 2 }).map((_, index) => (
             <motion.div 
@@ -84,7 +84,7 @@ export default function Dashboard() {
       </motion.div>
 
       {/* Chamados Recentes & Status Integrações */}
-      <motion.div className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8" variants={itemVariants}>
+      <motion.div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 mb-8" variants={itemVariants}>
         <motion.div 
           className="col-span-1 xl:col-span-2"
           initial={{ opacity: 0, x: -10 }}
@@ -125,7 +125,7 @@ export default function Dashboard() {
 
       {/* Chamados com SLA próximo & Feed de Atividades */}
       <motion.div 
-        className="grid grid-cols-1 xl:grid-cols-3 gap-6 mb-8" 
+        className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 mb-6 md:mb-8" 
         variants={itemVariants}
       >
         <motion.div 
@@ -155,7 +155,7 @@ export default function Dashboard() {
 
       {/* Alertas & Performance SLA */}
       <motion.div 
-        className="grid grid-cols-1 lg:grid-cols-2 gap-6" 
+        className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4" 
         variants={itemVariants}
       >
         <motion.div

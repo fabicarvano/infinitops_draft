@@ -61,15 +61,15 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
         </Button>
       </div>
       <div className="overflow-x-auto">
-        <Table>
+        <Table className="min-w-[650px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-slate-200">
-              <TableHead className="text-xs text-slate-500 uppercase font-medium px-4">Status</TableHead>
-              <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
-              <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativo</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium px-4 w-[90px]">Status</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Ativo</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
-              <TableHead className="text-xs text-slate-500 uppercase font-medium">Tempo</TableHead>
-              <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ação</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Tempo</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[140px]">Ação</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
