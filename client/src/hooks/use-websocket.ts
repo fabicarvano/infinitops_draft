@@ -159,6 +159,15 @@ export function useWebSocket() {
           variant: 'default',
         });
         break;
+      
+      case 'vip_ticket':
+        toast({
+          title: '⭐ Chamado VIP',
+          description: `Novo chamado VIP #${message.ticketId} aberto para ${message.client}`,
+          variant: 'destructive',
+          duration: 7000,
+        });
+        break;
         
       case 'error':
         toast({
