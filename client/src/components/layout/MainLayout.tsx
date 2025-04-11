@@ -25,7 +25,7 @@ export default function MainLayout({ children }: MainLayoutProps) {
         }}
         transition={{
           type: "tween",
-          duration: 0.3,
+          duration: 0.25,
           ease: "easeOut"
         }}
       >
