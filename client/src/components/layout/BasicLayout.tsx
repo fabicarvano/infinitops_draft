@@ -24,20 +24,14 @@ interface LayoutProps {
 export default function BasicLayout({ children }: LayoutProps) {
   const [location] = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isSmallScreen, setIsSmallScreen] = useState(false);
   const [pageTitle, setPageTitle] = useState("Painel de Controle");
   const [currentCenter, setCurrentCenter] = useState("Centro de Operações SP");
 
   // Detectar tamanho da tela no carregamento e em redimensionamentos
   useEffect(() => {
     const checkScreenSize = () => {
-      const smallScreen = window.innerWidth <= 1366;
-      setIsSmallScreen(smallScreen);
-      
-      // Em telas pequenas, mantenha a barra lateral fechada por padrão
-      if (smallScreen && menuOpen) {
-        setMenuOpen(false);
-      }
+      // Apenas verificar tamanho de tela, sem alterar estado do menu
+      console.log("Verificando tamanho da tela");
     };
     
     // Verificar inicialmente
@@ -48,7 +42,7 @@ export default function BasicLayout({ children }: LayoutProps) {
     
     // Limpar listener ao desmontar
     return () => window.removeEventListener('resize', checkScreenSize);
-  }, [menuOpen]);
+  }, []);
 
   // Atualizar título da página com base na URL
   useEffect(() => {
@@ -132,10 +126,10 @@ export default function BasicLayout({ children }: LayoutProps) {
 
   return (
     <div className="flex min-h-screen text-slate-800 overflow-x-hidden">
-      {/* Overlay para telas pequenas quando o menu está aberto */}
-      {isSmallScreen && menuOpen && (
+      {/* Overlay quando o menu está aberto */}
+      {menuOpen && (
         <div 
-          className="fixed inset-0 bg-black/50 z-10"
+          className="fixed inset-0 bg-black/50 z-20"
           onClick={() => setMenuOpen(false)}
         />
       )}
@@ -143,16 +137,13 @@ export default function BasicLayout({ children }: LayoutProps) {
       {/* Sidebar */}
       <aside 
         className={`fixed h-screen shadow-md border-r border-slate-200 bg-gradient-to-b from-green-800/90 to-green-700/70 z-30 transition-all duration-300 ease-out ${
-          menuOpen ? 'w-64' : 'w-16'
+          menuOpen ? 'w-64 left-0' : 'w-0 -left-4'
         }`}
       >
         <div className="flex flex-col h-full overflow-hidden">
           {/* Sidebar Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/20">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-green-700 font-bold">
-                CCO
-              </div>
               {menuOpen && (
                 <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
               )}
@@ -213,11 +204,7 @@ export default function BasicLayout({ children }: LayoutProps) {
       {/* Main Content */}
       <main 
         className={`flex-1 transition-all duration-300 ease-out ${
-          (isSmallScreen && menuOpen) 
-            ? 'ml-0' 
-            : menuOpen 
-              ? 'ml-64' 
-              : 'ml-16'
+          menuOpen ? 'ml-0' : 'ml-0'
         }`}
       >
         {/* Header */}
