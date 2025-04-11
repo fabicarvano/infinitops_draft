@@ -207,10 +207,20 @@ export default function Assets() {
           whileHover="hover"
           whileTap="tap"
         >
-          <Button className="w-full sm:w-auto bg-green-700 hover:bg-green-800">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Novo Ativo
-          </Button>
+          <div className="flex gap-2">
+            <Button className="w-full sm:w-auto bg-green-700 hover:bg-green-800">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Novo Ativo
+            </Button>
+            <Button 
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => window.location.href = "/ativos/matriz"}
+            >
+              <Server className="mr-2 h-4 w-4" />
+              Matriz de Ativos
+            </Button>
+          </div>
         </motion.div>
       </motion.div>
 
