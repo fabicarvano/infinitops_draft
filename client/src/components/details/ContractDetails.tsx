@@ -141,7 +141,7 @@ export default function ContractDetails({ open, onOpenChange, contractId }: Cont
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto z-50">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto z-50 bg-white shadow-lg border">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center">
             <FileText className="mr-2 h-5 w-5 text-green-600" />
