@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -56,7 +56,7 @@ export default function ClientDetails({ open, onOpenChange, clientId }: ClientDe
   const [loading, setLoading] = useState(false);
 
   // Carregar dados do cliente quando o componente abrir
-  useState(() => {
+  useEffect(() => {
     if (open && clientId) {
       setLoading(true);
       
@@ -79,7 +79,7 @@ export default function ClientDetails({ open, onOpenChange, clientId }: ClientDe
     } else {
       setClient(null);
     }
-  });
+  }, [open, clientId]);
 
   if (!client && !loading) {
     return null;

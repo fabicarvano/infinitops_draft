@@ -308,13 +308,20 @@ export default function Clients() {
                         </Badge>
                       </TableCell>
                       <TableCell className="text-right">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                        >
-                          Detalhes
-                        </Button>
+                        <div className="flex space-x-1 justify-end">
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                            onClick={() => {
+                              setSelectedContractId(contract.id);
+                              setIsContractDetailsOpen(true);
+                            }}
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            Detalhes
+                          </Button>
+                        </div>
                       </TableCell>
                     </TableRow>
                   );
@@ -342,6 +349,19 @@ export default function Clients() {
           console.log("Contrato criado:", contract);
           // Em um app real, atualizaríamos a lista de contratos
         }}
+      />
+
+      {/* Detalhes em modais */}
+      <ClientDetails 
+        open={isClientDetailsOpen}
+        onOpenChange={setIsClientDetailsOpen}
+        clientId={selectedClientId}
+      />
+
+      <ContractDetails
+        open={isContractDetailsOpen}
+        onOpenChange={setIsContractDetailsOpen}
+        contractId={selectedContractId}
       />
     </>
   );
