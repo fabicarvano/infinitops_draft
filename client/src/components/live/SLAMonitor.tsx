@@ -199,7 +199,14 @@ export function SLAMonitor() {
                           : 'bg-blue-500';
                           
                     return (
-                      <div key={item.id} className="bg-slate-50 rounded-lg p-3 border border-slate-200">
+                      <div 
+                        key={item.id} 
+                        className={`rounded-lg p-3 border ${
+                          item.isVip
+                            ? 'bg-purple-50 border-purple-200'
+                            : 'bg-slate-50 border-slate-200'
+                        }`}
+                      >
                         <div className="flex items-center justify-between mb-2">
                           <div className="flex items-center">
                             <Badge 
@@ -223,9 +230,14 @@ export function SLAMonitor() {
                             <h3 className="font-medium text-sm">{item.asset}</h3>
                           </div>
                           
-                          {item.isVip && (
-                            <Badge className="bg-purple-500 hover:bg-purple-600">VIP</Badge>
-                          )}
+                          <span className={`text-xs font-medium ${
+                            isExpired ? 'text-red-600' : 
+                            item.percentage > 75 ? 'text-red-600' : 
+                            item.percentage > 50 ? 'text-orange-600' : 
+                            'text-slate-600'
+                          }`}>
+                            {formatRemainingTime(item.remainingTime)}
+                          </span>
                         </div>
                         
                         <div className="text-xs text-slate-500 mb-2">
@@ -244,12 +256,17 @@ export function SLAMonitor() {
                         </div>
                         
                         <div className="mb-1 flex justify-between text-xs">
-                          <span>Progresso</span>
-                          <span 
-                            className={`font-medium ${isExpired || item.percentage > 75 ? 'text-red-600' : ''}`}
-                          >
-                            {formatRemainingTime(item.remainingTime)}
-                          </span>
+                          <div className="flex items-center">
+                            <span>Progresso</span>
+                            {item.isVip && (
+                              <Badge 
+                                variant="outline" 
+                                className="ml-2 bg-purple-50 text-purple-700 border-purple-200"
+                              >
+                                <span className="mr-1">⭐</span> VIP
+                              </Badge>
+                            )}
+                          </div>
                         </div>
                         
                         <Progress 

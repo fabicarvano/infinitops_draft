@@ -513,6 +513,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Erro ao criar alerta simulado:', error);
     }
   }, 30000);
+  
+  // Simular abertura de chamados VIP ocasionalmente (a cada 15 segundos para teste)
+  setInterval(async () => {
+    try {
+      // 40% de chance de gerar um novo chamado VIP
+      if (Math.random() > 0.6) {
+        const clients = await storage.getClients();
+        if (clients.length > 0) {
+          const randomClient = clients[Math.floor(Math.random() * clients.length)];
+          const assets = await storage.getAssetsByClient(randomClient.id);
+          
+          if (assets.length > 0) {
+            const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+            const ticketId = Math.floor(Math.random() * 1000) + 5000;
+            
+            // Broadcast do novo chamado VIP
+            broadcastMessage({
+              type: 'vip_ticket',
+              ticketId,
+              client: randomClient.name,
+              asset: randomAsset.name,
+              timestamp: new Date().toISOString()
+            });
+            
+            console.log('Notificação de chamado VIP enviada:', { 
+              ticketId, 
+              client: randomClient.name,
+              asset: randomAsset.name 
+            });
+          }
+        }
+      }
+    } catch (error) {
+      console.error('Erro ao criar notificação de chamado VIP:', error);
+    }
+  }, 15000);
 
   return httpServer;
 }
