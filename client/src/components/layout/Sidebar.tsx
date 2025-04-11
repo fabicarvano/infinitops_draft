@@ -167,8 +167,9 @@ export default function Sidebar() {
               <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
             </motion.div>
             <button 
-              onClick={toggleSidebar}
-              className="bg-white/20 text-white hover:bg-white/30 p-1 rounded-md"
+              onClick={() => toggleSidebar()}
+              className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
+              style={{ touchAction: "manipulation" }}
             >
               {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
             </button>

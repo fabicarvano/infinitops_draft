@@ -1,15 +1,17 @@
 import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
-import { Bell, MapPin } from "lucide-react";
+import { Bell, MapPin, Menu, X } from "lucide-react";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown } from "lucide-react";
+import { useSidebar } from "@/hooks/use-sidebar";
 
 export default function Header() {
   const [location] = useLocation();
   const [pageTitle, setPageTitle] = useState("Painel de Controle");
   const [currentCenter, setCurrentCenter] = useState("Centro de Operações SP");
+  const { collapsed, toggleSidebar, isSmallScreen } = useSidebar();
 
   useEffect(() => {
     // Set page title based on current location
@@ -47,7 +49,18 @@ export default function Header() {
   return (
     <header className="bg-white shadow-sm py-4 px-6 z-10 border-b border-slate-200">
       <div className="flex justify-between items-center">
-        <h1 className="text-xl font-semibold text-slate-800">{pageTitle}</h1>
+        <div className="flex items-center space-x-3">
+          <button 
+            className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
+            onClick={() => {
+              console.log("Toggling sidebar from header");
+              toggleSidebar();
+            }}
+          >
+            {collapsed ? <Menu size={20} /> : <X size={20} />}
+          </button>
+          <h1 className="text-xl font-semibold text-slate-800">{pageTitle}</h1>
+        </div>
         <div className="flex items-center space-x-4">
           <Popover>
             <PopoverTrigger asChild>
