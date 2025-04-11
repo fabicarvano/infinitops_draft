@@ -254,15 +254,15 @@ export default function Assets() {
           </motion.div>
         </div>
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="min-w-[650px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-slate-200">
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Tipo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Alertas</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Criticidade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ação</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Tipo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Alertas</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Criticidade</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[140px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -276,9 +276,9 @@ export default function Assets() {
                   animate="visible"
                   whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
                 >
-                  <TableCell className="font-medium">{asset.name}</TableCell>
-                  <TableCell>{asset.type}</TableCell>
-                  <TableCell>{asset.client}</TableCell>
+                  <TableCell className="font-medium truncate max-w-[150px] lg:max-w-none">{asset.name}</TableCell>
+                  <TableCell className="truncate max-w-[100px] lg:max-w-none">{asset.type}</TableCell>
+                  <TableCell className="truncate max-w-[120px] lg:max-w-none">{asset.client}</TableCell>
                   <TableCell>
                     <Badge className="bg-red-100 text-red-700 hover:bg-red-200">
                       {asset.alertCount} {asset.alertCount === 1 ? 'alerta' : 'alertas'}
@@ -384,15 +384,15 @@ export default function Assets() {
           </motion.div>
         </div>
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="min-w-[650px]">
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-slate-200">
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Ativo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Severidade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Tempo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Chamado</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Severidade</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Tempo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[150px]">Chamado</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -406,9 +406,9 @@ export default function Assets() {
                   animate="visible"
                   whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
                 >
-                  <TableCell className="font-medium">{alert.asset}</TableCell>
-                  <TableCell>{alert.client}</TableCell>
-                  <TableCell>{alert.message}</TableCell>
+                  <TableCell className="font-medium truncate max-w-[120px] lg:max-w-none">{alert.asset}</TableCell>
+                  <TableCell className="truncate max-w-[120px] lg:max-w-none">{alert.client}</TableCell>
+                  <TableCell className="truncate max-w-[180px] lg:max-w-none">{alert.message}</TableCell>
                   <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
                   <TableCell>{alert.time}</TableCell>
                   <TableCell className="text-right">

@@ -86,40 +86,40 @@ export default function TicketsTable({ tickets, loading, slaExpiring = false }: 
             </p>
           </div>
         ) : (
-          <table className="w-full">
+          <table className="w-full min-w-[700px]">
             <thead>
               <tr className="bg-slate-50">
-                <th className="px-5 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">ID</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Título</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Cliente</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Prioridade</th>
-                <th className="px-5 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Status</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-[60px]">ID</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">Título</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-[120px]">Cliente</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-[100px]">Prioridade</th>
+                <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-[90px]">Status</th>
                 {slaExpiring && (
-                  <th className="px-5 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider">SLA</th>
+                  <th className="px-3 py-3 text-left text-xs font-medium text-slate-500 uppercase tracking-wider w-[90px]">SLA</th>
                 )}
-                <th className="px-5 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider">Ação</th>
+                <th className="px-3 py-3 text-right text-xs font-medium text-slate-500 uppercase tracking-wider w-[100px]">Ação</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {tickets.map((ticket) => (
                 <tr key={ticket.id} className="hover:bg-slate-50">
-                  <td className="px-5 py-4 text-sm text-slate-800">#{ticket.id}</td>
-                  <td className="px-5 py-4">
-                    <div className="text-sm font-medium text-slate-800">{ticket.title}</div>
-                    <div className="text-xs text-slate-500">{ticket.asset}</div>
+                  <td className="px-3 py-4 text-sm text-slate-800">#{ticket.id}</td>
+                  <td className="px-3 py-4">
+                    <div className="text-sm font-medium text-slate-800 truncate max-w-[180px] lg:max-w-none">{ticket.title}</div>
+                    <div className="text-xs text-slate-500 truncate max-w-[180px] lg:max-w-none">{ticket.asset}</div>
                   </td>
-                  <td className="px-5 py-4 text-sm text-slate-800">{ticket.client}</td>
-                  <td className="px-5 py-4 text-sm">{getPriorityBadge(ticket.priority)}</td>
-                  <td className="px-5 py-4 text-sm">{getStatusBadge(ticket.status)}</td>
+                  <td className="px-3 py-4 text-sm text-slate-800 truncate">{ticket.client}</td>
+                  <td className="px-3 py-4 text-sm">{getPriorityBadge(ticket.priority)}</td>
+                  <td className="px-3 py-4 text-sm">{getStatusBadge(ticket.status)}</td>
                   {slaExpiring && ticket.slaExpiration && (
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-4">
                       <div className="flex items-center">
-                        <Clock className="h-4 w-4 text-red-500 mr-1" />
+                        <Clock className="h-4 w-4 text-red-500 mr-1 flex-shrink-0" />
                         <span className="text-sm text-red-500">{ticket.slaExpiration}</span>
                       </div>
                     </td>
                   )}
-                  <td className="px-5 py-4 text-right">
+                  <td className="px-3 py-4 text-right">
                     <Button variant="ghost" size="sm" className="text-blue-600 hover:text-blue-800 hover:bg-blue-50">
                       <ArrowUpRight className="h-4 w-4" />
                     </Button>
