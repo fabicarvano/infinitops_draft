@@ -34,9 +34,8 @@ interface License {
   contractId: number;
   name: string;
   type: string;
-  key: string;
+  vendor: string; // Fabricante
   expirationDate: string;
-  quantity: number;
   status: "active" | "expired" | "pending";
   renewalType?: "client" | "internal" | "business";
   notes?: string;
@@ -67,9 +66,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             contractId: contractId,
             name: "Windows Server 2022",
             type: "Sistema Operacional",
-            key: "WXYZ-ABCD-1234-5678-EFGH",
+            vendor: "Microsoft",
             expirationDate: "2025-12-31T23:59:59Z",
-            quantity: 10,
             status: "active",
             renewalType: "client",
             notes: "Licenças para servidores virtuais"
@@ -79,9 +77,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             contractId: contractId,
             name: "Microsoft 365",
             type: "Produtividade",
-            key: "M365-ENTERPRISE-X123456",
+            vendor: "Microsoft",
             expirationDate: "2025-10-15T23:59:59Z",
-            quantity: 50,
             status: "active",
             renewalType: "business"
           },
@@ -90,9 +87,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             contractId: contractId,
             name: "SQL Server 2022",
             type: "Banco de Dados",
-            key: "SQL-ENT-ABCDEF-78901",
+            vendor: "Microsoft",
             expirationDate: "2024-12-31T23:59:59Z",
-            quantity: 5,
             status: "active",
             renewalType: "internal"
           },
@@ -101,9 +97,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             contractId: contractId,
             name: "Antivírus Corporativo",
             type: "Segurança",
-            key: "AV-CORP-XYZ78901234",
+            vendor: "Kaspersky",
             expirationDate: "2025-01-15T23:59:59Z",
-            quantity: 100,
             status: "active",
             renewalType: "client"
           }
@@ -181,9 +176,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
               <TableRow className="hover:bg-transparent border-b border-slate-200">
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Tipo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Chave</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Fabricante</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Vencimento</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Quantidade</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
               </TableRow>
@@ -207,21 +201,7 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
                   <TableRow key={license.id} className="border-b border-slate-100 hover:bg-slate-50">
                     <TableCell className="font-medium">{license.name}</TableCell>
                     <TableCell>{license.type}</TableCell>
-                    <TableCell>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <div className="flex items-center">
-                              <span className="truncate max-w-[120px]">{license.key}</span>
-                              <Key className="h-4 w-4 ml-1 text-slate-400" />
-                            </div>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="text-xs">{license.key}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </TableCell>
+                    <TableCell>{license.vendor}</TableCell>
                     <TableCell>
                       <div className="flex items-center">
                         {new Date(license.expirationDate).toLocaleDateString('pt-BR')}
@@ -239,7 +219,6 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
                         )}
                       </div>
                     </TableCell>
-                    <TableCell>{license.quantity}</TableCell>
                     <TableCell>{statusBadge}</TableCell>
                     <TableCell className="text-right">
                       <Button
@@ -297,10 +276,10 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="key" className="text-right text-sm font-medium">
-                Chave
+              <label htmlFor="vendor" className="text-right text-sm font-medium">
+                Fabricante
               </label>
-              <Input id="key" className="col-span-3" />
+              <Input id="vendor" className="col-span-3" />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
@@ -308,13 +287,6 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
                 Vencimento
               </label>
               <Input id="expiration" type="date" className="col-span-3" />
-            </div>
-            
-            <div className="grid grid-cols-4 items-center gap-4">
-              <label htmlFor="quantity" className="text-right text-sm font-medium">
-                Quantidade
-              </label>
-              <Input id="quantity" type="number" min="1" className="col-span-3" />
             </div>
             
             <div className="grid grid-cols-4 items-center gap-4">
@@ -375,8 +347,8 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
               </div>
               
               <div className="grid grid-cols-3 gap-2">
-                <div className="text-sm font-medium text-slate-500">Chave:</div>
-                <div className="col-span-2 break-all">{selectedLicense.key}</div>
+                <div className="text-sm font-medium text-slate-500">Fabricante:</div>
+                <div className="col-span-2">{selectedLicense.vendor}</div>
               </div>
               
               <div className="grid grid-cols-3 gap-2">
@@ -389,11 +361,6 @@ export default function LicenseManagement({ contractId }: LicenseManagementProps
                       : `(Vence em ${getDaysUntilExpiration(selectedLicense.expirationDate)} dias)`}
                   </span>
                 </div>
-              </div>
-              
-              <div className="grid grid-cols-3 gap-2">
-                <div className="text-sm font-medium text-slate-500">Quantidade:</div>
-                <div className="col-span-2">{selectedLicense.quantity} licenças</div>
               </div>
               
               <div className="grid grid-cols-3 gap-2">
