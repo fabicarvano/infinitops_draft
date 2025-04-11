@@ -1,5 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { WebSocketServer, WebSocket } from "ws";
 import { storage } from "./storage";
 import { z } from "zod";
 import { 
@@ -326,6 +327,192 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // Create HTTP server
   const httpServer = createServer(app);
+
+  // WebSocket server setup
+  const wss = new WebSocketServer({ server: httpServer, path: '/ws' });
+
+  // Cliente conectado
+  wss.on('connection', (ws) => {
+    console.log('Cliente conectado ao WebSocket');
+
+    // Enviar mensagem inicial
+    const welcomeMessage = {
+      type: 'connection',
+      message: 'Conectado ao Servidor CCO',
+      timestamp: new Date().toISOString()
+    };
+    ws.send(JSON.stringify(welcomeMessage));
+
+    // Lidar com mensagens recebidas
+    ws.on('message', async (message) => {
+      try {
+        const data = JSON.parse(message.toString());
+        console.log('Mensagem recebida:', data);
+
+        // Responder de acordo com o tipo da mensagem
+        switch (data.type) {
+          case 'alert_ack':
+            await handleAlertAcknowledgment(data.alertId, ws);
+            break;
+          case 'ticket_update': 
+            await handleTicketUpdate(data.ticketId, data.status, ws);
+            break;
+          case 'ping':
+            ws.send(JSON.stringify({ type: 'pong', timestamp: new Date().toISOString() }));
+            break;
+          default:
+            ws.send(JSON.stringify({ 
+              type: 'error', 
+              message: 'Tipo de mensagem desconhecido',
+              timestamp: new Date().toISOString()
+            }));
+        }
+      } catch (error) {
+        console.error('Erro ao processar mensagem WebSocket:', error);
+        ws.send(JSON.stringify({ 
+          type: 'error', 
+          message: 'Erro ao processar mensagem',
+          timestamp: new Date().toISOString()
+        }));
+      }
+    });
+
+    // Lidar com conexão fechada
+    ws.on('close', () => {
+      console.log('Cliente desconectado do WebSocket');
+    });
+  });
+
+  // Broadcast para todos os clientes conectados
+  function broadcastMessage(message: any): void {
+    wss.clients.forEach((client) => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(JSON.stringify(message));
+      }
+    });
+  }
+
+  // Handler para reconhecimento de alertas
+  async function handleAlertAcknowledgment(alertId: number, ws: WebSocket): Promise<void> {
+    try {
+      const alert = await storage.getAlert(alertId);
+      if (!alert) {
+        ws.send(JSON.stringify({ 
+          type: 'error', 
+          message: 'Alerta não encontrado',
+          alertId,
+          timestamp: new Date().toISOString()
+        }));
+        return;
+      }
+
+      // Atualizar status do alerta (isso seria implementado no storage)
+      // await storage.updateAlertStatus(alertId, 'acknowledged');
+
+      // Enviar confirmação
+      ws.send(JSON.stringify({
+        type: 'alert_ack_success',
+        alertId,
+        message: 'Alerta reconhecido com sucesso',
+        timestamp: new Date().toISOString()
+      }));
+
+      // Broadcast da atualização para todos os clientes
+      broadcastMessage({
+        type: 'alert_updated',
+        alertId,
+        status: 'acknowledged',
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Erro ao reconhecer alerta:', error);
+      ws.send(JSON.stringify({
+        type: 'error',
+        message: 'Erro ao reconhecer alerta',
+        alertId,
+        timestamp: new Date().toISOString()
+      }));
+    }
+  }
+
+  // Handler para atualização de chamado
+  async function handleTicketUpdate(ticketId: number, status: string, ws: WebSocket): Promise<void> {
+    try {
+      const ticket = await storage.getTicket(ticketId);
+      if (!ticket) {
+        ws.send(JSON.stringify({ 
+          type: 'error', 
+          message: 'Chamado não encontrado',
+          ticketId,
+          timestamp: new Date().toISOString()
+        }));
+        return;
+      }
+
+      // Atualizar status do chamado (isso seria implementado no storage)
+      // await storage.updateTicketStatus(ticketId, status);
+
+      // Enviar confirmação
+      ws.send(JSON.stringify({
+        type: 'ticket_update_success',
+        ticketId,
+        status,
+        message: 'Status do chamado atualizado com sucesso',
+        timestamp: new Date().toISOString()
+      }));
+
+      // Broadcast da atualização para todos os clientes
+      broadcastMessage({
+        type: 'ticket_updated',
+        ticketId,
+        status,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Erro ao atualizar chamado:', error);
+      ws.send(JSON.stringify({
+        type: 'error',
+        message: 'Erro ao atualizar chamado',
+        ticketId,
+        timestamp: new Date().toISOString()
+      }));
+    }
+  }
+
+  // Simular novos alertas a cada 30 segundos
+  setInterval(async () => {
+    try {
+      // Criar um alerta simulado (na prática, isso viria de sistemas externos como Zabbix)
+      const assets = await storage.getAssets();
+      if (assets.length > 0) {
+        const randomAsset = assets[Math.floor(Math.random() * assets.length)];
+        const severities = ['low', 'medium', 'high', 'critical'];
+        const randomSeverity = severities[Math.floor(Math.random() * severities.length)];
+        
+        const newAlert = {
+          assetId: randomAsset.id,
+          severity: randomSeverity,
+          message: `Alerta automático: ${randomSeverity === 'critical' ? 'CPU crítico' : 'Uso de memória alto'} em ${randomAsset.name}`,
+          status: 'open',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString()
+        };
+        
+        const alert = await storage.createAlert(newAlert);
+        
+        // Broadcast do novo alerta
+        broadcastMessage({
+          type: 'new_alert',
+          alert,
+          timestamp: new Date().toISOString()
+        });
+        
+        console.log('Novo alerta simulado enviado:', alert);
+      }
+    } catch (error) {
+      console.error('Erro ao criar alerta simulado:', error);
+    }
+  }, 30000);
 
   return httpServer;
 }
