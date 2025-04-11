@@ -125,7 +125,7 @@ export default function ClientForm({ open, onOpenChange, onClientCreated }: Clie
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange} modal>
-      <DialogContent className="sm:max-w-[600px] z-50">
+      <DialogContent className="sm:max-w-[600px] z-50 bg-white shadow-lg border">
         <DialogHeader>
           <DialogTitle>Novo Cliente</DialogTitle>
           <DialogDescription>

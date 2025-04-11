@@ -114,7 +114,7 @@ export default function Clients() {
             />
           </div>
           <Button 
-            className="w-full sm:w-auto bg-green-700 hover:bg-green-800"
+            className="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white"
             onClick={() => setIsClientFormOpen(true)}
           >
             <PlusCircle className="mr-2 h-4 w-4" />
@@ -200,7 +200,7 @@ export default function Clients() {
               <h3 className="title text-lg">Lista de Contratos</h3>
             </div>
             <Button 
-              className="bg-green-700 hover:bg-green-800"
+              className="bg-green-700 hover:bg-green-800 text-white"
               size="sm"
               onClick={() => setIsContractFormOpen(true)}
             >

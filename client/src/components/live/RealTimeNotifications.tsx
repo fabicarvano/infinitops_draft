@@ -66,7 +66,7 @@ export function RealTimeNotifications() {
                     <Alert
                       key={`alert-${index}`}
                       variant={severity === 'critical' ? 'destructive' : 'default'}
-                      className="relative"
+                      className="relative bg-white border shadow-sm"
                     >
                       <div className="flex items-start gap-2">
                         {severity === 'critical' ? (
