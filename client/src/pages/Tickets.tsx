@@ -135,31 +135,13 @@ export default function Tickets() {
     }
   ];
   
-  // Simular notificações para chamados VIP
+  // Inicializar notificações (não mostramos mais alertas estáticos)
   useEffect(() => {
-    // Filtrar chamados VIP que estão abertos
-    const vipTickets = tickets.filter(
-      ticket => ticket.serviceLevel === "vip" && 
-      ticket.status === "open" && 
-      ticket.hasNotification
-    );
+    // Não filtrar nenhum chamado para notificações estáticas
+    // Iremos usar apenas notificações em tempo real via WebSocket
     
-    // Mostrar notificações para chamados VIP
-    setNotifications(vipTickets.map(ticket => ({
-      id: ticket.id,
-      title: ticket.title,
-      client: ticket.client,
-      serviceLevel: ticket.serviceLevel
-    })));
-    
-    // Mostrar toasts para chamados VIP
-    vipTickets.forEach(ticket => {
-      toast({
-        title: "Chamado VIP Aberto",
-        description: `Cliente ${ticket.client}: ${ticket.title}`,
-        variant: "destructive",
-      });
-    });
+    // Inicializa com array vazio
+    setNotifications([]);
   }, []);
 
   // Chamados com SLA próximo (prioridade crítica ou alta)
