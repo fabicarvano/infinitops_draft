@@ -6,6 +6,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Clients from "@/pages/Clients";
 import Assets from "@/pages/Assets";
+import AssetMatrix from "@/pages/AssetMatrix";
 import Alerts from "@/pages/Alerts";
 import Tickets from "@/pages/Tickets";
 import Settings from "@/pages/Settings";
@@ -30,6 +31,7 @@ function Router() {
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/clientes" component={Clients} />
           <Route path="/ativos" component={Assets} />
+          <Route path="/ativos/matriz" component={AssetMatrix} />
           <Route path="/alertas" component={Alerts} />
           <Route path="/chamados" component={Tickets} />
           <Route path="/configuracoes" component={Settings} />

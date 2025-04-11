@@ -54,11 +54,6 @@ const contractFormSchema = z.object({
   }),
   end_date: z.date({
     required_error: "Data de término é obrigatória.",
-  }).refine((end_date, data) => {
-    return end_date > data.start_date;
-  }, {
-    message: "Data de término deve ser posterior à data de início.",
-    path: ["end_date"],
   }),
   renewal_type: z.enum(["client", "internal", "business"], {
     required_error: "Tipo de renovação é obrigatório.",
