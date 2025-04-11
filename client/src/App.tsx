@@ -9,8 +9,9 @@ import Assets from "@/pages/Assets";
 import Alerts from "@/pages/Alerts";
 import Tickets from "@/pages/Tickets";
 import Settings from "@/pages/Settings";
-import MainLayout from "@/components/layout/MainLayout";
-import { SidebarProvider } from "@/hooks/use-sidebar";
+// import MainLayout from "@/components/layout/MainLayout";
+// import { SidebarProvider } from "@/hooks/use-sidebar";
+import SimpleMainLayout from "@/components/layout/MainLayout.simple";
 import { AnimatePresence, motion } from "framer-motion";
 
 function Router() {
@@ -44,11 +45,9 @@ function Router() {
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <SidebarProvider>
-        <MainLayout>
-          <Router />
-        </MainLayout>
-      </SidebarProvider>
+      <SimpleMainLayout>
+        <Router />
+      </SimpleMainLayout>
       <Toaster />
     </QueryClientProvider>
   );
