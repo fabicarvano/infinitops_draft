@@ -101,8 +101,8 @@ export default function Clients() {
   ];
 
   return (
-    <>
-      <div>
+    <div className="relative">
+      <div className="mb-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
           <div className="relative w-full sm:w-80">
             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
@@ -363,6 +363,6 @@ export default function Clients() {
         onOpenChange={setIsContractDetailsOpen}
         contractId={selectedContractId}
       />
-    </>
+    </div>
   );
 }

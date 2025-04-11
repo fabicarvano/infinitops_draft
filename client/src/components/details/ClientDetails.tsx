@@ -86,8 +86,8 @@ export default function ClientDetails({ open, onOpenChange, clientId }: ClientDe
   }
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto">
+    <Dialog open={open} onOpenChange={onOpenChange} modal>
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto z-50">
         <DialogHeader>
           <DialogTitle className="text-xl flex items-center">
             <Building2 className="mr-2 h-5 w-5 text-green-600" />
