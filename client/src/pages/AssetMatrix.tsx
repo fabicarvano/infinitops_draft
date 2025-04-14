@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Server, List, FileText } from "lucide-react";
+import { Server, List } from "lucide-react";
 import { useLocation } from "wouter";
-import AssetMatrixComponent from "@/components/management/AssetMatrix";
 import AssetMatrixTable from "@/components/management/AssetMatrixTable";
 import LicenseRenewal from "@/components/management/LicenseRenewal";
 import { 
@@ -43,10 +42,6 @@ export default function AssetMatrix() {
             <List className="h-4 w-4" />
             <span>Lista de Matrizes</span>
           </TabsTrigger>
-          <TabsTrigger value="matrix-form" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            <span>Nova Matriz</span>
-          </TabsTrigger>
           <TabsTrigger value="licenses" className="flex items-center gap-2">
             <Server className="h-4 w-4" />
             <span>Licenças</span>
@@ -56,17 +51,6 @@ export default function AssetMatrix() {
         {/* Tab: Lista de Matrizes */}
         <TabsContent value="matrix-list">
           <AssetMatrixTable />
-        </TabsContent>
-        
-        {/* Tab: Nova Matriz */}
-        <TabsContent value="matrix-form">
-          <AssetMatrixComponent 
-            onSave={(data) => {
-              console.log("Matriz salva:", data);
-              // Após salvar, voltar para a lista de matrizes
-              setSelectedTab("matrix-list");
-            }}
-          />
         </TabsContent>
         
         {/* Tab: Licenças */}
