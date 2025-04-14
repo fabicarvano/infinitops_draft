@@ -1,7 +1,23 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, AlertTriangle, TicketPlus, ArrowUpRight } from "lucide-react";
+import { Link } from "wouter";
+import { 
+  ArrowRight, 
+  AlertTriangle, 
+  TicketPlus, 
+  ArrowUpRight, 
+  Terminal, 
+  Clock, 
+  CalendarClock,
+  ShieldCheck 
+} from "lucide-react";
+import { 
+  Tooltip, 
+  TooltipContent, 
+  TooltipProvider, 
+  TooltipTrigger 
+} from "@/components/ui/tooltip";
 
 type AlertSeverity = "critical" | "medium" | "low";
 
@@ -10,9 +26,14 @@ interface Alert {
   status: AlertSeverity;
   client: string;
   asset: string;
+  assetId: number;
   message: string;
   time: string;
   ticketId?: number;
+  createdAt: string;
+  ticketCreatedAt?: string;
+  sla?: string;
+  isAutoTicket?: boolean;
 }
 
 interface AlertTableProps {
@@ -33,6 +54,37 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
         return "bg-slate-100 text-slate-700 hover:bg-slate-200";
     }
   };
+  
+  // Função para calcular o tempo decorrido entre alerta e criação do chamado
+  const calculateTimeDifference = (alertCreatedAt: string, ticketCreatedAt?: string) => {
+    if (!ticketCreatedAt) return null;
+    
+    const alertDate = new Date(alertCreatedAt);
+    const ticketDate = new Date(ticketCreatedAt);
+    
+    const diffMs = ticketDate.getTime() - alertDate.getTime();
+    const diffMins = Math.floor(diffMs / (1000 * 60));
+    
+    if (diffMins < 60) {
+      return `${diffMins}m`;
+    } else {
+      const hours = Math.floor(diffMins / 60);
+      const mins = diffMins % 60;
+      return `${hours}h ${mins}m`;
+    }
+  };
+  
+  // Formatar data/hora de criação
+  const formatCreatedAt = (createdAt: string) => {
+    const date = new Date(createdAt);
+    return date.toLocaleString('pt-BR', { 
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
 
   const handleGoToTicket = (ticketId?: number) => {
     if (ticketId) {
@@ -40,6 +92,10 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
     } else {
       alert("Criando um novo chamado para este alerta");
     }
+  };
+  
+  const handleRunScript = (alertId: number) => {
+    alert(`Preparando execução de script para o alerta #${alertId}`);
   };
 
   return (
@@ -61,27 +117,30 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
         </Button>
       </div>
       <div className="overflow-x-auto">
-        <Table className="min-w-[650px]">
+        <Table className="min-w-[1000px]">
           <TableHeader>
             <TableRow className="hover:bg-transparent border-b border-slate-200">
               <TableHead className="text-xs text-slate-500 uppercase font-medium px-4 w-[90px]">Status</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Ativo</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium w-[140px]">Criado em</TableHead>
               <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Tempo</TableHead>
-              <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[140px]">Ação</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">SLA</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium w-[150px]">Tempo até Chamado</TableHead>
+              <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[180px]">Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {loading ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-4 text-slate-500">
+                <TableCell colSpan={9} className="text-center py-4 text-slate-500">
                   Carregando alertas...
                 </TableCell>
               </TableRow>
             ) : alerts.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} className="text-center py-4 text-slate-500">
+                <TableCell colSpan={9} className="text-center py-4 text-slate-500">
                   Nenhum alerta encontrado
                 </TableCell>
               </TableRow>
@@ -96,32 +155,90 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
                     </Badge>
                   </TableCell>
                   <TableCell className="text-sm font-medium text-slate-700">{alert.client}</TableCell>
-                  <TableCell className="text-sm text-slate-600">{alert.asset}</TableCell>
+                  <TableCell className="text-sm text-slate-600">
+                    <Link href={`/assets/${alert.assetId}`} className="text-blue-600 hover:text-blue-800 hover:underline flex items-center">
+                      {alert.asset}
+                      <ArrowUpRight className="ml-1 h-3 w-3" />
+                    </Link>
+                  </TableCell>
                   <TableCell className="text-sm text-slate-600">{alert.message}</TableCell>
+                  <TableCell className="text-sm text-slate-500">{formatCreatedAt(alert.createdAt)}</TableCell>
                   <TableCell className="text-sm text-slate-500">{alert.time}</TableCell>
-                  <TableCell className="text-sm text-right">
-                    <Button 
-                      size="sm" 
-                      variant={alert.ticketId ? "outline" : "default"}
-                      className={
-                        alert.ticketId 
-                          ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
-                          : "bg-green-700 hover:bg-green-800"
-                      }
-                      onClick={() => handleGoToTicket(alert.ticketId)}
-                    >
-                      {alert.ticketId ? (
-                        <>
-                          <ArrowUpRight className="mr-1 h-4 w-4" />
-                          Chamado #{alert.ticketId}
-                        </>
+                  <TableCell className="text-sm text-slate-600">
+                    {alert.sla ? (
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <div className="flex items-center">
+                              <ShieldCheck className="h-4 w-4 text-green-600 mr-1" />
+                              <span>{alert.sla}</span>
+                            </div>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">SLA definido pelo contrato</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    ) : (
+                      <span className="text-slate-400">-</span>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm">
+                    {alert.ticketId ? (
+                      alert.isAutoTicket ? (
+                        <Badge className="bg-purple-100 text-purple-700">Automático</Badge>
                       ) : (
-                        <>
-                          <TicketPlus className="mr-1 h-4 w-4" />
-                          Criar Chamado
-                        </>
-                      )}
-                    </Button>
+                        <span className="text-slate-600">
+                          {calculateTimeDifference(alert.createdAt, alert.ticketCreatedAt)}
+                        </span>
+                      )
+                    ) : (
+                      <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>
+                    )}
+                  </TableCell>
+                  <TableCell className="text-sm text-right">
+                    <div className="flex items-center justify-end space-x-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm"
+                              variant="ghost"
+                              className="h-8 w-8 p-0 text-slate-500 hover:text-slate-800"
+                              onClick={() => handleRunScript(alert.id)}
+                            >
+                              <Terminal className="h-4 w-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="text-xs">Executar Script</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      
+                      <Button 
+                        size="sm" 
+                        variant={alert.ticketId ? "outline" : "default"}
+                        className={
+                          alert.ticketId 
+                            ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
+                            : "bg-green-700 hover:bg-green-800"
+                        }
+                        onClick={() => handleGoToTicket(alert.ticketId)}
+                      >
+                        {alert.ticketId ? (
+                          <>
+                            <ArrowUpRight className="mr-1 h-4 w-4" />
+                            Chamado #{alert.ticketId}
+                          </>
+                        ) : (
+                          <>
+                            <TicketPlus className="mr-1 h-4 w-4" />
+                            Criar Chamado
+                          </>
+                        )}
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))
