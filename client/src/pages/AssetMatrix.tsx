@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Server } from "lucide-react";
+import { Server, List, FileText } from "lucide-react";
 import { useLocation } from "wouter";
 import AssetMatrixComponent from "@/components/management/AssetMatrix";
+import AssetMatrixTable from "@/components/management/AssetMatrixTable";
 import LicenseRenewal from "@/components/management/LicenseRenewal";
 import { 
   Tabs, 
@@ -12,7 +13,7 @@ import {
 } from "@/components/ui/tabs";
 
 export default function AssetMatrix() {
-  const [selectedTab, setSelectedTab] = useState("matrix");
+  const [selectedTab, setSelectedTab] = useState("matrix-list");
   const [location, setLocation] = useLocation();
 
   // Retornar para a página de ativos principal
@@ -38,9 +39,13 @@ export default function AssetMatrix() {
         className="space-y-4"
       >
         <TabsList>
-          <TabsTrigger value="matrix" className="flex items-center gap-2">
-            <Server className="h-4 w-4" />
-            <span>Matriz de Ativos</span>
+          <TabsTrigger value="matrix-list" className="flex items-center gap-2">
+            <List className="h-4 w-4" />
+            <span>Lista de Matrizes</span>
+          </TabsTrigger>
+          <TabsTrigger value="matrix-form" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            <span>Nova Matriz</span>
           </TabsTrigger>
           <TabsTrigger value="licenses" className="flex items-center gap-2">
             <Server className="h-4 w-4" />
@@ -48,11 +53,18 @@ export default function AssetMatrix() {
           </TabsTrigger>
         </TabsList>
         
-        {/* Tab: Matriz de Ativos */}
-        <TabsContent value="matrix">
+        {/* Tab: Lista de Matrizes */}
+        <TabsContent value="matrix-list">
+          <AssetMatrixTable />
+        </TabsContent>
+        
+        {/* Tab: Nova Matriz */}
+        <TabsContent value="matrix-form">
           <AssetMatrixComponent 
             onSave={(data) => {
               console.log("Matriz salva:", data);
+              // Após salvar, voltar para a lista de matrizes
+              setSelectedTab("matrix-list");
             }}
           />
         </TabsContent>
