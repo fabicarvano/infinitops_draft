@@ -19,6 +19,35 @@ import {
   TooltipTrigger 
 } from "@/components/ui/tooltip";
 
+// Função para formatar a data de criação
+export const formatCreatedAt = (createdAt: string) => {
+  const date = new Date(createdAt);
+  return new Intl.DateTimeFormat('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  }).format(date);
+};
+
+// Função para calcular a diferença de tempo entre duas datas
+export const calculateTimeDifference = (createdAt: string, ticketCreatedAt?: string) => {
+  if (!ticketCreatedAt) return "-";
+  
+  const alertDate = new Date(createdAt);
+  const ticketDate = new Date(ticketCreatedAt);
+  const diffMs = ticketDate.getTime() - alertDate.getTime();
+  const diffMins = Math.floor(diffMs / (1000 * 60));
+  
+  if (diffMins < 1) return "< 1min";
+  if (diffMins < 60) return `${diffMins}min`;
+  
+  const hours = Math.floor(diffMins / 60);
+  const mins = diffMins % 60;
+  return `${hours}h${mins ? ` ${mins}min` : ''}`;
+};
+
 type AlertSeverity = "critical" | "medium" | "low";
 
 interface Alert {

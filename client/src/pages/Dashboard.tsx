@@ -8,6 +8,7 @@ import { useImpactedServices } from "@/hooks/use-impacted-services";
 import { useWebSocket } from "@/hooks/use-websocket";
 import StatCard from "@/components/dashboard/StatCard";
 import AlertTable from "@/components/dashboard/AlertTable";
+import NoTicketAlertsCard from "@/components/dashboard/NoTicketAlertsCard";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import SLAPerformance from "@/components/dashboard/SLAPerformance";
 import IntegrationStatus from "@/components/dashboard/IntegrationStatus";
@@ -26,6 +27,9 @@ export default function Dashboard() {
   const { data: recentTicketsData, isLoading: recentTicketsLoading } = useTickets("recent");
   const { data: slaTicketsData, isLoading: slaTicketsLoading } = useTickets("sla-expiring");
   const { data: impactedServicesData, isLoading: impactedServicesLoading } = useImpactedServices();
+  
+  // Filtrar alertas sem chamados
+  const alertsWithoutTickets = (alerts || []).filter(alert => !alert.ticketId);
   
   // Filtrar apenas os cards de alertas críticos e chamados abertos
   const filteredStatCards = allStatCards.filter(card => 
@@ -184,7 +188,7 @@ export default function Dashboard() {
         </motion.div>
       </motion.div>
 
-      {/* Tempo Real: Notificações e SLA Monitor */}
+      {/* Alertas sem chamados & Notificações Tempo Real */}
       <motion.div 
         className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4" 
         variants={itemVariants}
@@ -194,15 +198,29 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.9, duration: 0.3, ease: "easeOut" }}
         >
-          <RealTimeNotifications />
+          <NoTicketAlertsCard 
+            alerts={alertsWithoutTickets} 
+            loading={alertsLoading} 
+          />
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.0, duration: 0.3, ease: "easeOut" }}
         >
-          <SLAMonitor />
+          <RealTimeNotifications />
         </motion.div>
+      </motion.div>
+      
+      {/* SLA Monitor */}
+      <motion.div 
+        className="mb-4" 
+        variants={itemVariants}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1, duration: 0.3, ease: "easeOut" }}
+      >
+        <SLAMonitor />
       </motion.div>
     </motion.div>
   );
