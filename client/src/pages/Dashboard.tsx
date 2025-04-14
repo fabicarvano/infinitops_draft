@@ -8,7 +8,6 @@ import { useImpactedServices } from "@/hooks/use-impacted-services";
 import { useWebSocket } from "@/hooks/use-websocket";
 import StatCard from "@/components/dashboard/StatCard";
 import AlertTable from "@/components/dashboard/AlertTable";
-import NoTicketAlertsCard from "@/components/dashboard/NoTicketAlertsCard";
 import ActivityFeed from "@/components/dashboard/ActivityFeed";
 import SLAPerformance from "@/components/dashboard/SLAPerformance";
 import IntegrationStatus from "@/components/dashboard/IntegrationStatus";
@@ -188,28 +187,15 @@ export default function Dashboard() {
         </motion.div>
       </motion.div>
 
-      {/* Alertas sem chamados & Notificações Tempo Real */}
+      {/* Notificações Tempo Real */}
       <motion.div 
-        className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mb-4" 
+        className="mb-4" 
         variants={itemVariants}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.9, duration: 0.3, ease: "easeOut" }}
       >
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.9, duration: 0.3, ease: "easeOut" }}
-        >
-          <NoTicketAlertsCard 
-            alerts={alertsWithoutTickets} 
-            loading={alertsLoading} 
-          />
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 1.0, duration: 0.3, ease: "easeOut" }}
-        >
-          <RealTimeNotifications />
-        </motion.div>
+        <RealTimeNotifications />
       </motion.div>
       
       {/* SLA Monitor */}
