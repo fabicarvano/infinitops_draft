@@ -11,8 +11,55 @@ export default function Header() {
   const [location] = useLocation();
   const [pageTitle, setPageTitle] = useState("Painel de Controle");
   const [currentCenter, setCurrentCenter] = useState("Centro de Operações SP");
-  const { collapsed, toggleSidebar, isSmallScreen } = useSidebar();
+  const { collapsed, toggleSidebar, setCollapsedState, isSmallScreen } = useSidebar();
+  const [, navigate] = useLocation();
+  
+  // Esta função será adicionada ao evento de clique em itens da barra lateral
+  // quando o botão de hambúrguer for clicado
+  const setupSidebarClickHandler = () => {
+    // Selecionamos todos os links da barra lateral
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+    
+    // Adicionamos o handler para cada link
+    sidebarLinks.forEach(link => {
+      // Removemos handlers existentes para evitar duplicidade
+      link.removeEventListener('click', handleSidebarLinkClick);
+      // Adicionamos o novo handler
+      link.addEventListener('click', handleSidebarLinkClick);
+    });
+  };
+  
+  // Function para tratar o clique em um link da barra lateral
+  const handleSidebarLinkClick = (e: Event) => {
+    // Prevenimos o comportamento padrão
+    e.preventDefault();
+    
+    // Obtendo a URL de destino
+    const target = e.currentTarget as HTMLAnchorElement;
+    const href = target.getAttribute('href');
+    
+    if (href) {
+      // Fechamos a barra lateral antes de navegar
+      if (!collapsed) {
+        setCollapsedState(true);
+      }
+      
+      // Navegamos para a rota desejada
+      navigate(href);
+    }
+  };
 
+  // Efeito para monitorar mudanças no estado collapsed
+  useEffect(() => {
+    // Se a barra lateral for aberta, configura os handlers
+    if (!collapsed) {
+      // Damos um pequeno tempo para garantir que os elementos do DOM sejam atualizados
+      setTimeout(() => {
+        setupSidebarClickHandler();
+      }, 100);
+    }
+  }, [collapsed]);
+  
   useEffect(() => {
     // Set page title based on current location
     switch (location) {
@@ -55,6 +102,14 @@ export default function Header() {
             onClick={() => {
               console.log("Toggling sidebar from header");
               toggleSidebar();
+              
+              // Se estiver abrindo o menu, configura os handlers após um pequeno atraso
+              // para garantir que o DOM tenha tempo de atualizar
+              if (collapsed) {
+                setTimeout(() => {
+                  setupSidebarClickHandler();
+                }, 100);
+              }
             }}
           >
             {collapsed ? <Menu size={20} /> : <X size={20} />}
