@@ -128,8 +128,8 @@ export default function AlertTable({ alerts, loading }: AlertTableProps) {
   };
 
   return (
-    <div className="card rounded-xl shadow-md border border-slate-200 bg-white overflow-hidden">
-      <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+    <div className="card">
+      <div className="card-header">
         <div className="flex items-center">
           <div className="bg-red-50 p-2 rounded-lg mr-3">
             <AlertTriangle className="h-5 w-5 text-red-600" />
