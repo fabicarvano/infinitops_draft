@@ -187,6 +187,12 @@ export default function Sidebar() {
                       ? 'bg-white text-green-700 shadow-sm'
                       : 'text-white hover:bg-white/10'
                   }`}
+                  onClick={() => {
+                    // Fechar a barra lateral ao clicar em um item de navegação em telas pequenas
+                    if (isSmallScreen && !collapsed) {
+                      toggleSidebar();
+                    }
+                  }}
                 >
                   <motion.div
                     whileHover={{ scale: 1.1 }}
@@ -225,7 +231,15 @@ export default function Sidebar() {
           
           {/* User Profile */}
           <div className="border-t border-slate-200/20 p-4">
-            <div className="flex items-center">
+            <div 
+              className="flex items-center cursor-pointer"
+              onClick={() => {
+                // Também fechar a barra lateral ao clicar no perfil de usuário em telas pequenas
+                if (isSmallScreen && !collapsed) {
+                  toggleSidebar();
+                }
+              }}
+            >
               <motion.div 
                 className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700"
                 whileHover={{ scale: 1.1 }}
