@@ -17,21 +17,18 @@ import {
 // Componente de navegação personalizado que também fechará o menu
 function NavLink({ href, className, children }: { href: string, className: string, children: React.ReactNode }) {
   const [, navigate] = useLocation();
-  const { toggleSidebar, collapsed, isSmallScreen } = useSidebar();
+  const { setCollapsedState } = useSidebar();
   
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Se o menu estiver aberto, fechamos ele (em qualquer tamanho de tela)
-    if (!collapsed) {
-      toggleSidebar();
-    }
+    // Fechamos o menu antes de navegar (sempre, independente do tamanho da tela)
+    setCollapsedState(true);
     
-    // Navegar para o destino - adicionamos um pequeno atraso para permitir
-    // que a animação de fechamento seja iniciada
+    // Navegamos para a rota desejada
     setTimeout(() => {
       navigate(href);
-    }, 100);
+    }, 10);
   };
   
   return (
