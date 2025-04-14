@@ -46,9 +46,9 @@ export default function SLAPerformance({ metrics, chartData, loading }: SLAPerfo
   };
 
   return (
-    <div className="card">
-      <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-        <h3 className="title text-lg">Performance de SLA</h3>
+    <div className="card rounded-xl shadow-md border border-slate-200 bg-white overflow-hidden">
+      <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center bg-white">
+        <h3 className="title text-lg font-bold">Performance de SLA</h3>
         <Button 
           variant="ghost" 
           size="sm" 
@@ -58,7 +58,7 @@ export default function SLAPerformance({ metrics, chartData, loading }: SLAPerfo
           <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
       </div>
-      <div className="p-5">
+      <div className="p-5 bg-white">
         {loading ? (
           <div className="flex justify-center items-center h-48">
             <p className="caption">Carregando dados de SLA...</p>

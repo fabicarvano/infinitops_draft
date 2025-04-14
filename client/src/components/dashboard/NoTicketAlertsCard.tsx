@@ -61,13 +61,13 @@ export default function NoTicketAlertsCard({ alerts, loading }: NoTicketAlertsCa
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card className="shadow-md rounded-xl border border-slate-200 bg-white overflow-hidden">
       <CardHeader className="pb-2 pt-4 flex flex-row items-center justify-between">
         <div className="flex items-center">
           <div className="bg-yellow-50 p-2 rounded-lg mr-3">
             <AlertTriangle className="h-5 w-5 text-yellow-600" />
           </div>
-          <CardTitle className="text-lg">Alertas sem Chamados</CardTitle>
+          <CardTitle className="text-lg font-bold">Alertas sem Chamados</CardTitle>
         </div>
         <Button 
           variant="ghost" 
@@ -78,7 +78,7 @@ export default function NoTicketAlertsCard({ alerts, loading }: NoTicketAlertsCa
           <ArrowRight className="ml-1 h-4 w-4" />
         </Button>
       </CardHeader>
-      <CardContent className="pb-3 pt-1">
+      <CardContent className="pb-3 pt-1 bg-white">
         {loading ? (
           <div className="text-center py-8 text-slate-500">Carregando alertas...</div>
         ) : alerts.length === 0 ? (
