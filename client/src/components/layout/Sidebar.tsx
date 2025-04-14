@@ -1,7 +1,7 @@
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
   LayoutDashboard,
   Building2, 
@@ -13,6 +13,33 @@ import {
   ChevronRight,
   User
 } from "lucide-react";
+
+// Componente de navegação personalizado que também fechará o menu
+function NavLink({ href, className, children }: { href: string, className: string, children: React.ReactNode }) {
+  const [, navigate] = useLocation();
+  const { toggleSidebar, collapsed, isSmallScreen } = useSidebar();
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Se o menu estiver aberto, fechamos ele (em qualquer tamanho de tela)
+    if (!collapsed) {
+      toggleSidebar();
+    }
+    
+    // Navegar para o destino - adicionamos um pequeno atraso para permitir
+    // que a animação de fechamento seja iniciada
+    setTimeout(() => {
+      navigate(href);
+    }, 100);
+  };
+  
+  return (
+    <a href={href} className={className} onClick={handleClick}>
+      {children}
+    </a>
+  );
+}
 
 export default function Sidebar() {
   const [location] = useLocation();
@@ -190,7 +217,7 @@ export default function Sidebar() {
           <nav className="mt-4 flex-1 px-2 space-y-1 overflow-y-auto scrollbar-thin">
             <div className="py-1">
               {navItems.map((item, i) => (
-                <Link 
+                <NavLink 
                   key={item.path}
                   href={item.path}
                   className={`sidebar-link flex items-center px-3 py-2 rounded-xl mb-1 transition-all ${
@@ -229,14 +256,17 @@ export default function Sidebar() {
                       {item.notification}
                     </motion.div>
                   )}
-                </Link>
+                </NavLink>
               ))}
             </div>
           </nav>
           
           {/* User Profile */}
           <div className="border-t border-slate-200/20 p-4">
-            <div className="flex items-center cursor-pointer">
+            <NavLink 
+              href="/configuracoes"
+              className="flex items-center cursor-pointer"
+            >
               <motion.div 
                 className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700"
                 whileHover={{ scale: 1.1 }}
@@ -254,7 +284,7 @@ export default function Sidebar() {
                 <div className="font-medium text-white">Admin NOC</div>
                 <div className="text-xs text-white/70">admin@ccocore.com</div>
               </motion.div>
-            </div>
+            </NavLink>
           </div>
         </div>
       </motion.aside>
