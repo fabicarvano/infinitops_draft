@@ -1,10 +1,7 @@
 import { useState } from "react";
 import { 
   Server, 
-  FileSearch, 
-  PlusCircle,
-  UserPlus,
-  ExternalLink
+  FileSearch
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -119,7 +116,7 @@ export default function AssetMatrixTable() {
       animate="visible"
       className="space-y-4"
     >
-      <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <motion.div variants={itemVariants} className="flex justify-between items-center gap-4">
         <div className="w-full sm:w-80 relative">
           <Input
             placeholder="Buscar por contrato ou cliente..."
@@ -130,16 +127,6 @@ export default function AssetMatrixTable() {
           <div className="absolute left-3 top-2.5 text-slate-400">
             <FileSearch className="h-4 w-4" />
           </div>
-        </div>
-        <div className="flex gap-2 w-full sm:w-auto">
-          <Button className="w-full sm:w-auto bg-green-700 hover:bg-green-800">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Nova Matriz
-          </Button>
-          <Button variant="outline" className="w-full sm:w-auto">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Novo Contrato
-          </Button>
         </div>
       </motion.div>
 
@@ -195,42 +182,6 @@ export default function AssetMatrixTable() {
                               </TooltipTrigger>
                               <TooltipContent>
                                 <p>Detalhes da Matriz</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon"
-                                  className="h-8 w-8 text-green-600 hover:text-green-800 hover:bg-green-50"
-                                >
-                                  <PlusCircle className="h-4 w-4" />
-                                  <span className="sr-only">Novo Ativo</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Novo Ativo</p>
-                              </TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
-                          
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <Button 
-                                  variant="ghost" 
-                                  size="icon"
-                                  className="h-8 w-8 text-purple-600 hover:text-purple-800 hover:bg-purple-50"
-                                >
-                                  <UserPlus className="h-4 w-4" />
-                                  <span className="sr-only">Novo Contato</span>
-                                </Button>
-                              </TooltipTrigger>
-                              <TooltipContent>
-                                <p>Novo Contato</p>
                               </TooltipContent>
                             </Tooltip>
                           </TooltipProvider>
