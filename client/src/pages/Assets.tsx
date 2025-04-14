@@ -224,9 +224,107 @@ export default function Assets() {
         <AssetsCollapsibleList />
       </motion.div>
 
+      {/* Últimos alertas gerados */}
+      <motion.div 
+        className="card overflow-hidden mb-6"
+        variants={itemVariants}
+        initial={{ opacity: 0.9, y: 3 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.05, duration: 0.15, ease: "easeOut" }}
+      >
+        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
+          <motion.div 
+            className="flex items-center"
+            initial={{ opacity: 0.9, x: -3 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.08, duration: 0.15, ease: "easeOut" }}
+          >
+            <div className="bg-yellow-50 p-2 rounded-lg mr-3">
+              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            </div>
+            <h3 className="title text-lg">Últimos Alertas Gerados</h3>
+          </motion.div>
+          <motion.div
+            variants={buttonVariants}
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
+            >
+              Ver todos
+            </Button>
+          </motion.div>
+        </div>
+        <div className="overflow-x-auto">
+          <Table className="min-w-[650px]">
+            <TableHeader>
+              <TableRow className="hover:bg-transparent border-b border-slate-200">
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Ativo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Severidade</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Tempo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[150px]">Chamado</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {recentAlerts.map((alert, i) => (
+                <motion.tr
+                  key={alert.id}
+                  custom={i}
+                  variants={tableRowVariants}
+                  className="border-b border-slate-100 hover:bg-slate-50"
+                  initial="hidden"
+                  animate="visible"
+                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
+                >
+                  <TableCell className="font-medium truncate max-w-[120px] lg:max-w-none">{alert.asset}</TableCell>
+                  <TableCell className="truncate max-w-[120px] lg:max-w-none">{alert.client}</TableCell>
+                  <TableCell className="truncate max-w-[180px] lg:max-w-none">{alert.message}</TableCell>
+                  <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
+                  <TableCell>{alert.time}</TableCell>
+                  <TableCell className="text-right">
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <Button 
+                        size="sm" 
+                        variant={alert.ticketId ? "outline" : "default"}
+                        className={
+                          alert.ticketId 
+                            ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
+                            : "bg-green-700 hover:bg-green-800"
+                        }
+                        onClick={() => handleGoToTicket(alert.ticketId)}
+                      >
+                        {alert.ticketId ? (
+                          <>
+                            <ArrowUpRight className="mr-1 h-4 w-4" />
+                            Chamado #{alert.ticketId}
+                          </>
+                        ) : (
+                          <>
+                            <TicketPlus className="mr-1 h-4 w-4" />
+                            Criar Chamado
+                          </>
+                        )}
+                      </Button>
+                    </motion.div>
+                  </TableCell>
+                </motion.tr>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
+      </motion.div>
+
       {/* Ativos com mais alertas */}
       <motion.div 
-        className="card overflow-hidden mb-6" 
+        className="card overflow-hidden"
         variants={itemVariants}
         initial={{ opacity: 0.9, y: 3 }}
         animate={{ opacity: 1, y: 0 }}
@@ -346,104 +444,6 @@ export default function Assets() {
                         </Tooltip>
                       </TooltipProvider>
                     </div>
-                  </TableCell>
-                </motion.tr>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </motion.div>
-
-      {/* Últimos alertas gerados */}
-      <motion.div 
-        className="card overflow-hidden"
-        variants={itemVariants}
-        initial={{ opacity: 0.9, y: 3 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05, duration: 0.15, ease: "easeOut" }}
-      >
-        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-          <motion.div 
-            className="flex items-center"
-            initial={{ opacity: 0.9, x: -3 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.08, duration: 0.15, ease: "easeOut" }}
-          >
-            <div className="bg-yellow-50 p-2 rounded-lg mr-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
-            </div>
-            <h3 className="title text-lg">Últimos Alertas Gerados</h3>
-          </motion.div>
-          <motion.div
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-          >
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
-            >
-              Ver todos
-            </Button>
-          </motion.div>
-        </div>
-        <div className="overflow-x-auto">
-          <Table className="min-w-[650px]">
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-b border-slate-200">
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Ativo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Severidade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Tempo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[150px]">Chamado</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentAlerts.map((alert, i) => (
-                <motion.tr
-                  key={alert.id}
-                  custom={i}
-                  variants={tableRowVariants}
-                  className="border-b border-slate-100 hover:bg-slate-50"
-                  initial="hidden"
-                  animate="visible"
-                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
-                >
-                  <TableCell className="font-medium truncate max-w-[120px] lg:max-w-none">{alert.asset}</TableCell>
-                  <TableCell className="truncate max-w-[120px] lg:max-w-none">{alert.client}</TableCell>
-                  <TableCell className="truncate max-w-[180px] lg:max-w-none">{alert.message}</TableCell>
-                  <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
-                  <TableCell>{alert.time}</TableCell>
-                  <TableCell className="text-right">
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <Button 
-                        size="sm" 
-                        variant={alert.ticketId ? "outline" : "default"}
-                        className={
-                          alert.ticketId 
-                            ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
-                            : "bg-green-700 hover:bg-green-800"
-                        }
-                        onClick={() => handleGoToTicket(alert.ticketId)}
-                      >
-                        {alert.ticketId ? (
-                          <>
-                            <ArrowUpRight className="mr-1 h-4 w-4" />
-                            Chamado #{alert.ticketId}
-                          </>
-                        ) : (
-                          <>
-                            <TicketPlus className="mr-1 h-4 w-4" />
-                            Criar Chamado
-                          </>
-                        )}
-                      </Button>
-                    </motion.div>
                   </TableCell>
                 </motion.tr>
               ))}
