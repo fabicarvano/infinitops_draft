@@ -1,0 +1,57 @@
+{
+    "alertas": {
+        "novo_card": "Criar card: 'Alertas sem chamados' na dashboard",
+        "link_ativo": "Adicionar link no nome do ativo que redireciona para descrição completa",
+        "coluna_tempo_criacao": "Incluir coluna com o timestamp de criação do alerta",
+        "coluna_tempo_sem_chamado": "Calcular e exibir o tempo desde a criação do alerta até a abertura do chamado. Se chamado for automático, exibir badge 'Automático'",
+        "acoes_scripts": {
+            "icone_scripts": "Adicionar ícone em ações para execução de scripts",
+            "configuracoes_scripts": "Adicionar área de configuração para scripts personalizados no painel de configurações"
+        },
+        "criacao_chamado_interativa": "Permitir abertura de chamado a partir do alerta usando o mesmo formulário, com preenchimento automático",
+        "coluna_sla": "Exibir SLA relacionado ao ativo, com base no contrato vinculado"
+    },
+    "ativos": {
+        "remover_novo_ativo": "Desativar botão 'Novo Ativo' da página principal",
+        "descricao_do_ativo": {
+            "link": "Cada ativo deve abrir tela com abas: Dados, Escalonamento, Contrato, Monitoramento, SLA",
+            "dados_monitoramento": "Obter dados do Zabbix via API em tempo real (sem gravação no banco)",
+            "outros_dados": [
+                "Exibir alertas vinculados",
+                "Listar chamados em aberto",
+                "Mostrar serviços relacionados ao ativo"
+            ]
+        },
+        "matriz_de_ativos": {
+            "estrutura_tabela": [
+                "Cliente",
+                "Contrato",
+                "Quantidade de Ativos",
+                "Última Atualização",
+                "Data de Inclusão",
+                "Ações: Ver Matriz, Adicionar Ativo, Inclusão em Massa"
+            ],
+            "botao_nova_matriz": "Habilitado apenas se houver contrato ativo selecionado",
+            "remover_status": "Campo de status da matriz será removido"
+        },
+        "licencas": {
+            "card_expirados": "Substituir card 'Total' por 'Expirados'",
+            "coluna_contrato": "Incluir coluna com contrato vinculado",
+            "acao_avisar_responsavel": {
+                "descricao": "Substituir botão 'Renovar' por ícone para avisar o responsável",
+                "log": "Registrar ação de aviso no histórico da licença"
+            }
+        }
+    },
+    "contratos_clientes": {
+        "sla_submodulo": "SLA será tratado como submódulo separado dentro do contrato, que será decrito posteriorente, sempre que citado SLA esse deverá ser atralado a um modulo SLA que vmos desenvolver posteriormente",
+        "formulario_contrato": {
+            "aba_sla": "Incluir aba 'SLA do Contrato' com campos da planilha padrão de SLA, que será atrealado ao submoduo SLA",
+            "anexo_contrato": "Permitir upload de arquivo do contrato"
+        }
+    },
+    "geral": {
+        "notificacoes_popup": "Corrigir fundo transparente nas notificações popup",
+        "erro_servidor_tempo_real": "Verificar e corrigir falha de conexão com servidor de tempo real"
+    }
+}
