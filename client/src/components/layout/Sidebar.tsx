@@ -151,7 +151,15 @@ export default function Sidebar() {
           ease: "easeOut"
         }}
       >
-        <div className="flex flex-col h-full overflow-hidden">
+        <div 
+          className="flex flex-col h-full overflow-hidden"
+          onClick={() => {
+            // Fechar a barra lateral ao clicar em qualquer área do menu
+            if (isSmallScreen && !collapsed) {
+              toggleSidebar();
+            }
+          }}
+        >
           {/* Sidebar Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/20">
             <motion.div 
@@ -167,7 +175,10 @@ export default function Sidebar() {
               <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
             </motion.div>
             <button 
-              onClick={() => toggleSidebar()}
+              onClick={(e) => {
+                e.stopPropagation(); // Impedir que o clique no botão dispare o onClick do container pai
+                toggleSidebar();
+              }}
               className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
               style={{ touchAction: "manipulation" }}
             >
@@ -187,12 +198,6 @@ export default function Sidebar() {
                       ? 'bg-white text-green-700 shadow-sm'
                       : 'text-white hover:bg-white/10'
                   }`}
-                  onClick={() => {
-                    // Fechar a barra lateral ao clicar em um item de navegação em telas pequenas
-                    if (isSmallScreen && !collapsed) {
-                      toggleSidebar();
-                    }
-                  }}
                 >
                   <motion.div
                     whileHover={{ scale: 1.1 }}
@@ -231,15 +236,7 @@ export default function Sidebar() {
           
           {/* User Profile */}
           <div className="border-t border-slate-200/20 p-4">
-            <div 
-              className="flex items-center cursor-pointer"
-              onClick={() => {
-                // Também fechar a barra lateral ao clicar no perfil de usuário em telas pequenas
-                if (isSmallScreen && !collapsed) {
-                  toggleSidebar();
-                }
-              }}
-            >
+            <div className="flex items-center cursor-pointer">
               <motion.div 
                 className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700"
                 whileHover={{ scale: 1.1 }}
