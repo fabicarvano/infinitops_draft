@@ -55,10 +55,8 @@ export default function Header() {
             onClick={toggleSidebar}
             aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
           >
-            {isSmallScreen 
-              ? <Menu size={20} /> // Em telas pequenas, sempre mostrar o ícone de menu
-              : (collapsed ? <Menu size={20} /> : <X size={20} />)
-            }
+            {/* Alternar entre Menu e X baseado no estado do collapsed, independente do tamanho da tela */}
+            {collapsed ? <Menu size={20} /> : <X size={20} />}
           </button>
           <h1 className="text-xl font-semibold text-slate-800">{pageTitle}</h1>
         </div>

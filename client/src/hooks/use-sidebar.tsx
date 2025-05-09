@@ -15,9 +15,9 @@ export const SidebarContext = createContext<SidebarContextType>({
 });
 
 export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
-  // Verificar se é uma tela pequena (largura <= 768px para dispositivos móveis)
-  // Ajustado para 768px que é um breakpoint comum para dispositivos móveis
-  const isMobileScreen = () => window.innerWidth <= 768;
+  // Verificar se é uma tela pequena (largura <= 1024px para incluir tablets)
+  // Ajustado para 1024px para pegar tanto celulares quanto tablets
+  const isMobileScreen = () => window.innerWidth <= 1024;
   
   // Inicializar estado recolhido com base no tamanho da tela e rastrear o tamanho da tela
   const [collapsed, setCollapsed] = useState(isMobileScreen());
@@ -46,7 +46,8 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
   }, []);
 
   const toggleSidebar = () => {
-    console.log("Toggle sidebar called, current state:", collapsed);
+    // Removido log para reduzir ruído no console 
+    // e garantir que não haja processamento adicional desnecessário
     setCollapsed(prevState => !prevState);
   };
 

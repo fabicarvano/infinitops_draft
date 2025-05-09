@@ -83,13 +83,17 @@ export default function Sidebar() {
     return location === path;
   };
 
-  // Variantes de animação com efeitos mais sutis
-  const sidebarVariants = {
-    expanded: { width: "16rem", x: 0 },
-    collapsed: isSmallScreen 
-      ? { width: "16rem", x: "-100%" } // Em telas pequenas, escondemos completamente
-      : { width: "4rem", x: 0 } // Em telas grandes, mantemos visível mas reduzido
-  };
+  // Variantes de animação com efeitos diferentes para telas pequenas e grandes
+  // Para telas pequenas usamos uma abordagem mais simples - apenas mover para fora da tela
+  const sidebarVariants = isSmallScreen 
+    ? {
+        expanded: { x: 0, opacity: 1 },
+        collapsed: { x: "-100%", opacity: 0 }
+      }
+    : {
+        expanded: { width: "16rem", x: 0 },
+        collapsed: { width: "4rem", x: 0 }
+      };
   
   // Efeito para garantir que o menu feche quando a janela for redimensionada para uma tela pequena
   useEffect(() => {
@@ -169,7 +173,8 @@ export default function Sidebar() {
           isSmallScreen ? 'w-64' : '' // Adicionar largura explícita em telas pequenas
         }`}
         style={{ 
-          background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)"
+          background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)",
+          width: isSmallScreen ? '16rem' : undefined // Garante largura constante em telas pequenas
         }}
         initial={false}
         animate={collapsed ? "collapsed" : "expanded"}
