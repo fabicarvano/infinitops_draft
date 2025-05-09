@@ -51,11 +51,14 @@ export default function Header() {
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-3">
           <button 
-            className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
-            onClick={toggleSidebar}
+            className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors focus:outline-none"
+            onClick={(e) => {
+              e.preventDefault(); // Prevenir comportamento padrão do botão
+              toggleSidebar(); // Chamar a função toggle corretamente
+            }}
             aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
           >
-            {/* Alternar entre Menu e X baseado no estado do collapsed, independente do tamanho da tela */}
+            {/* Ícones mais claros para entender o estado atual */}
             {collapsed ? <Menu size={20} /> : <X size={20} />}
           </button>
           <h1 className="text-xl font-semibold text-slate-800">{pageTitle}</h1>

@@ -1,6 +1,5 @@
 import { useLocation } from "wouter";
 import { useSidebar } from "@/hooks/use-sidebar";
-import { motion, AnimatePresence } from "framer-motion";
 import { useEffect } from "react";
 import {
   LayoutDashboard,
@@ -12,24 +11,23 @@ import {
   ChevronLeft, 
   ChevronRight,
   User,
-  X
 } from "lucide-react";
 
-// Componente de navegação personalizado que também fechará o menu
+// Abordagem simplificada de navegação para evitar problemas de refresh
 function NavLink({ href, className, children }: { href: string, className: string, children: React.ReactNode }) {
   const [, navigate] = useLocation();
-  const { setCollapsedState } = useSidebar();
+  const { setCollapsedState, isSmallScreen } = useSidebar();
   
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Fechamos o menu antes de navegar (sempre, independente do tamanho da tela)
-    setCollapsedState(true);
+    // Em telas pequenas, fechamos o menu antes de navegar
+    if (isSmallScreen) {
+      setCollapsedState(true);
+    }
     
-    // Navegamos para a rota desejada
-    setTimeout(() => {
-      navigate(href);
-    }, 10);
+    // Usamos uma navegação simples para evitar conflitos
+    navigate(href);
   };
   
   return (
@@ -83,142 +81,63 @@ export default function Sidebar() {
     return location === path;
   };
 
-  // Variantes de animação com efeitos diferentes para telas pequenas e grandes
-  // Para telas pequenas usamos uma abordagem mais simples - apenas mover para fora da tela
-  const sidebarVariants = isSmallScreen 
-    ? {
-        expanded: { x: 0, opacity: 1 },
-        collapsed: { x: "-100%", opacity: 0 }
-      }
-    : {
-        expanded: { width: "16rem", x: 0 },
-        collapsed: { width: "4rem", x: 0 }
-      };
-  
-  // Efeito para garantir que o menu feche quando a janela for redimensionada para uma tela pequena
+  // Fechar automaticamente o menu em telas pequenas quando redimensionar
   useEffect(() => {
-    if (isSmallScreen && !collapsed) {
-      toggleSidebar();
-    }
+    const handleResize = () => {
+      if (isSmallScreen && !collapsed) {
+        toggleSidebar();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
   }, [isSmallScreen, collapsed, toggleSidebar]);
+
+  // Determinar a classe CSS baseada no estado
+  const sidebarClasses = `
+    fixed h-screen z-20 shadow-md border-r border-slate-200
+    transition-all duration-300 ease-in-out
+    ${collapsed && isSmallScreen ? '-translate-x-full' : 'translate-x-0'}
+    ${!isSmallScreen && collapsed ? 'w-16' : 'w-64'}
+  `;
   
-  const logoVariants = {
-    expanded: { 
-      opacity: 1,
-      x: 0,
-      display: "flex"
-    },
-    collapsed: { 
-      opacity: 0,
-      x: -5,
-      transitionEnd: { display: "none" }
-    }
-  };
-  
-  const navItemVariants = {
-    expanded: (i: number) => ({
-      opacity: 1, 
-      x: 0,
-      transition: {
-        delay: i * 0.02,
-        duration: 0.15
-      }
-    }),
-    collapsed: {
-      opacity: 0,
-      x: -5
-    }
-  };
-  
-  const profileTextVariants = {
-    expanded: { 
-      opacity: 1, 
-      x: 0,
-      display: "block" 
-    },
-    collapsed: { 
-      opacity: 0, 
-      x: -5,
-      transitionEnd: { display: "none" }
-    }
-  };
-  
-  const notificationVariants = {
-    initial: { scale: 0.9 },
-    animate: { 
-      scale: 1,
-      transition: {
-        type: "spring",
-        stiffness: 300,
-        damping: 25
-      }
-    }
+  // Background com gradiente
+  const bgStyle = {
+    background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)"
   };
 
   return (
     <>
       {/* Overlay para telas pequenas quando o menu está aberto */}
       {isSmallScreen && !collapsed && (
-        <motion.div 
+        <div 
           className="fixed inset-0 bg-black/50 z-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.2 }}
           onClick={toggleSidebar}
         />
       )}
       
-      <motion.aside 
-        className={`fixed h-screen z-20 shadow-md border-r border-slate-200 ${
-          isSmallScreen ? 'w-64' : '' // Adicionar largura explícita em telas pequenas
-        }`}
-        style={{ 
-          background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)",
-          width: isSmallScreen ? '16rem' : undefined // Garante largura constante em telas pequenas
-        }}
-        initial={false}
-        animate={collapsed ? "collapsed" : "expanded"}
-        variants={sidebarVariants}
-        transition={{
-          type: "tween",
-          duration: 0.25,
-          ease: "easeOut"
-        }}
+      <div 
+        className={sidebarClasses}
+        style={bgStyle}
       >
-        <div 
-          className="flex flex-col h-full overflow-hidden"
-          onClick={() => {
-            // Fechar a barra lateral ao clicar em qualquer área do menu
-            if (isSmallScreen && !collapsed) {
-              toggleSidebar();
-            }
-          }}
-        >
+        <div className="flex flex-col h-full overflow-hidden">
           {/* Sidebar Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/20">
-            <motion.div 
-              className="flex items-center space-x-3"
-              variants={logoVariants}
-              initial={false}
-              animate={collapsed ? "collapsed" : "expanded"}
-              transition={{ duration: 0.3 }}
-            >
+            <div className="flex items-center space-x-3">
               <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-green-700 font-bold">
                 CCO
               </div>
-              <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
-            </motion.div>
-            {/* Esconder botão em telas pequenas, pois agora usamos o botão do Header */}
+              {!collapsed && (
+                <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
+              )}
+            </div>
+            
+            {/* Botão toggle apenas para desktop */}
             {!isSmallScreen && (
               <button 
-                onClick={(e) => {
-                  e.stopPropagation(); // Impedir que o clique no botão dispare o onClick do container pai
-                  toggleSidebar();
-                }}
+                onClick={toggleSidebar}
                 className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
-                style={{ touchAction: "manipulation" }}
               >
-                {/* Em telas maiores, mantemos o comportamento original com setas */}
                 {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
               </button>
             )}
@@ -227,7 +146,7 @@ export default function Sidebar() {
           {/* Navigation */}
           <nav className="mt-4 flex-1 px-2 space-y-1 overflow-y-auto scrollbar-thin">
             <div className="py-1">
-              {navItems.map((item, i) => (
+              {navItems.map((item) => (
                 <NavLink 
                   key={item.path}
                   href={item.path}
@@ -237,35 +156,20 @@ export default function Sidebar() {
                       : 'text-white hover:bg-white/10'
                   }`}
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
+                  <div className="flex-shrink-0">
                     <item.icon className="w-5 h-5" />
-                  </motion.div>
-                  <AnimatePresence>
-                    {!collapsed && (
-                      <motion.span
-                        className="ml-3 whitespace-nowrap"
-                        custom={i}
-                        variants={navItemVariants}
-                        initial="collapsed"
-                        animate="expanded"
-                        exit="collapsed"
-                      >
-                        {item.name}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                  {item.notification && (
-                    <motion.div 
-                      className="ml-auto bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium"
-                      variants={notificationVariants}
-                      initial="initial"
-                      animate="animate"
-                    >
+                  </div>
+                  
+                  {!collapsed && (
+                    <span className="ml-3 whitespace-nowrap">
+                      {item.name}
+                    </span>
+                  )}
+                  
+                  {item.notification && !collapsed && (
+                    <div className="ml-auto bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
                       {item.notification}
-                    </motion.div>
+                    </div>
                   )}
                 </NavLink>
               ))}
@@ -278,27 +182,20 @@ export default function Sidebar() {
               href="/configuracoes"
               className="flex items-center cursor-pointer"
             >
-              <motion.div 
-                className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-              >
+              <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700">
                 <User size={16} />
-              </motion.div>
-              <motion.div 
-                className="ml-3"
-                variants={profileTextVariants}
-                initial={false}
-                animate={collapsed ? "collapsed" : "expanded"}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="font-medium text-white">Admin NOC</div>
-                <div className="text-xs text-white/70">admin@ccocore.com</div>
-              </motion.div>
+              </div>
+              
+              {!collapsed && (
+                <div className="ml-3">
+                  <div className="font-medium text-white">Admin NOC</div>
+                  <div className="text-xs text-white/70">admin@ccocore.com</div>
+                </div>
+              )}
             </NavLink>
           </div>
         </div>
-      </motion.aside>
+      </div>
     </>
   );
 }

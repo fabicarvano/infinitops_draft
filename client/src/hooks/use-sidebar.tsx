@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 
 interface SidebarContextType {
   collapsed: boolean;
@@ -15,45 +15,56 @@ export const SidebarContext = createContext<SidebarContextType>({
 });
 
 export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
-  // Verificar se é uma tela pequena (largura <= 1024px para incluir tablets)
-  // Ajustado para 1024px para pegar tanto celulares quanto tablets
-  const isMobileScreen = () => window.innerWidth <= 1024;
+  // Tela pequena: 1024px para incluir tablets e smartphones
+  const MOBILE_BREAKPOINT = 1024;
   
-  // Inicializar estado recolhido com base no tamanho da tela e rastrear o tamanho da tela
-  const [collapsed, setCollapsed] = useState(isMobileScreen());
-  const [isSmallScreen, setIsSmallScreen] = useState(isMobileScreen());
+  // Verificar se é uma tela pequena
+  const isMobileScreen = useCallback(() => {
+    return window.innerWidth <= MOBILE_BREAKPOINT;
+  }, []);
+  
+  // Estado para controle do sidebar
+  const [collapsed, setCollapsed] = useState(() => {
+    // Em telas pequenas, iniciar com menu fechado
+    return isMobileScreen();
+  });
+  
+  // Estado para rastrear o tamanho da tela
+  const [isSmallScreen, setIsSmallScreen] = useState(() => isMobileScreen());
 
-  // Atualizar estado quando a janela for redimensionada
+  // Função para alternar sidebar - usando useCallback para evitar problemas de referência
+  const toggleSidebar = useCallback(() => {
+    setCollapsed(prevState => !prevState);
+  }, []);
+
+  // Função para definir estado explicitamente - usando useCallback para consistência
+  const setCollapsedState = useCallback((state: boolean) => {
+    setCollapsed(state);
+  }, []);
+
+  // Rastrear redimensionamento da janela
   useEffect(() => {
     const handleResize = () => {
       const smallScreen = isMobileScreen();
+      
+      // Atualizar estado de tamanho da tela
       setIsSmallScreen(smallScreen);
       
-      // Se a tela for pequena, mantenha a barra lateral recolhida
-      if (smallScreen) {
+      // Em telas pequenas, fechar automaticamente o menu
+      if (smallScreen && !collapsed) {
         setCollapsed(true);
       }
     };
 
-    // Adicionar listener para redimensionamento
+    // Adicionar listener de redimensionamento
     window.addEventListener('resize', handleResize);
     
-    // Verificar no carregamento inicial
+    // Verificar o tamanho inicial da tela
     handleResize();
     
-    // Limpar listener quando componente for desmontado
+    // Limpar listener ao desmontar
     return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const toggleSidebar = () => {
-    // Removido log para reduzir ruído no console 
-    // e garantir que não haja processamento adicional desnecessário
-    setCollapsed(prevState => !prevState);
-  };
-
-  const setCollapsedState = (state: boolean) => {
-    setCollapsed(state);
-  };
+  }, [collapsed, isMobileScreen]);
 
   return (
     <SidebarContext.Provider value={{ 
