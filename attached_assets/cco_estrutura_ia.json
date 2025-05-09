@@ -1,5 +1,5 @@
 {
-  "nome": "CCOCORE – Centro de Controle de Operações",
+  "nome": "InfinitCenter",
   "visao_sistema": "Sistema de gestão e automação de NOC, com foco na centralização de dados operacionais, integração com ferramentas de backend (GLPI, Zabbix, N8N) e inteligência própria no frontend (CCOCORE).",
   "proposta_valor": [
     "Centralização em uma única interface",

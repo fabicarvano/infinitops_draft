@@ -2,6 +2,6 @@ import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
 
-document.title = "CCO - Centro de Controle de Operações";
+document.title = "InfinitCenter";
 
 createRoot(document.getElementById("root")!).render(<App />);
