@@ -20,6 +20,7 @@ import ClientForm from "@/components/forms/ClientForm";
 import ContractForm from "@/components/forms/ContractForm";
 import ClientDetails from "@/components/details/ClientDetails";
 import ContractDetails from "@/components/details/ContractDetails";
+import ClientsCollapsibleList from "@/components/clients/ClientsCollapsibleList";
 
 export default function Clients() {
   const { toast } = useToast();
@@ -113,106 +114,19 @@ export default function Clients() {
   return (
     <div className="relative">
       <div className="mb-6">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
-          <div className="relative w-full sm:w-80">
-            <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-slate-400" />
-            <Input
-              placeholder="Buscar clientes ou contratos..."
-              className="w-full pl-9 border-slate-200"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <Button 
-            className="w-full sm:w-auto bg-green-700 hover:bg-green-800 text-white"
-            onClick={() => setIsClientFormOpen(true)}
-          >
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Novo Cliente
-          </Button>
-        </div>
-
-        {/* Lista de Clientes */}
-        <div className="card overflow-hidden mb-6">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="bg-blue-50 p-2 rounded-lg mr-3">
-                <Users className="h-5 w-5 text-blue-600" />
-              </div>
-              <h3 className="title text-lg">Lista de Clientes</h3>
-            </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
-            >
-              Exportar
-            </Button>
-          </div>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-b border-slate-200">
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">ID</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Contratos</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativos</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {clients.map((client) => (
-                  <TableRow key={client.id} className="border-b border-slate-100 hover:bg-slate-50">
-                    <TableCell className="font-medium">#{client.id}</TableCell>
-                    <TableCell>{client.name}</TableCell>
-                    <TableCell>{client.contracts}</TableCell>
-                    <TableCell>{client.assets}</TableCell>
-                    <TableCell>
-                      <Badge className={
-                        client.status === "active" 
-                          ? "bg-green-100 text-green-700" 
-                          : "bg-slate-100 text-slate-700"
-                      }>
-                        {client.status === "active" ? "Ativo" : "Inativo"}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex space-x-1 justify-end">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                          onClick={() => {
-                            setSelectedClientId(client.id);
-                            setIsClientDetailsOpen(true);
-                          }}
-                        >
-                          <Eye className="h-4 w-4 mr-1" />
-                          Detalhes
-                        </Button>
-                        
-                        {/* Botão para criar contrato - adequado ao status do cliente */}
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="text-green-600 hover:text-green-800 hover:bg-green-50"
-                          onClick={() => {
-                            setSelectedClientId(client.id);
-                            setIsContractFormOpen(true);
-                          }}
-                        >
-                          <FileText className="h-4 w-4 mr-1" />
-                          {client.status === "active" ? "Novo Contrato" : "Adicionar Contrato"}
-                        </Button>
-                      </div>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+        {/* Lista de Clientes com Interface Colapsável */}
+        <ClientsCollapsibleList
+          clients={clients}
+          onOpenDetails={(clientId) => {
+            setSelectedClientId(clientId);
+            setIsClientDetailsOpen(true);
+          }}
+          onOpenContractForm={(clientId) => {
+            setSelectedClientId(clientId);
+            setIsContractFormOpen(true);
+          }}
+          onOpenClientForm={() => setIsClientFormOpen(true)}
+        />
         
         {/* Lista de Contratos */}
         <div className="card overflow-hidden">
