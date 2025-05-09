@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { ChevronDown } from "lucide-react";
 import { useSidebar } from "@/hooks/use-sidebar";
+import MobileSidebar from "./MobileSidebar";
 
 export default function Header() {
   const [location] = useLocation();
@@ -50,21 +51,26 @@ export default function Header() {
     <header className="bg-white shadow-sm py-4 px-6 z-10 border-b border-slate-200">
       <div className="flex justify-between items-center">
         <div className="flex items-center space-x-3">
-          <button 
-            className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors focus:outline-none"
-            onClick={(e) => {
-              e.preventDefault();       // Evitar navegação padrão
-              e.stopPropagation();      // Interromper propagação do evento
-              console.log("Botão hambúrguer clicado, estado atual:", collapsed);
-              toggleSidebar();          // Chamar a função toggle
-              console.log("Novo estado após toggle:", !collapsed);
-            }}
-            type="button"               // Explicitamente definir como button
-            aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
-          >
-            {/* Ícones mais claros para entender o estado atual */}
-            {collapsed ? <Menu size={20} /> : <X size={20} />}
-          </button>
+          {isSmallScreen ? (
+            // Para dispositivos móveis, use o MobileSidebar
+            <MobileSidebar />
+          ) : (
+            // Para desktop, mantenha o botão original
+            <button 
+              className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors focus:outline-none"
+              onClick={(e) => {
+                e.preventDefault();     
+                e.stopPropagation();    
+                console.log("Botão desktop clicado, estado atual:", collapsed);
+                toggleSidebar();        
+                console.log("Novo estado após toggle:", !collapsed);
+              }}
+              type="button"            
+              aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
+            >
+              {collapsed ? <Menu size={20} /> : <X size={20} />}
+            </button>
+          )}
           <h1 className="text-xl font-semibold text-slate-800">{pageTitle}</h1>
         </div>
         <div className="flex items-center space-x-4">

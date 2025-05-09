@@ -1,6 +1,6 @@
 import React from 'react';
 import { SidebarProvider } from "@/hooks/use-sidebar";
-import Sidebar from "./Sidebar";
+import DesktopSidebar from "./DesktopSidebar";
 import Header from "./Header";
 import { useSidebar } from "@/hooks/use-sidebar";
 
