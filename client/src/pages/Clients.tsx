@@ -21,6 +21,7 @@ import ContractForm from "@/components/forms/ContractForm";
 import ClientDetails from "@/components/details/ClientDetails";
 import ContractDetails from "@/components/details/ContractDetails";
 import ClientsCollapsibleList from "@/components/clients/ClientsCollapsibleList";
+import ContractsCollapsibleList from "@/components/contracts/ContractsCollapsibleList";
 
 export default function Clients() {
   const { toast } = useToast();
@@ -144,156 +145,15 @@ export default function Clients() {
           onOpenClientForm={() => setIsClientFormOpen(true)}
         />
         
-        {/* Lista de Contratos */}
-        <div className="card overflow-hidden">
-          <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-            <div className="flex items-center">
-              <div className="bg-green-50 p-2 rounded-lg mr-3">
-                <CalendarClock className="h-5 w-5 text-green-600" />
-              </div>
-              <h3 className="title text-lg">Lista de Contratos</h3>
-            </div>
-            {/* Botão "Novo Contrato" removido */}
-          </div>
-          <div className="overflow-x-auto">
-            <Table>
-              <TableHeader>
-                <TableRow className="hover:bg-transparent border-b border-slate-200">
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">ID</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Cliente</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Término</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Nível</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
-                  <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ações</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {contracts.map((contract) => {
-                  const daysUntilExpiration = getDaysUntilExpiration(contract.endDate);
-                  
-                  // Determina o status do contrato com base na data de término
-                  // Se o contrato estiver vencido (daysUntilExpiration <= 0), deve estar inativo
-                  const effectiveStatus = daysUntilExpiration <= 0 
-                    ? "inactive" 
-                    : contract.status;
-                  
-                  // Determina o ícone de alerta baseado nos dias até o vencimento
-                  let expirationAlert = null;
-                  
-                  if (daysUntilExpiration <= 3 && daysUntilExpiration > 0) {
-                    // Vence em 3 dias ou menos: ícone vermelho
-                    expirationAlert = (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <AlertCircle className="h-5 w-5 text-red-500 ml-2" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Contrato vence em {daysUntilExpiration} {daysUntilExpiration === 1 ? 'dia' : 'dias'}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    );
-                  } else if (daysUntilExpiration <= 90 && daysUntilExpiration > 3) {
-                    // Vence entre 4 e 90 dias: ícone laranja
-                    expirationAlert = (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <AlertTriangle className="h-5 w-5 text-orange-500 ml-2" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Contrato vence em {daysUntilExpiration} dias</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    );
-                  } else if (daysUntilExpiration <= 0) {
-                    // Contrato já vencido: ícone vermelho com aviso
-                    expirationAlert = (
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <AlertCircle className="h-5 w-5 text-red-600 ml-2" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Contrato vencido há {Math.abs(daysUntilExpiration)} {Math.abs(daysUntilExpiration) === 1 ? 'dia' : 'dias'}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    );
-                  }
-                  
-                  return (
-                    <TableRow key={contract.id} className="border-b border-slate-100 hover:bg-slate-50">
-                      <TableCell className="font-medium">CTR{contract.id.toString().padStart(6, '0')}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center">
-                          {contract.name}
-                          {expirationAlert}
-                        </div>
-                      </TableCell>
-                      <TableCell>{contract.client}</TableCell>
-                      <TableCell>{contract.endDate}</TableCell>
-                      <TableCell>
-                        <Badge className={
-                          contract.serviceLevel === "vip" 
-                            ? "bg-purple-100 text-purple-700"
-                            : contract.serviceLevel === "premium"
-                            ? "bg-blue-100 text-blue-700" 
-                            : "bg-slate-100 text-slate-700"
-                        }>
-                          {contract.serviceLevel === "vip" 
-                            ? "VIP" 
-                            : contract.serviceLevel === "premium" 
-                            ? "Premium" 
-                            : "Standard"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge className={
-                          effectiveStatus === "active" 
-                            ? "bg-green-100 text-green-700" 
-                            : effectiveStatus === "pending"
-                            ? "bg-yellow-100 text-yellow-700"
-                            : "bg-slate-100 text-slate-700"
-                        }>
-                          {effectiveStatus === "active" 
-                            ? "Ativo" 
-                            : effectiveStatus === "pending"
-                            ? "Pendente"
-                            : "Inativo"}
-                        </Badge>
-                        {daysUntilExpiration <= 0 && contract.status !== "inactive" && (
-                          <div className="text-xs text-gray-500 mt-1">
-                            (Inativado automaticamente por vencimento)
-                          </div>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex space-x-1 justify-end">
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                            onClick={() => {
-                              setSelectedContractId(contract.id);
-                              setIsContractDetailsOpen(true);
-                            }}
-                          >
-                            <FileText className="h-4 w-4 mr-1" />
-                            Detalhes
-                          </Button>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </div>
-        </div>
+        {/* Lista de Contratos com Interface Colapsável */}
+        <ContractsCollapsibleList
+          contracts={contracts}
+          getDaysUntilExpiration={getDaysUntilExpiration}
+          onOpenDetails={(contractId) => {
+            setSelectedContractId(contractId);
+            setIsContractDetailsOpen(true);
+          }}
+        />
       </div>
 
       {/* Formulários em modais */}
