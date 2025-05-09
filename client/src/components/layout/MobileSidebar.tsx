@@ -56,13 +56,14 @@ export default function MobileSidebar() {
                           (location === "/dashboard" && item.path === "/");
           
           return (
-            <div key={item.path} onClick={() => {
-              setOpen(false);
-              // Usar o navigate para navegar programaticamente
-              // eslint-disable-next-line @typescript-eslint/no-unused-vars
-              const [_, navigate] = useLocation();
-              navigate(item.path);
-            }}>
+            <div 
+              key={item.path} 
+              onClick={() => {
+                setOpen(false);
+                // Navegar diretamente para a página usando window.location
+                window.location.href = item.path;
+              }}
+            >
               <div className={`sidebar-link flex items-center px-3 py-2 rounded-xl mb-1 transition-all cursor-pointer ${
                 isActive
                   ? 'bg-white text-green-700 shadow-sm'
@@ -90,16 +91,13 @@ export default function MobileSidebar() {
   );
 
   const renderFooter = () => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [_, navigate] = useLocation();
-    
     return (
       <div className="border-t border-slate-200/20 p-4">
         <div 
           className="flex items-center cursor-pointer"
           onClick={() => {
             setOpen(false);
-            navigate("/configuracoes");
+            window.location.href = "/configuracoes";
           }}
         >
           <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700 flex-shrink-0">
