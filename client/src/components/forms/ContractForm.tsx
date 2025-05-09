@@ -375,9 +375,12 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
                       <SelectContent>
                         <SelectItem value="pending">Pendente</SelectItem>
                         <SelectItem value="active">Ativo</SelectItem>
-                        <SelectItem value="inactive">Inativo</SelectItem>
+                        {/* Opção "Inativo" removida - será definida automaticamente com base na data de término */}
                       </SelectContent>
                     </Select>
+                    <FormDescription>
+                      O status "Inativo" é aplicado automaticamente quando a data de término é atingida
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

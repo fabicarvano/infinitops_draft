@@ -73,7 +73,7 @@ export default function Clients() {
       name: "Monitoramento", 
       client: "Tech Solutions", 
       endDate: "14/03/2024", 
-      status: "active",
+      status: "active",  // Embora esteja marcado como ativo, aparecerá inativo por estar vencido
       serviceLevel: "premium" as ServiceLevelType  // Nível Premium
     }, // Já vencido
     { 
@@ -89,7 +89,7 @@ export default function Clients() {
       name: "Consultoria", 
       client: "Global Services", 
       endDate: "04/11/2023", 
-      status: "inactive",
+      status: "inactive", // Já estava marcado como inativo manualmente
       serviceLevel: "standard" as ServiceLevelType  // Nível Standard
     }, // Já vencido
     { 
@@ -97,9 +97,17 @@ export default function Clients() {
       name: "Infraestrutura", 
       client: "Data Systems", 
       endDate: "19/04/2024", 
-      status: "active",
+      status: "active", // Será mostrado como inativo automaticamente devido à data
       serviceLevel: "premium" as ServiceLevelType  // Nível Premium
     }, // Já vencido
+    { 
+      id: 106, 
+      name: "Manutenção Preventiva", 
+      client: "Empresa ABC", 
+      endDate: "30/09/2025", 
+      status: "pending", // Contrato pendente de ativação
+      serviceLevel: "standard" as ServiceLevelType  // Nível Standard
+    }, // Contrato pendente
   ];
 
   return (
@@ -234,6 +242,12 @@ export default function Clients() {
                 {contracts.map((contract) => {
                   const daysUntilExpiration = getDaysUntilExpiration(contract.endDate);
                   
+                  // Determina o status do contrato com base na data de término
+                  // Se o contrato estiver vencido (daysUntilExpiration <= 0), deve estar inativo
+                  const effectiveStatus = daysUntilExpiration <= 0 
+                    ? "inactive" 
+                    : contract.status;
+                  
                   // Determina o ícone de alerta baseado nos dias até o vencimento
                   let expirationAlert = null;
                   
@@ -309,12 +323,23 @@ export default function Clients() {
                       </TableCell>
                       <TableCell>
                         <Badge className={
-                          contract.status === "active" 
+                          effectiveStatus === "active" 
                             ? "bg-green-100 text-green-700" 
+                            : effectiveStatus === "pending"
+                            ? "bg-yellow-100 text-yellow-700"
                             : "bg-slate-100 text-slate-700"
                         }>
-                          {contract.status === "active" ? "Ativo" : "Inativo"}
+                          {effectiveStatus === "active" 
+                            ? "Ativo" 
+                            : effectiveStatus === "pending"
+                            ? "Pendente"
+                            : "Inativo"}
                         </Badge>
+                        {daysUntilExpiration <= 0 && contract.status !== "inactive" && (
+                          <div className="text-xs text-gray-500 mt-1">
+                            (Inativado automaticamente por vencimento)
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex space-x-1 justify-end">
