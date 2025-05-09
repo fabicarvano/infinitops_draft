@@ -181,6 +181,22 @@ export default function Clients() {
                           <Eye className="h-4 w-4 mr-1" />
                           Detalhes
                         </Button>
+                        
+                        {/* Novo botão para criar contrato - apenas para clientes ativos */}
+                        {client.status === "active" && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="text-green-600 hover:text-green-800 hover:bg-green-50"
+                            onClick={() => {
+                              setSelectedClientId(client.id);
+                              setIsContractFormOpen(true);
+                            }}
+                          >
+                            <FileText className="h-4 w-4 mr-1" />
+                            Novo Contrato
+                          </Button>
+                        )}
                       </div>
                     </TableCell>
                   </TableRow>
@@ -199,15 +215,7 @@ export default function Clients() {
               </div>
               <h3 className="title text-lg">Lista de Contratos</h3>
             </div>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
-              onClick={() => setIsContractFormOpen(true)}
-            >
-              <PlusCircle className="h-4 w-4 mr-1" />
-              Novo Contrato
-            </Button>
+            {/* Botão "Novo Contrato" removido */}
           </div>
           <div className="overflow-x-auto">
             <Table>
@@ -350,6 +358,7 @@ export default function Clients() {
           console.log("Contrato criado:", contract);
           // Em um app real, atualizaríamos a lista de contratos
         }}
+        clientId={selectedClientId} // Passa o ID do cliente selecionado
       />
 
       {/* Detalhes em modais */}
