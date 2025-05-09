@@ -80,9 +80,10 @@ interface ContractFormProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onContractCreated?: (contract: ContractFormValues) => void;
+  clientId?: number; // Novo parâmetro para receber o ID do cliente pré-selecionado
 }
 
-export default function ContractForm({ open, onOpenChange, onContractCreated }: ContractFormProps) {
+export default function ContractForm({ open, onOpenChange, onContractCreated, clientId }: ContractFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
@@ -104,7 +105,7 @@ export default function ContractForm({ open, onOpenChange, onContractCreated }: 
     resolver: zodResolver(contractFormSchema),
     defaultValues: {
       name: "",
-      client_id: "",
+      client_id: clientId ? clientId.toString() : "",
       start_date: new Date(),
       end_date: new Date(new Date().setMonth(new Date().getMonth() + 12)), // 12 meses
       technical_contact: "",
