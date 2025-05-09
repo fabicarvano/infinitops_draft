@@ -48,7 +48,15 @@ export default function Clients() {
   };
 
   // Dados de exemplo para clientes (como estado atualizável)
-  const [clients, setClients] = useState([
+  type ClientStatus = "active" | "inactive";
+  
+  const [clients, setClients] = useState<Array<{
+    id: number;
+    name: string;
+    contracts: number;
+    assets: number;
+    status: ClientStatus;
+  }>>([
     { id: 1, name: "Empresa ABC", contracts: 3, assets: 12, status: "active" },
     { id: 2, name: "Tech Solutions", contracts: 1, assets: 5, status: "active" },
     { id: 3, name: "Empresa XYZ", contracts: 2, assets: 8, status: "active" },
@@ -58,16 +66,24 @@ export default function Clients() {
 
   // Níveis de atendimento possíveis
   type ServiceLevelType = "standard" | "premium" | "vip";
+  type ContractStatus = "active" | "inactive" | "pending";
 
   // Dados de exemplo para contratos com datas próximas de vencimento
-  const contracts = [
+  const contracts: Array<{
+    id: number;
+    name: string;
+    client: string;
+    endDate: string;
+    status: ContractStatus;
+    serviceLevel: ServiceLevelType;
+  }> = [
     { 
       id: 101, 
       name: "Suporte 24x7", 
       client: "Empresa ABC", 
       endDate: "13/04/2025", 
       status: "active",
-      serviceLevel: "vip" as ServiceLevelType  // Nível VIP
+      serviceLevel: "vip"  // Nível VIP
     }, // Vence em 3 dias
     { 
       id: 102, 
@@ -75,7 +91,7 @@ export default function Clients() {
       client: "Tech Solutions", 
       endDate: "14/03/2024", 
       status: "active",  // Embora esteja marcado como ativo, aparecerá inativo por estar vencido
-      serviceLevel: "premium" as ServiceLevelType  // Nível Premium
+      serviceLevel: "premium"  // Nível Premium
     }, // Já vencido
     { 
       id: 103, 
@@ -83,7 +99,7 @@ export default function Clients() {
       client: "Empresa XYZ", 
       endDate: "08/07/2025", 
       status: "active",
-      serviceLevel: "standard" as ServiceLevelType  // Nível Standard
+      serviceLevel: "standard"  // Nível Standard
     }, // Vence em 89 dias
     { 
       id: 104, 
@@ -91,7 +107,7 @@ export default function Clients() {
       client: "Global Services", 
       endDate: "04/11/2023", 
       status: "inactive", // Já estava marcado como inativo manualmente
-      serviceLevel: "standard" as ServiceLevelType  // Nível Standard
+      serviceLevel: "standard"  // Nível Standard
     }, // Já vencido
     { 
       id: 105, 
@@ -99,7 +115,7 @@ export default function Clients() {
       client: "Data Systems", 
       endDate: "19/04/2024", 
       status: "active", // Será mostrado como inativo automaticamente devido à data
-      serviceLevel: "premium" as ServiceLevelType  // Nível Premium
+      serviceLevel: "premium"  // Nível Premium
     }, // Já vencido
     { 
       id: 106, 
@@ -107,7 +123,7 @@ export default function Clients() {
       client: "Empresa ABC", 
       endDate: "30/09/2025", 
       status: "pending", // Contrato pendente de ativação
-      serviceLevel: "standard" as ServiceLevelType  // Nível Standard
+      serviceLevel: "standard"  // Nível Standard
     }, // Contrato pendente
   ];
 
@@ -305,7 +321,7 @@ export default function Clients() {
           // Na implementação real, este código estaria no servidor
           const updatedClients = clients.map(client => 
             client.id === clientId 
-              ? { ...client, status: "active" } 
+              ? { ...client, status: "active" as const } 
               : client
           );
           

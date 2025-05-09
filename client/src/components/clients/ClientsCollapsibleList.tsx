@@ -35,7 +35,7 @@ export default function ClientsCollapsibleList({
   onOpenContractForm,
   onOpenClientForm
 }: ClientsCollapsibleListProps) {
-  const [isExpanded, setIsExpanded] = useState(true);
+  const [isExpanded, setIsExpanded] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
 
@@ -56,7 +56,11 @@ export default function ClientsCollapsibleList({
       >
         <div className="flex items-center">
           <div className="bg-blue-50 p-2 rounded-lg mr-3">
-            <Users className="h-5 w-5 text-blue-600" />
+            {isExpanded ? (
+              <ChevronUp className="h-5 w-5 text-blue-600" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-blue-600" />
+            )}
           </div>
           <h3 className="title text-lg">Lista de Clientes</h3>
           <Badge className="ml-3 bg-blue-100 text-blue-700">
