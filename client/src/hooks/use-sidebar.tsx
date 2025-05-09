@@ -15,8 +15,9 @@ export const SidebarContext = createContext<SidebarContextType>({
 });
 
 export const SidebarProvider = ({ children }: { children: React.ReactNode }) => {
-  // Verificar se é uma tela pequena (largura <= 1366px para notebooks de 13-14")
-  const isMobileScreen = () => window.innerWidth <= 1366;
+  // Verificar se é uma tela pequena (largura <= 768px para dispositivos móveis)
+  // Ajustado para 768px que é um breakpoint comum para dispositivos móveis
+  const isMobileScreen = () => window.innerWidth <= 768;
   
   // Inicializar estado recolhido com base no tamanho da tela e rastrear o tamanho da tela
   const [collapsed, setCollapsed] = useState(isMobileScreen());

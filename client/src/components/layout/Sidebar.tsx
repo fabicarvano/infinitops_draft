@@ -11,7 +11,8 @@ import {
   Settings,
   ChevronLeft, 
   ChevronRight,
-  User
+  User,
+  X
 } from "lucide-react";
 
 // Componente de navegação personalizado que também fechará o menu
@@ -206,7 +207,13 @@ export default function Sidebar() {
               className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
               style={{ touchAction: "manipulation" }}
             >
-              {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+              {/* Em telas pequenas, mostramos apenas o ícone de X para fechar, sem setas */}
+              {isSmallScreen ? (
+                !collapsed ? <X size={20} /> : null // Em telas pequenas, o botão não fica visível quando fechado
+              ) : (
+                // Em telas maiores, mantemos o comportamento original com setas
+                collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />
+              )}
             </button>
           </div>
           
