@@ -21,8 +21,8 @@ function LayoutContent({ children }: LayoutProps) {
   
   return (
     <div className="flex min-h-screen text-slate-800 overflow-x-hidden">
-      {/* Sidebar Component */}
-      <Sidebar />
+      {/* Renderizar o sidebar apenas em telas grandes */}
+      {!isSmallScreen && <DesktopSidebar />}
       
       {/* Main Content */}
       <main className={`flex-1 transition-all duration-300 ${mainMargin}`}>
