@@ -11,7 +11,7 @@ export default function Header() {
   const [location] = useLocation();
   const [pageTitle, setPageTitle] = useState("Painel de Controle");
   const [currentCenter, setCurrentCenter] = useState("Centro de Operações SP");
-  const { collapsed, setCollapsedState } = useSidebar();
+  const { collapsed, toggleSidebar } = useSidebar();
   
   useEffect(() => {
     // Set page title based on current location
@@ -52,19 +52,8 @@ export default function Header() {
         <div className="flex items-center space-x-3">
           <button 
             className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors"
-            onClick={() => {
-              console.log("Toggling sidebar from header");
-              
-              // Alternar estado do sidebar - se estiver fechado, abrimos
-              // se estiver aberto, fechamos
-              if (collapsed) {
-                // Estamos abrindo o menu
-                setCollapsedState(false);
-              } else {
-                // Estamos fechando o menu
-                setCollapsedState(true);
-              }
-            }}
+            onClick={toggleSidebar}
+            aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
           >
             {collapsed ? <Menu size={20} /> : <X size={20} />}
           </button>
