@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, AlertTriangle, Bell, TicketPlus, ArrowUpRight } from "lucide-react";
+import { Search, Filter, AlertTriangle, Bell, TicketPlus, ArrowUpRight, AlertCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
@@ -78,6 +78,10 @@ export default function Alerts() {
     }
   };
 
+  // Calcular alertas sem chamados
+  const alertsWithoutTickets = alerts.filter(alert => !alert.ticketId);
+  const alertsWithoutTicketsCount = alertsWithoutTickets.length;
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
@@ -99,7 +103,7 @@ export default function Alerts() {
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="card overflow-hidden border-l-4 border-l-red-500">
           <div className="p-5">
             <div className="flex justify-between items-start mb-4">
@@ -148,6 +152,33 @@ export default function Alerts() {
               className="w-full border-yellow-200 text-yellow-700 hover:bg-yellow-50"
             >
               Ver alertas de atenção
+            </Button>
+          </div>
+        </div>
+
+        {/* Novo card: Alertas sem Chamados */}
+        <div className="card overflow-hidden border-l-4 border-l-blue-500">
+          <div className="p-5">
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center">
+                <div className="bg-blue-50 p-2 rounded-lg mr-3">
+                  <AlertCircle className="h-5 w-5 text-blue-600" />
+                </div>
+                <div>
+                  <Badge className="bg-blue-100 text-blue-700 mb-1">Pendentes</Badge>
+                  <h3 className="font-medium">{alertsWithoutTicketsCount} alertas sem chamados</h3>
+                </div>
+              </div>
+            </div>
+            <p className="text-slate-500 text-sm mb-4">
+              Alertas que precisam de abertura de chamado
+            </p>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+            >
+              Ver alertas sem chamados
             </Button>
           </div>
         </div>
