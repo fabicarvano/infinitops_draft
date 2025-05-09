@@ -199,22 +199,20 @@ export default function Sidebar() {
               </div>
               <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
             </motion.div>
-            <button 
-              onClick={(e) => {
-                e.stopPropagation(); // Impedir que o clique no botão dispare o onClick do container pai
-                toggleSidebar();
-              }}
-              className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
-              style={{ touchAction: "manipulation" }}
-            >
-              {/* Em telas pequenas, mostramos apenas o ícone de X para fechar, sem setas */}
-              {isSmallScreen ? (
-                !collapsed ? <X size={20} /> : null // Em telas pequenas, o botão não fica visível quando fechado
-              ) : (
-                // Em telas maiores, mantemos o comportamento original com setas
-                collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />
-              )}
-            </button>
+            {/* Esconder botão em telas pequenas, pois agora usamos o botão do Header */}
+            {!isSmallScreen && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation(); // Impedir que o clique no botão dispare o onClick do container pai
+                  toggleSidebar();
+                }}
+                className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
+                style={{ touchAction: "manipulation" }}
+              >
+                {/* Em telas maiores, mantemos o comportamento original com setas */}
+                {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
+              </button>
+            )}
           </div>
           
           {/* Navigation */}

@@ -11,7 +11,7 @@ export default function Header() {
   const [location] = useLocation();
   const [pageTitle, setPageTitle] = useState("Painel de Controle");
   const [currentCenter, setCurrentCenter] = useState("Centro de Operações SP");
-  const { collapsed, toggleSidebar } = useSidebar();
+  const { collapsed, toggleSidebar, isSmallScreen } = useSidebar();
   
   useEffect(() => {
     // Set page title based on current location
@@ -55,7 +55,10 @@ export default function Header() {
             onClick={toggleSidebar}
             aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
           >
-            {collapsed ? <Menu size={20} /> : <X size={20} />}
+            {isSmallScreen 
+              ? <Menu size={20} /> // Em telas pequenas, sempre mostrar o ícone de menu
+              : (collapsed ? <Menu size={20} /> : <X size={20} />)
+            }
           </button>
           <h1 className="text-xl font-semibold text-slate-800">{pageTitle}</h1>
         </div>
