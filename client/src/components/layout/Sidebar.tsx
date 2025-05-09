@@ -1,7 +1,7 @@
 import { useLocation } from "wouter";
 import { useSidebar } from "@/hooks/use-sidebar";
 import { motion, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import {
   LayoutDashboard,
   Building2, 
