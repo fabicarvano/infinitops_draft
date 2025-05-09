@@ -50,6 +50,7 @@ const clientFormSchema = z.object({
   contact_phone: z.string().min(10, {
     message: "Telefone deve ter pelo menos 10 dígitos",
   }),
+  // Status não é mais um campo editável, mas é mantido no schema
   status: z.enum(["active", "inactive"]),
   address: z.string().min(5, {
     message: "Endereço deve ter pelo menos 5 caracteres",
@@ -78,7 +79,7 @@ export default function ClientForm({ open, onOpenChange, onClientCreated }: Clie
       contact_name: "",
       contact_email: "",
       contact_phone: "",
-      status: "active",
+      status: "inactive", // Todos os novos clientes são criados como inativos por padrão
       address: "",
       notes: "",
     },
@@ -211,31 +212,7 @@ export default function ClientForm({ open, onOpenChange, onClientCreated }: Clie
                 )}
               />
               
-              {/* Status */}
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="active">Ativo</SelectItem>
-                        <SelectItem value="inactive">Inativo</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* O campo de Status foi removido aqui. O status será sempre "inactive" por padrão */}
             </div>
             
             {/* Endereço */}

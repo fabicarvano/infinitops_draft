@@ -81,9 +81,10 @@ interface ContractFormProps {
   onOpenChange: (open: boolean) => void;
   onContractCreated?: (contract: ContractFormValues) => void;
   clientId?: number; // Novo parâmetro para receber o ID do cliente pré-selecionado
+  onClientActivated?: (clientId: number) => void; // Novo callback para ativar o cliente
 }
 
-export default function ContractForm({ open, onOpenChange, onContractCreated, clientId }: ContractFormProps) {
+export default function ContractForm({ open, onOpenChange, onContractCreated, clientId, onClientActivated }: ContractFormProps) {
   const { toast } = useToast();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [clients, setClients] = useState<Client[]>([]);
@@ -127,10 +128,20 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
       // Esperar um pouco para simular o processamento
       await new Promise(resolve => setTimeout(resolve, 1000));
       
+      // Verificar se o ID do cliente está disponível para ativação
+      const selectedClientId = values.client_id ? parseInt(values.client_id) : undefined;
+      
+      // Ativar o cliente automaticamente
+      if (selectedClientId && onClientActivated) {
+        console.log("Ativando cliente:", selectedClientId);
+        // Em um app real, aqui faríamos uma chamada para atualizar o status no servidor
+        onClientActivated(selectedClientId);
+      }
+      
       // Notificar sucesso
       toast({
         title: "Contrato criado com sucesso",
-        description: `${values.name} foi adicionado ao sistema.`,
+        description: `${values.name} foi adicionado ao sistema.${selectedClientId ? " O cliente foi ativado automaticamente." : ""}`,
       });
       
       // Resetar o formulário

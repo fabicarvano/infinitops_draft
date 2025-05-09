@@ -12,6 +12,7 @@ import {
   Eye,
   FileText
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -21,6 +22,7 @@ import ClientDetails from "@/components/details/ClientDetails";
 import ContractDetails from "@/components/details/ContractDetails";
 
 export default function Clients() {
+  const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [isClientFormOpen, setIsClientFormOpen] = useState(false);
   const [isContractFormOpen, setIsContractFormOpen] = useState(false);
@@ -44,14 +46,14 @@ export default function Clients() {
     return diffDays;
   };
 
-  // Dados de exemplo para clientes
-  const clients = [
+  // Dados de exemplo para clientes (como estado atualizável)
+  const [clients, setClients] = useState([
     { id: 1, name: "Empresa ABC", contracts: 3, assets: 12, status: "active" },
     { id: 2, name: "Tech Solutions", contracts: 1, assets: 5, status: "active" },
     { id: 3, name: "Empresa XYZ", contracts: 2, assets: 8, status: "active" },
     { id: 4, name: "Global Services", contracts: 1, assets: 3, status: "inactive" },
     { id: 5, name: "Data Systems", contracts: 4, assets: 15, status: "active" },
-  ];
+  ]);
 
   // Níveis de atendimento possíveis
   type ServiceLevelType = "standard" | "premium" | "vip";
@@ -182,21 +184,19 @@ export default function Clients() {
                           Detalhes
                         </Button>
                         
-                        {/* Novo botão para criar contrato - apenas para clientes ativos */}
-                        {client.status === "active" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            className="text-green-600 hover:text-green-800 hover:bg-green-50"
-                            onClick={() => {
-                              setSelectedClientId(client.id);
-                              setIsContractFormOpen(true);
-                            }}
-                          >
-                            <FileText className="h-4 w-4 mr-1" />
-                            Novo Contrato
-                          </Button>
-                        )}
+                        {/* Botão para criar contrato - adequado ao status do cliente */}
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="text-green-600 hover:text-green-800 hover:bg-green-50"
+                          onClick={() => {
+                            setSelectedClientId(client.id);
+                            setIsContractFormOpen(true);
+                          }}
+                        >
+                          <FileText className="h-4 w-4 mr-1" />
+                          {client.status === "active" ? "Novo Contrato" : "Adicionar Contrato"}
+                        </Button>
                       </div>
                     </TableCell>
                   </TableRow>
@@ -359,6 +359,27 @@ export default function Clients() {
           // Em um app real, atualizaríamos a lista de contratos
         }}
         clientId={selectedClientId} // Passa o ID do cliente selecionado
+        onClientActivated={(clientId) => {
+          console.log("Ativando cliente:", clientId);
+          // Em um app real, chamaríamos uma API para ativar o cliente
+          // Para simular, vamos buscar o cliente na lista e ativar localmente
+          // Na implementação real, este código estaria no servidor
+          const updatedClients = clients.map(client => 
+            client.id === clientId 
+              ? { ...client, status: "active" } 
+              : client
+          );
+          
+          // Atualizamos o estado local com os clientes modificados
+          setClients(updatedClients);
+          
+          // Mostramos uma mensagem para o usuário
+          toast({
+            title: "Cliente ativado",
+            description: `Cliente #${clientId} foi ativado automaticamente ao criar o contrato.`,
+            className: "bg-green-50 border-green-200 text-green-800",
+          });
+        }}
       />
 
       {/* Detalhes em modais */}
