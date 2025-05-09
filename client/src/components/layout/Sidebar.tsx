@@ -13,7 +13,7 @@ import {
   User,
 } from "lucide-react";
 
-// Abordagem simplificada de navegação para evitar problemas de refresh
+// Componente simplificado de navegação para evitar problemas de refresh
 function NavLink({ href, className, children }: { href: string, className: string, children: React.ReactNode }) {
   const [, navigate] = useLocation();
   const { setCollapsedState, isSmallScreen } = useSidebar();
@@ -21,12 +21,14 @@ function NavLink({ href, className, children }: { href: string, className: strin
   const handleClick = (e: React.MouseEvent) => {
     e.preventDefault();
     
-    // Em telas pequenas, fechamos o menu antes de navegar
+    // Em telas pequenas, fechamos o menu antes de navegar com delay
     if (isSmallScreen) {
-      setCollapsedState(true);
+      setTimeout(() => {
+        setCollapsedState(true);
+      }, 100); // Pequeno delay para garantir que a navegação ocorra primeiro
     }
     
-    // Usamos uma navegação simples para evitar conflitos
+    // Navegação simples e direta usando wouter
     navigate(href);
   };
   
@@ -93,14 +95,6 @@ export default function Sidebar() {
     return () => window.removeEventListener('resize', handleResize);
   }, [isSmallScreen, collapsed, toggleSidebar]);
 
-  // Determinar a classe CSS baseada no estado
-  const sidebarClasses = `
-    fixed h-screen z-20 shadow-md border-r border-slate-200
-    transition-all duration-300 ease-in-out
-    ${collapsed && isSmallScreen ? '-translate-x-full' : 'translate-x-0'}
-    ${!isSmallScreen && collapsed ? 'w-16' : 'w-64'}
-  `;
-  
   // Background com gradiente
   const bgStyle = {
     background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)"
@@ -112,22 +106,33 @@ export default function Sidebar() {
       {isSmallScreen && !collapsed && (
         <div 
           className="fixed inset-0 bg-black/50 z-10"
-          onClick={toggleSidebar}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleSidebar();
+          }}
         />
       )}
       
-      <div 
-        className={sidebarClasses}
+      {/* Sidebar principal com classes CSS para animação */}
+      <aside 
+        className={`
+          fixed h-screen z-20 shadow-md border-r border-slate-200
+          transition-all duration-300 ease-in-out
+          ${isSmallScreen ? 'w-64' : (collapsed ? 'w-16' : 'w-64')}
+          ${collapsed && isSmallScreen ? '-translate-x-full' : 'translate-x-0'}
+        `}
         style={bgStyle}
       >
+        {/* Conteúdo do sidebar */}
         <div className="flex flex-col h-full overflow-hidden">
           {/* Sidebar Header */}
           <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/20">
             <div className="flex items-center space-x-3">
-              <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-green-700 font-bold">
+              <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-green-700 font-bold flex-shrink-0">
                 CCO
               </div>
-              {!collapsed && (
+              {(!collapsed || isSmallScreen) && (
                 <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
               )}
             </div>
@@ -135,6 +140,7 @@ export default function Sidebar() {
             {/* Botão toggle apenas para desktop */}
             {!isSmallScreen && (
               <button 
+                type="button"
                 onClick={toggleSidebar}
                 className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
               >
@@ -160,13 +166,13 @@ export default function Sidebar() {
                     <item.icon className="w-5 h-5" />
                   </div>
                   
-                  {!collapsed && (
+                  {(!collapsed || isSmallScreen) && (
                     <span className="ml-3 whitespace-nowrap">
                       {item.name}
                     </span>
                   )}
                   
-                  {item.notification && !collapsed && (
+                  {item.notification && (!collapsed || isSmallScreen) && (
                     <div className="ml-auto bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
                       {item.notification}
                     </div>
@@ -182,11 +188,11 @@ export default function Sidebar() {
               href="/configuracoes"
               className="flex items-center cursor-pointer"
             >
-              <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700">
+              <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700 flex-shrink-0">
                 <User size={16} />
               </div>
               
-              {!collapsed && (
+              {(!collapsed || isSmallScreen) && (
                 <div className="ml-3">
                   <div className="font-medium text-white">Admin NOC</div>
                   <div className="text-xs text-white/70">admin@ccocore.com</div>
@@ -195,7 +201,7 @@ export default function Sidebar() {
             </NavLink>
           </div>
         </div>
-      </div>
+      </aside>
     </>
   );
 }

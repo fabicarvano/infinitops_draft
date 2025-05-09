@@ -13,11 +13,11 @@ function LayoutContent({ children }: LayoutProps) {
   const { collapsed, isSmallScreen } = useSidebar();
   
   // Calcular a margem dinamicamente com base no estado do sidebar e tamanho da tela
-  // Em telas pequenas: sempre sem margem, pois o sidebar é um overlay
-  // Em telas grandes: margem ajustada ao tamanho do sidebar (16px quando recolhido, 64px quando expandido)
+  // Em telas pequenas (isSmallScreen): sempre sem margem, pois o sidebar é um overlay
+  // Em telas grandes: margem ajustada ao tamanho do sidebar (64px quando expandido, 16px quando recolhido)
   const mainMargin = isSmallScreen
     ? 'ml-0' // Em telas pequenas, sem margem independente do estado
-    : (collapsed ? 'ml-16' : 'ml-64'); // Em telas grandes, margem se ajusta
+    : (collapsed ? 'ml-16' : 'ml-64'); // Em telas grandes, margem se ajusta conforme o sidebar
   
   return (
     <div className="flex min-h-screen text-slate-800 overflow-x-hidden">

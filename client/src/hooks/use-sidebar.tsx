@@ -18,7 +18,7 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
   // Tela pequena: 1024px para incluir tablets e smartphones
   const MOBILE_BREAKPOINT = 1024;
   
-  // Verificar se é uma tela pequena
+  // Verificar se é uma tela pequena - memoizado para consistência
   const isMobileScreen = useCallback(() => {
     return window.innerWidth <= MOBILE_BREAKPOINT;
   }, []);
@@ -32,13 +32,19 @@ export const SidebarProvider = ({ children }: { children: React.ReactNode }) => 
   // Estado para rastrear o tamanho da tela
   const [isSmallScreen, setIsSmallScreen] = useState(() => isMobileScreen());
 
-  // Função para alternar sidebar - usando useCallback para evitar problemas de referência
+  // Função para alternar sidebar - memoizada para evitar problemas de referência
   const toggleSidebar = useCallback(() => {
-    setCollapsed(prevState => !prevState);
-  }, []);
+    console.log("toggleSidebar chamado, estado atual:", collapsed);
+    setCollapsed(prevState => {
+      const newState = !prevState;
+      console.log("Novo estado do sidebar:", newState);
+      return newState;
+    });
+  }, [collapsed]);
 
-  // Função para definir estado explicitamente - usando useCallback para consistência
+  // Função para definir estado explicitamente
   const setCollapsedState = useCallback((state: boolean) => {
+    console.log("setCollapsedState chamado, novo estado:", state);
     setCollapsed(state);
   }, []);
 

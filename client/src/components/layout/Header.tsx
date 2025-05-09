@@ -53,9 +53,13 @@ export default function Header() {
           <button 
             className="p-2 rounded-md text-slate-600 hover:bg-slate-100 transition-colors focus:outline-none"
             onClick={(e) => {
-              e.preventDefault(); // Prevenir comportamento padrão do botão
-              toggleSidebar(); // Chamar a função toggle corretamente
+              e.preventDefault();       // Evitar navegação padrão
+              e.stopPropagation();      // Interromper propagação do evento
+              console.log("Botão hambúrguer clicado, estado atual:", collapsed);
+              toggleSidebar();          // Chamar a função toggle
+              console.log("Novo estado após toggle:", !collapsed);
             }}
+            type="button"               // Explicitamente definir como button
             aria-label={collapsed ? "Abrir menu" : "Fechar menu"}
           >
             {/* Ícones mais claros para entender o estado atual */}
