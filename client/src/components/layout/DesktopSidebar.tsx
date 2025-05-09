@@ -1,163 +1,123 @@
-import { useLocation } from "wouter";
+import React from 'react';
 import { useSidebar } from "@/hooks/use-sidebar";
+import { Link, useLocation } from "wouter";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
 import {
-  LayoutDashboard,
-  Building2, 
-  Server,
-  Bell,
-  TicketPlus,
+  PieChart,
+  LayoutGrid,
+  Users,
+  AlertTriangle,
+  Ticket,
   Settings,
-  ChevronLeft, 
-  ChevronRight,
-  User,
+  LogOut,
+  Bell,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
-
-// Componente de navegação apenas para desktop - mantém a mesma funcionalidade atual
-function NavLink({ href, className, children }: { href: string, className: string, children: React.ReactNode }) {
-  const [, navigate] = useLocation();
-  
-  const handleClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    navigate(href);
-  };
-  
-  return (
-    <a href={href} className={className} onClick={handleClick}>
-      {children}
-    </a>
-  );
-}
 
 export default function DesktopSidebar() {
   const [location] = useLocation();
   const { collapsed, toggleSidebar } = useSidebar();
 
-  // Define navigation items
-  const navItems = [
-    { 
-      path: "/dashboard", 
-      name: "Painel de Controle", 
-      icon: LayoutDashboard 
-    },
-    { 
-      path: "/clientes", 
-      name: "Clientes & Contratos", 
-      icon: Building2 
-    },
-    { 
-      path: "/ativos", 
-      name: "Ativos", 
-      icon: Server 
-    },
-    { 
-      path: "/alertas", 
-      name: "Alertas", 
-      icon: Bell,
-      notification: 7
-    },
-    { 
-      path: "/chamados", 
-      name: "Chamados", 
-      icon: TicketPlus,
-      notification: 5
-    },
-    { 
-      path: "/configuracoes", 
-      name: "Configurações", 
-      icon: Settings 
-    },
+  // Menu items config
+  const menuItems = [
+    { path: "/", icon: <PieChart size={20} />, label: "Dashboard" },
+    { path: "/ativos", icon: <LayoutGrid size={20} />, label: "Ativos" },
+    { path: "/clientes", icon: <Users size={20} />, label: "Clientes" },
+    { path: "/alertas", icon: <AlertTriangle size={20} />, label: "Alertas" },
+    { path: "/chamados", icon: <Ticket size={20} />, label: "Chamados" },
+    { path: "/configuracoes", icon: <Settings size={20} />, label: "Configurações" },
   ];
 
-  const isActive = (path: string) => {
-    return location === path;
-  };
+  // Logo e título da empresa
+  const renderLogo = () => (
+    <div className={`flex items-center ${collapsed ? 'justify-center px-0' : 'px-4'} py-4`}>
+      <div className={`flex ${collapsed ? 'flex-col' : 'items-center'}`}>
+        <div className="bg-gradient-to-r from-green-600 to-green-400 h-10 w-10 rounded-lg flex items-center justify-center shadow-sm">
+          <Bell className="h-6 w-6 text-white" />
+        </div>
+        {!collapsed && (
+          <div className="ml-2">
+            <h1 className="text-lg font-bold text-slate-800 leading-5">CCOCORE</h1>
+            <p className="text-[10px] text-slate-500 leading-3">Centro de Controle Operacional</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
 
-  // Background com gradiente
-  const bgStyle = {
-    background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)"
-  };
+  // Menu items
+  const renderMenuItems = () => (
+    <div className={`${collapsed ? 'px-2' : 'px-4'} py-2`}>
+      {menuItems.map((item) => {
+        const isActive = item.path === location || 
+                         (location === "/dashboard" && item.path === "/");
+        
+        return (
+          <Link
+            key={item.path}
+            href={item.path}
+          >
+            <Button
+              variant="ghost"
+              className={`w-full justify-start mb-1 ${
+                collapsed ? 'px-2' : ''
+              } ${
+                isActive 
+                ? "bg-green-50 text-green-700" 
+                : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
+              }`}
+            >
+              <span className={collapsed ? '' : 'mr-3'}>
+                {React.cloneElement(item.icon, { 
+                  className: isActive ? "text-green-600" : "text-slate-500" 
+                })}
+              </span>
+              {!collapsed && item.label}
+            </Button>
+          </Link>
+        );
+      })}
+    </div>
+  );
+
+  const renderFooter = () => (
+    <div className={`mt-auto ${collapsed ? 'px-2' : 'px-4'} mb-4`}>
+      <Separator className="my-4 bg-slate-200" />
+      <Button variant="ghost" className={`w-full justify-start ${
+        collapsed ? 'px-2' : ''
+      } text-slate-600 hover:text-red-500 hover:bg-red-50`}>
+        <LogOut className={`h-5 w-5 ${collapsed ? '' : 'mr-3'} text-slate-500`} />
+        {!collapsed && "Logout"}
+      </Button>
+      
+      <Button 
+        variant="ghost" 
+        size="sm"
+        className="mt-4 w-full text-xs text-slate-400 hover:text-slate-600 flex items-center justify-center"
+        onClick={(e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          toggleSidebar();
+        }}
+      >
+        {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+        {!collapsed && <span className="ml-1">Recolher</span>}
+      </Button>
+    </div>
+  );
 
   return (
     <aside 
-      className={`fixed h-screen z-20 shadow-md border-r border-slate-200 transition-all duration-300 ${
+      className={`fixed left-0 top-0 h-full bg-white border-r border-slate-200 transition-all duration-300 ease-in-out ${
         collapsed ? 'w-16' : 'w-64'
-      }`}
-      style={bgStyle}
+      } z-50 flex flex-col shadow-sm`}
     >
-      <div className="flex flex-col h-full overflow-hidden">
-        {/* Sidebar Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-slate-200/20">
-          <div className="flex items-center space-x-3">
-            <div className="h-10 w-10 rounded-full bg-white flex items-center justify-center text-green-700 font-bold flex-shrink-0">
-              CCO
-            </div>
-            {!collapsed && (
-              <span className="font-semibold text-lg text-white whitespace-nowrap">Controle Operacional</span>
-            )}
-          </div>
-          
-          {/* Botão toggle para desktop */}
-          <button 
-            type="button"
-            onClick={toggleSidebar}
-            className="bg-white/20 text-white hover:bg-white/30 p-2 rounded-md cursor-pointer z-30"
-          >
-            {collapsed ? <ChevronRight size={20} /> : <ChevronLeft size={20} />}
-          </button>
-        </div>
-        
-        {/* Navigation */}
-        <nav className="mt-4 flex-1 px-2 space-y-1 overflow-y-auto scrollbar-thin">
-          <div className="py-1">
-            {navItems.map((item) => (
-              <NavLink 
-                key={item.path}
-                href={item.path}
-                className={`sidebar-link flex items-center px-3 py-2 rounded-xl mb-1 transition-all ${
-                  isActive(item.path)
-                    ? 'bg-white text-green-700 shadow-sm'
-                    : 'text-white hover:bg-white/10'
-                }`}
-              >
-                <div className="flex-shrink-0">
-                  <item.icon className="w-5 h-5" />
-                </div>
-                
-                {!collapsed && (
-                  <span className="ml-3 whitespace-nowrap">
-                    {item.name}
-                  </span>
-                )}
-                
-                {item.notification && !collapsed && (
-                  <div className="ml-auto bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-medium">
-                    {item.notification}
-                  </div>
-                )}
-              </NavLink>
-            ))}
-          </div>
-        </nav>
-        
-        {/* User Profile */}
-        <div className="border-t border-slate-200/20 p-4">
-          <NavLink 
-            href="/configuracoes"
-            className="flex items-center cursor-pointer"
-          >
-            <div className="h-8 w-8 rounded-full bg-white flex items-center justify-center text-green-700 flex-shrink-0">
-              <User size={16} />
-            </div>
-            
-            {!collapsed && (
-              <div className="ml-3">
-                <div className="font-medium text-white">Admin NOC</div>
-                <div className="text-xs text-white/70">admin@ccocore.com</div>
-              </div>
-            )}
-          </NavLink>
-        </div>
-      </div>
+      {renderLogo()}
+      <Separator className="bg-slate-200" />
+      {renderMenuItems()}
+      {renderFooter()}
     </aside>
   );
 }
