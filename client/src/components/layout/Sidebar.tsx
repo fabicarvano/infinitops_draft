@@ -86,7 +86,9 @@ export default function Sidebar() {
   // Variantes de animação com efeitos mais sutis
   const sidebarVariants = {
     expanded: { width: "16rem", x: 0 },
-    collapsed: { width: "4rem", x: 0 }
+    collapsed: isSmallScreen 
+      ? { width: "16rem", x: "-100%" } // Em telas pequenas, escondemos completamente
+      : { width: "4rem", x: 0 } // Em telas grandes, mantemos visível mas reduzido
   };
   
   // Efeito para garantir que o menu feche quando a janela for redimensionada para uma tela pequena
@@ -163,7 +165,9 @@ export default function Sidebar() {
       )}
       
       <motion.aside 
-        className="fixed h-screen z-20 shadow-md border-r border-slate-200"
+        className={`fixed h-screen z-20 shadow-md border-r border-slate-200 ${
+          isSmallScreen ? 'w-64' : '' // Adicionar largura explícita em telas pequenas
+        }`}
         style={{ 
           background: "linear-gradient(180deg, rgba(25, 97, 39, 0.9) 0%, rgba(25, 97, 39, 0.7) 100%)"
         }}
