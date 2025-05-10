@@ -49,7 +49,7 @@ export const assets = pgTable("assets", {
   ip_address: text("ip_address"),
   hostname: text("hostname"),
   criticality: text("criticality").notNull().default("medium"), // Criticidade técnica (herdada do alerta)
-  business_criticality: integer("business_criticality").notNull().default("3"), // Criticidade de negócio (0-5, onde 0 é crítico)
+  business_criticality: text("business_criticality").notNull().default("3"), // Criticidade de negócio (0-5, onde 0 é crítico)
   status: text("status").notNull().default("active"),
   zabbix_id: text("zabbix_id"),
   created_at: timestamp("created_at").notNull().defaultNow(),
@@ -99,7 +99,7 @@ export const tickets = pgTable("tickets", {
   first_response_deadline: timestamp("first_response_deadline"), // Prazo para primeiro atendimento
   resolution_deadline: timestamp("resolution_deadline"), // Prazo para resolução
   service_hours: text("service_hours"), // 24x7, Seg-Sex 06h-23h, Seg-Sex 09h-18h
-  adjustment_factor: numeric("adjustment_factor").notNull().default(1.0), // Fator de ajuste aplicado (0.5, 0.75, 0.9, 1.0)
+  adjustment_factor: text("adjustment_factor").notNull().default("1.0"), // Fator de ajuste aplicado (0.5, 0.75, 0.9, 1.0)
   is_adjustment_enabled: boolean("is_adjustment_enabled").notNull().default(true), // Se o ajuste por criticidade está habilitado
   sla_paused: boolean("sla_paused").notNull().default(false), // Se o SLA está pausado
   sla_violated: boolean("sla_violated").notNull().default(false), // Se o SLA foi violado
