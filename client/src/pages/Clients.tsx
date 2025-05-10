@@ -14,7 +14,8 @@ import {
   Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useQuery } from "@tanstack/react-query";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -65,29 +66,27 @@ export default function Clients() {
   const [clients, setClients] = useState<ClientData[]>([]);
   const [isLoadingClients, setIsLoadingClients] = useState<boolean>(true);
   
-  // Buscar clientes da API ao carregar o componente
+  // Carregar dados dos clientes do servidor
   useEffect(() => {
-    const fetchClients = async () => {
+    const fetchData = async () => {
       try {
         setIsLoadingClients(true);
         
-        // Buscar todos os clientes
-        const allClients = await apiRequest('/api/clients');
+        // Obter dados dos clientes, contratos e ativos
+        const clientsResponse = await apiRequest('/api/clients');
+        const contractsResponse = await apiRequest('/api/contracts');
+        const assetsResponse = await apiRequest('/api/assets');
         
-        // Buscar contratos para contagem
-        const allContracts = await apiRequest('/api/contracts');
+        // Garantir que os dados são arrays
+        const clients = Array.isArray(clientsResponse) ? clientsResponse : [];
+        const contracts = Array.isArray(contractsResponse) ? contractsResponse : [];
+        const assets = Array.isArray(assetsResponse) ? assetsResponse : [];
         
-        // Buscar ativos para contagem
-        const allAssets = await apiRequest('/api/assets');
-        
-        // Transformar os dados para o formato necessário para a UI
-        const clientsData = Array.isArray(allClients) ? allClients : [];
-        const contractsData = Array.isArray(allContracts) ? allContracts : [];
-        const assetsData = Array.isArray(allAssets) ? allAssets : [];
-        
-        const formattedClients = clientsData.map((client: any) => {
-          const clientContracts = contractsData.filter((contract: any) => contract.client_id === client.id);
-          const clientAssets = assetsData.filter((asset: any) => asset.client_id === client.id);
+        // Formatar dados para exibição
+        const formattedClients = clients.map(client => {
+          // Contar contratos e ativos para este cliente
+          const clientContracts = contracts.filter(contract => contract.client_id === client.id);
+          const clientAssets = assets.filter(asset => asset.client_id === client.id);
           
           return {
             id: client.id,
@@ -100,10 +99,10 @@ export default function Clients() {
         
         setClients(formattedClients);
       } catch (error) {
-        console.error("Erro ao buscar clientes:", error);
+        console.error("Erro ao carregar dados:", error);
         toast({
-          title: "Erro ao carregar clientes",
-          description: "Não foi possível buscar os dados dos clientes. Verifique a conexão.",
+          title: "Erro ao carregar dados",
+          description: "Ocorreu um erro ao buscar dados do servidor.",
           variant: "destructive"
         });
       } finally {
@@ -111,7 +110,7 @@ export default function Clients() {
       }
     };
     
-    fetchClients();
+    fetchData();
   }, [toast]);
 
   // Níveis de atendimento possíveis
