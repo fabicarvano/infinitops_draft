@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -15,7 +15,8 @@ import {
   AlertOctagon,
   Clock,
   FileText,
-  Info
+  Info,
+  X
 } from "lucide-react";
 
 // Tipos para a API de alertas
@@ -42,8 +43,12 @@ interface Alert {
   isAcknowledged: boolean;
 }
 
+// Tipo para os filtros disponíveis
+type FilterType = "critical" | "open" | "pending" | null;
+
 export default function Alerts() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeFilter, setActiveFilter] = useState<FilterType>(null);
 
   // Função para mapear códigos de severidade da API para valores do sistema
   const mapApiSeverityToSystem = (apiSeverity: ApiSeverity): SystemSeverity => {
@@ -197,6 +202,42 @@ export default function Alerts() {
   const mediumAlerts = alerts.filter(alert => 
     ["medio", "aviso", "informativo", "nao_classificado"].includes(alert.severity)
   );
+  
+  // Função para filtrar alertas baseado no filtro ativo
+  const getFilteredAlerts = () => {
+    if (!activeFilter) return alerts;
+    
+    switch (activeFilter) {
+      case "critical":
+        return alerts.filter(alert => alert.severity === "critico");
+      case "open":
+        return alerts.filter(alert => alert.ticketId !== undefined);
+      case "pending":
+        return alerts.filter(alert => 
+          !isHighSeverity(alert.severity) && 
+          (!alert.isAcknowledged || !alert.ticketId)
+        );
+      default:
+        return alerts;
+    }
+  };
+  
+  // Alertas filtrados para exibição na tabela
+  const filteredAlerts = getFilteredAlerts().filter(alert => 
+    alert.client.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alert.asset.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    alert.message.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  // Função para aplicar ou remover um filtro
+  const handleFilter = (filterType: FilterType) => {
+    // Se o mesmo filtro já estiver ativo, desativamos
+    if (activeFilter === filterType) {
+      setActiveFilter(null);
+    } else {
+      setActiveFilter(filterType);
+    }
+  };
 
   // Mapeia a severidade do sistema para um badge visual
   const getSeverityBadge = (severity: SystemSeverity) => {
@@ -462,7 +503,7 @@ export default function Alerts() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {alerts.map((alert) => {
+              {filteredAlerts.map((alert) => {
                 // Determina se o alerta é de alta severidade (alto ou crítico)
                 const highSeverityAlert = isHighSeverity(alert.severity);
                 
