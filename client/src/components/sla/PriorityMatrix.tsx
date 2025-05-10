@@ -6,13 +6,18 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+// Tipos para as matrizes
+type TechnicalCriticality = "Information" | "Warning" | "Average" | "High" | "Disaster";
+type BusinessCriticality = 0 | 1 | 2 | 3 | 4 | 5;
+type PriorityLevel = "Crítica" | "Muito Alta" | "Alta" | "Média" | "Baixa" | "Muito Baixa";
+
 interface PriorityMatrixProps {
-  highlightTechnical?: string;  // Criticidade técnica a destacar
-  highlightBusiness?: number;   // Criticidade de negócio a destacar
+  highlightTechnical?: TechnicalCriticality;  // Criticidade técnica a destacar
+  highlightBusiness?: BusinessCriticality;   // Criticidade de negócio a destacar
 }
 
 // Matriz de prioridades baseada na criticidade técnica e de negócio
-const PRIORITY_MATRIX = {
+const PRIORITY_MATRIX: Record<TechnicalCriticality, Record<BusinessCriticality, PriorityLevel>> = {
   // Criticidade técnica (linhas)
   "Information": {
     0: "Baixa",
@@ -57,7 +62,7 @@ const PRIORITY_MATRIX = {
 };
 
 // Mapeamento de criticidade técnica para português
-const TECHNICAL_LABELS = {
+const TECHNICAL_LABELS: Record<TechnicalCriticality, string> = {
   "Information": "Informação",
   "Warning": "Alerta",
   "Average": "Média",
@@ -66,7 +71,7 @@ const TECHNICAL_LABELS = {
 };
 
 // Mapeamento de criticidade de negócio para texto descritivo
-const BUSINESS_LABELS = {
+const BUSINESS_LABELS: Record<BusinessCriticality, string> = {
   0: "Crítico",
   1: "Muito Alto",
   2: "Alto",
@@ -76,114 +81,110 @@ const BUSINESS_LABELS = {
 };
 
 // Cores para cada nível de prioridade
-const PRIORITY_COLORS = {
+const PRIORITY_COLORS: Record<PriorityLevel, string> = {
   "Crítica": "bg-red-100 text-red-800",
   "Muito Alta": "bg-orange-100 text-orange-800",
-  "Alta": "bg-yellow-100 text-yellow-800",
-  "Média": "bg-green-100 text-green-800",
-  "Baixa": "bg-blue-100 text-blue-800",
-  "Muito Baixa": "bg-gray-100 text-gray-800"
+  "Alta": "bg-amber-100 text-amber-800",
+  "Média": "bg-yellow-100 text-yellow-800",
+  "Baixa": "bg-green-100 text-green-800",
+  "Muito Baixa": "bg-blue-100 text-blue-800"
 };
 
 export default function PriorityMatrix({ 
   highlightTechnical, 
   highlightBusiness 
 }: PriorityMatrixProps) {
-  // Lista de criticidades técnicas e de negócio para exibir na matriz
-  const technicalCriticalities = Object.keys(PRIORITY_MATRIX);
-  const businessCriticalities = [0, 1, 2, 3, 4, 5];
-  
-  // Verifica se uma célula deve ser destacada
-  const isHighlighted = (tech: string, business: number) => {
-    return tech === highlightTechnical && business === highlightBusiness;
-  };
+  // Prioridade destacada baseada nas criticidades fornecidas
+  const highlightedPriority = highlightTechnical && typeof highlightBusiness === 'number' 
+    ? PRIORITY_MATRIX[highlightTechnical][highlightBusiness as BusinessCriticality] 
+    : undefined;
   
   return (
-    <div className="bg-white border rounded-lg p-4 shadow-sm">
-      <div className="flex justify-between items-center mb-4">
-        <h3 className="text-lg font-semibold">Matriz de Prioridade</h3>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              <HelpCircle className="h-4 w-4 text-muted-foreground" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">
-              <p>Esta matriz mostra a prioridade final do chamado com base na combinação de:</p>
-              <ul className="list-disc list-inside text-xs mt-1 space-y-1">
-                <li>Criticidade Técnica (severidade do alerta)</li>
-                <li>Criticidade de Negócio (importância do ativo)</li>
-              </ul>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-      </div>
-      
-      {/* Tabela da matriz de prioridade */}
-      <div className="overflow-x-auto">
-        <table className="w-full border-collapse">
-          <thead>
-            <tr>
-              <th className="p-2 border bg-gray-50 text-left text-sm font-medium text-gray-600">
-                Criticidade Técnica \ Negócio
+    <div className="w-full overflow-x-auto rounded-lg border">
+      <table className="w-full text-sm">
+        <thead>
+          <tr className="bg-slate-50">
+            <th className="p-2 text-left font-medium text-gray-500">
+              <div className="flex items-center">
+                <span>Criticidade Técnica / Negócio</span>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button className="ml-1 opacity-70">
+                        <HelpCircle className="h-3.5 w-3.5" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent side="right">
+                      <p className="w-60 text-xs">
+                        A matriz de prioridades determina a classificação final baseada nas criticidades técnica e de negócio.
+                        As criticidades técnicas variam de Informação (baixa) a Desastre (alta), enquanto as criticidades de negócio
+                        variam de 0 (crítico) a 5 (muito baixo).
+                      </p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
+              </div>
+            </th>
+            {/* Cabeçalho das colunas (criticidade de negócio) */}
+            {[0, 1, 2, 3, 4, 5].map((business) => (
+              <th 
+                key={business} 
+                className={`p-2 text-center font-medium ${highlightBusiness === business ? 'bg-blue-50' : ''}`}
+              >
+                <div className="flex flex-col items-center">
+                  <span className="text-sm font-bold">{business}</span>
+                  <span className="text-xs text-gray-500">{BUSINESS_LABELS[business as BusinessCriticality]}</span>
+                </div>
               </th>
-              {businessCriticalities.map(business => (
-                <th 
-                  key={business} 
-                  className={`p-2 border text-center text-sm font-medium ${
-                    business === highlightBusiness ? 'bg-blue-50' : 'bg-gray-50'
-                  }`}
-                >
-                  <div>{business}</div>
-                  <div className="text-xs text-gray-500">{BUSINESS_LABELS[business]}</div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {technicalCriticalities.map(tech => (
-              <tr key={tech}>
-                <td className={`p-2 border font-medium text-sm ${
-                  tech === highlightTechnical ? 'bg-blue-50' : ''
-                }`}>
-                  <div>{TECHNICAL_LABELS[tech]}</div>
-                  <div className="text-xs text-gray-500">{tech}</div>
-                </td>
-                {businessCriticalities.map(business => {
-                  const priority = PRIORITY_MATRIX[tech][business];
-                  const colorClass = PRIORITY_COLORS[priority];
-                  const cellHighlighted = isHighlighted(tech, business);
-                  
-                  return (
-                    <td 
-                      key={`${tech}-${business}`} 
-                      className={`p-2 border text-center ${
-                        cellHighlighted 
-                          ? 'ring-2 ring-blue-500 bg-blue-50' 
-                          : ''
-                      }`}
-                    >
-                      <span className={`px-2 py-1 rounded text-xs font-medium ${colorClass}`}>
-                        {priority}
-                      </span>
-                    </td>
-                  );
-                })}
-              </tr>
             ))}
-          </tbody>
-        </table>
-      </div>
+          </tr>
+        </thead>
+        <tbody>
+          {/* Linhas da matriz (criticidade técnica) */}
+          {Object.keys(PRIORITY_MATRIX).map((technical) => (
+            <tr 
+              key={technical} 
+              className={`${highlightTechnical === technical ? 'bg-blue-50' : ''}`}
+            >
+              <td className="p-2 text-left font-medium border-t">
+                <div className="flex flex-col">
+                  <span className="text-sm font-bold">{technical}</span>
+                  <span className="text-xs text-gray-500">
+                    {TECHNICAL_LABELS[technical as TechnicalCriticality]}
+                  </span>
+                </div>
+              </td>
+              {/* Células da matriz com as prioridades */}
+              {[0, 1, 2, 3, 4, 5].map((business) => {
+                const priority = PRIORITY_MATRIX[technical as TechnicalCriticality][business as BusinessCriticality];
+                const isHighlighted = highlightTechnical === technical && highlightBusiness === business;
+                
+                return (
+                  <td
+                    key={`${technical}-${business}`}
+                    className={`p-2 text-center border-t ${isHighlighted ? 'ring-2 ring-blue-500' : ''}`}
+                  >
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${PRIORITY_COLORS[priority]}`}>
+                      {priority}
+                    </span>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
       
       {/* Legenda */}
-      <div className="mt-4 flex flex-wrap gap-2">
-        {Object.entries(PRIORITY_COLORS).map(([priority, colorClass]) => (
-          <span 
-            key={priority} 
-            className={`px-2 py-1 rounded text-xs font-medium ${colorClass}`}
-          >
-            {priority}
-          </span>
-        ))}
+      <div className="p-3 border-t bg-slate-50">
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-xs font-medium text-gray-500">Legenda:</span>
+          {Object.entries(PRIORITY_COLORS).map(([priority, colorClass]) => (
+            <span key={priority} className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
+              {priority}
+            </span>
+          ))}
+        </div>
       </div>
     </div>
   );

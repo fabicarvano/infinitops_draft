@@ -32,42 +32,103 @@ import EffectiveSlaCard from '../sla/EffectiveSlaCard';
 import SlaRiskIndicator from '../sla/SlaRiskIndicator';
 import PriorityMatrix from '../sla/PriorityMatrix';
 
+// Definições de tipos
+type AlertStatus = "critical" | "high" | "medium" | "low";
+type MonitoringStatus = "ativo" | "normalizado" | "flapping" | "reconhecido" | "suprimido";
+type TechnicalCriticality = "Information" | "Warning" | "Average" | "High" | "Disaster";
+type BusinessCriticality = 0 | 1 | 2 | 3 | 4 | 5;
+type PriorityLevel = "Crítica" | "Muito Alta" | "Alta" | "Média" | "Baixa" | "Muito Baixa";
+
+interface EnhancedAlert {
+  id: number;
+  status: AlertStatus;
+  client: string;
+  asset: string;
+  assetId: number;
+  message: string;
+  time: string;
+  createdAt: string;
+  // Campos de monitoramento
+  monitoringStatus: MonitoringStatus;
+  monitoringSource: string;
+  monitoringId?: string;
+  // Campos de SLA
+  ticketId?: number;
+  ticketCreatedAt?: string;
+  finalPriority: PriorityLevel;
+  serviceLevel: string;
+  technicalCriticality: TechnicalCriticality;
+  businessCriticality: BusinessCriticality;
+  // Tempos e prazos de SLA
+  firstResponseTime: number;
+  resolutionTime: number;
+  firstResponseDeadline: string;
+  resolutionDeadline: string;
+  serviceHours: string;
+  adjustmentFactor: number;
+  isAdjustmentEnabled: boolean;
+  slaPaused: boolean;
+  slaViolated: boolean;
+}
+
 interface EnhancedAlertCardProps {
-  alert: {
-    id: number;
-    status: string;  // Severidade técnica
-    client: string;
-    asset: string;
-    assetId: number;
-    message: string;
-    time: string;
-    createdAt: string;
-    // Campos de monitoramento
-    monitoringStatus: string;
-    monitoringSource: string;
-    monitoringId?: string;
-    // Campos de SLA
-    ticketId?: number;
-    ticketCreatedAt?: string;
-    finalPriority: string;
-    serviceLevel: string;
-    technicalCriticality: string;
-    businessCriticality: number;
-    // Tempos e prazos de SLA
-    firstResponseTime: number;
-    resolutionTime: number;
-    firstResponseDeadline: string;
-    resolutionDeadline: string;
-    serviceHours: string;
-    adjustmentFactor: number;
-    isAdjustmentEnabled: boolean;
-    slaPaused: boolean;
-    slaViolated: boolean;
-  };
+  alert: EnhancedAlert;
   onAcknowledge?: (alertId: number) => void;
   onCreateTicket?: (alertId: number) => void;
   onViewTicket?: (ticketId: number) => void;
 }
+
+// Mapeamento de cores por status
+const STATUS_COLORS: Record<AlertStatus, string> = {
+  critical: "bg-red-100 text-red-800 border-red-300",
+  high: "bg-orange-100 text-orange-800 border-orange-300",
+  medium: "bg-yellow-100 text-yellow-800 border-yellow-300",
+  low: "bg-green-100 text-green-800 border-green-300"
+};
+
+// Mapeamento de cores por prioridade
+const PRIORITY_COLORS: Record<PriorityLevel, string> = {
+  "Crítica": "bg-red-100 text-red-800 border-red-300",
+  "Muito Alta": "bg-orange-100 text-orange-800 border-orange-300",
+  "Alta": "bg-amber-100 text-amber-800 border-amber-300",
+  "Média": "bg-yellow-100 text-yellow-800 border-yellow-300",
+  "Baixa": "bg-green-100 text-green-800 border-green-300",
+  "Muito Baixa": "bg-blue-100 text-blue-800 border-blue-300"
+};
+
+// Mapeamento de status de monitoramento para componentes visuais
+const MONITORING_STATUS_PROPS: Record<MonitoringStatus, { icon: JSX.Element, title: string, description: string, color: string }> = {
+  ativo: {
+    icon: <AlertTriangle className="h-5 w-5 text-red-500" />,
+    title: "Alerta Ativo",
+    description: "O problema ainda está ocorrendo no monitoramento",
+    color: "border-red-300 bg-red-50"
+  },
+  normalizado: {
+    icon: <AlertTriangle className="h-5 w-5 text-green-500" />,
+    title: "Normalizado",
+    description: "O problema foi resolvido no monitoramento",
+    color: "border-green-300 bg-green-50"
+  },
+  flapping: {
+    icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+    title: "Flapping",
+    description: "O alerta está oscilando entre ativo e normalizado",
+    color: "border-amber-300 bg-amber-50"
+  },
+  reconhecido: {
+    icon: <AlertTriangle className="h-5 w-5 text-blue-500" />,
+    title: "Reconhecido",
+    description: "O alerta foi reconhecido por um operador",
+    color: "border-blue-300 bg-blue-50"
+  },
+  suprimido: {
+    icon: <AlertTriangle className="h-5 w-5 text-gray-500" />,
+    title: "Suprimido",
+    description: "O alerta foi suprimido e não gerará novos alertas",
+    color: "border-gray-300 bg-gray-50"
+  }
+};
 
 export default function EnhancedAlertCard({ 
   alert, 
@@ -77,198 +138,94 @@ export default function EnhancedAlertCard({
 }: EnhancedAlertCardProps) {
   const [expanded, setExpanded] = useState(false);
   
-  // Valores simulados para o histórico de status de monitoramento
-  const statusHistory = [
-    {
-      id: 1,
-      status: "ativo" as const,
-      timestamp: alert.createdAt,
-      value: "CPU Usage: 95%",
-      message: "Alerta criado - CPU Usage acima do limiar de 90%",
-    },
-    {
-      id: 2,
-      status: "reconhecido" as const,
-      timestamp: new Date(new Date(alert.createdAt).getTime() + 15 * 60000).toISOString(),
-      user: "Carlos Silva",
-    },
-    {
-      id: 3,
-      status: "normalizado" as const,
-      timestamp: new Date(new Date(alert.createdAt).getTime() + 45 * 60000).toISOString(),
-      value: "CPU Usage: 78%",
-      message: "Sistema normalizado",
-    },
-    {
-      id: 4,
-      status: "ativo" as const,
-      timestamp: new Date(new Date(alert.createdAt).getTime() + 120 * 60000).toISOString(),
-      value: "CPU Usage: 97%",
-      message: "Alerta reativado - CPU Usage acima do limiar de 90%",
-    },
-    {
-      id: 5,
-      status: alert.monitoringStatus as any,
-      timestamp: new Date(new Date(alert.createdAt).getTime() + 150 * 60000).toISOString(),
-      value: "CPU Usage: 82%",
-      message: alert.monitoringStatus === "ativo" 
-        ? "Alerta ainda ativo" 
-        : "Sistema normalizado",
-    },
-  ];
+  // Extrair dados do status de monitoramento atual
+  const currentMonitoringStatus = MONITORING_STATUS_PROPS[alert.monitoringStatus];
   
-  // Mapeamento de severidade para cor
-  const getSeverityColor = (severity: string) => {
-    switch (severity) {
-      case 'critical':
-        return 'bg-red-100 text-red-800 border-red-200';
-      case 'high':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      case 'medium':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
-      case 'low':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
+  // Verificar se pode reconhecer o alerta (apenas os ativos podem ser reconhecidos)
+  const canAcknowledge = alert.monitoringStatus === "ativo" || alert.monitoringStatus === "flapping";
   
-  // Mapeamento de severidade para criticidade técnica
-  const mapSeverityToTechnicalCriticality = (severity: string) => {
-    const map = {
-      'critical': 'Disaster',
-      'high': 'High',
-      'medium': 'Average',
-      'low': 'Warning',
-    };
-    return map[severity] || 'Information';
-  };
-  
-  const getPriorityColor = (priority: string) => {
-    const map = {
-      'Crítica': 'bg-red-100 text-red-800 border-red-200',
-      'Muito Alta': 'bg-orange-100 text-orange-800 border-orange-200',
-      'Alta': 'bg-yellow-100 text-yellow-800 border-yellow-200',
-      'Média': 'bg-green-100 text-green-800 border-green-200',
-      'Baixa': 'bg-blue-100 text-blue-800 border-blue-200',
-      'Muito Baixa': 'bg-gray-100 text-gray-800 border-gray-200',
-    };
-    return map[priority] || 'bg-gray-100 text-gray-800 border-gray-200';
-  };
-  
-  // Status de monitoramento atual para o painel
-  const currentMonitoringStatus = {
-    status: alert.monitoringStatus as any,
-    source: alert.monitoringSource,
-    sourceId: alert.monitoringId,
-    lastUpdated: statusHistory[statusHistory.length - 1].timestamp,
-    currentValue: "CPU Usage: 82%",  // Valor simulado
-    threshold: "CPU Usage > 90%",    // Limiar simulado
-    sourceUrl: `https://zabbix.example.com/alerts/${alert.monitoringId}`,
-  };
-  
-  // Determinar qual badge de "em SLA" mostrar
-  const getSLAStatusBadge = () => {
-    if (alert.slaPaused) {
-      return <Badge variant="outline" className="bg-gray-100">SLA Pausado</Badge>;
-    }
-    if (alert.slaViolated) {
-      return <Badge variant="destructive">SLA Violado</Badge>;
-    }
-    return <Badge variant="outline" className="bg-green-100 text-green-800">Dentro do SLA</Badge>;
-  };
+  // Verificar se pode criar um chamado (apenas se não existir um chamado)
+  const canCreateTicket = !alert.ticketId;
   
   return (
-    <Card className={`mb-4 overflow-hidden ${alert.monitoringStatus === 'ativo' ? 'border-red-300' : ''}`}>
-      <CardHeader className="px-4 py-3 bg-gray-50">
-        <div className="flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <AlertTriangle className={`h-5 w-5 ${alert.status === 'critical' ? 'text-red-500' : alert.status === 'medium' ? 'text-yellow-500' : 'text-blue-500'}`} />
-            <span className="font-medium">{alert.message}</span>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            {/* Badge de severidade técnica */}
-            <Badge variant="outline" className={getSeverityColor(alert.status)}>
-              {alert.status === 'critical' ? 'Crítico' : 
-               alert.status === 'high' ? 'Alto' :
-               alert.status === 'medium' ? 'Médio' : 'Baixo'}
+    <Card className="w-full">
+      <CardHeader className="pb-2">
+        <div className="flex justify-between">
+          <div>
+            <Badge variant="outline" className={STATUS_COLORS[alert.status]}>
+              {alert.status === "critical" ? "Crítico" : 
+               alert.status === "high" ? "Alto" : 
+               alert.status === "medium" ? "Médio" : "Baixo"}
             </Badge>
-            
-            {/* Badge de prioridade final */}
-            <Badge variant="outline" className={getPriorityColor(alert.finalPriority)}>
+            <Badge variant="outline" className={`ml-2 ${PRIORITY_COLORS[alert.finalPriority]}`}>
               {alert.finalPriority}
             </Badge>
-            
-            {/* Badge de status do SLA */}
-            {alert.ticketId && getSLAStatusBadge()}
-            
-            {/* Menu de ações */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="h-8 w-8">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuLabel>Ações</DropdownMenuLabel>
-                {!alert.ticketId && (
-                  <DropdownMenuItem onClick={() => onCreateTicket?.(alert.id)}>
-                    Criar Chamado
-                  </DropdownMenuItem>
-                )}
-                {alert.ticketId && (
-                  <DropdownMenuItem onClick={() => onViewTicket?.(alert.ticketId!)}>
-                    Ver Chamado #{alert.ticketId}
-                  </DropdownMenuItem>
-                )}
-                <DropdownMenuSeparator />
-                {alert.monitoringStatus === 'ativo' && (
-                  <DropdownMenuItem onClick={() => onAcknowledge?.(alert.id)}>
-                    Reconhecer Alerta
-                  </DropdownMenuItem>
-                )}
-              </DropdownMenuContent>
-            </DropdownMenu>
-            
-            {/* Botão para expandir/recolher */}
-            <Button 
-              variant="ghost" 
-              size="sm" 
-              className="h-8 w-8 p-0" 
-              onClick={() => setExpanded(!expanded)}
-            >
-              {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-            </Button>
           </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <MoreVertical className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              {canAcknowledge && onAcknowledge && (
+                <DropdownMenuItem onClick={() => onAcknowledge(alert.id)}>
+                  Reconhecer Alerta
+                </DropdownMenuItem>
+              )}
+              {canCreateTicket && onCreateTicket && (
+                <DropdownMenuItem onClick={() => onCreateTicket(alert.id)}>
+                  Criar Chamado
+                </DropdownMenuItem>
+              )}
+              {alert.ticketId && onViewTicket && (
+                <DropdownMenuItem onClick={() => onViewTicket(alert.ticketId!)}>
+                  Ver Chamado #{alert.ticketId}
+                </DropdownMenuItem>
+              )}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                Ver Detalhes no Zabbix
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
       </CardHeader>
-      
-      <CardContent className="px-4 py-3">
-        <div className="flex flex-col md:flex-row md:items-center justify-between text-sm">
-          {/* Informações básicas do alerta */}
-          <div className="space-y-1">
-            <div className="flex items-center text-gray-600">
-              <Building className="h-4 w-4 mr-2" />
-              <span>Cliente: <span className="font-medium">{alert.client}</span></span>
-            </div>
-            <div className="flex items-center text-gray-600">
-              <Server className="h-4 w-4 mr-2" />
-              <span>Ativo: <span className="font-medium">{alert.asset}</span></span>
-            </div>
+      <CardContent className="pt-0">
+        <h3 className="text-lg font-semibold mb-2">{alert.message}</h3>
+        
+        <div className="flex flex-col gap-1 mb-4">
+          <div className="flex items-center text-gray-600">
+            <Building className="h-4 w-4 mr-2" />
+            <span>Cliente: <span className="font-medium">{alert.client}</span></span>
           </div>
-          
-          <div className="mt-2 md:mt-0 space-y-1">
+          <div className="flex items-center text-gray-600">
+            <Server className="h-4 w-4 mr-2" />
+            <span>Ativo: <span className="font-medium">{alert.asset}</span> (ID: {alert.assetId})</span>
+          </div>
+          <div className="flex items-center text-gray-600">
+            <Clock className="h-4 w-4 mr-2" />
+            <span>Detectado: <span className="font-medium">{format(new Date(alert.createdAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}</span></span>
+          </div>
+          {alert.ticketId && (
             <div className="flex items-center text-gray-600">
-              <Clock className="h-4 w-4 mr-2" />
-              <span>Criado: <span className="font-medium">{format(new Date(alert.createdAt), "dd/MM/yyyy HH:mm", { locale: ptBR })}</span></span>
+              <FileText className="h-4 w-4 mr-2" />
+              <span>Chamado: <span className="font-medium">#{alert.ticketId}</span> ({format(new Date(alert.ticketCreatedAt!), "dd/MM/yyyy HH:mm", { locale: ptBR })})</span>
             </div>
-            {alert.ticketId && (
-              <div className="flex items-center text-gray-600">
-                <FileText className="h-4 w-4 mr-2" />
-                <span>Chamado: <span className="font-medium">#{alert.ticketId}</span> ({format(new Date(alert.ticketCreatedAt!), "dd/MM/yyyy HH:mm", { locale: ptBR })})</span>
+          )}
+        </div>
+        
+        <div className="flex flex-wrap justify-between items-center">
+          <div className="flex items-center gap-2">
+            <div className={`p-2 rounded-md border ${currentMonitoringStatus.color}`}>
+              <div className="flex items-center gap-2">
+                {currentMonitoringStatus.icon}
+                <div>
+                  <p className="text-sm font-medium">{currentMonitoringStatus.title}</p>
+                </div>
               </div>
-            )}
+            </div>
           </div>
           
           <div className="mt-2 md:mt-0">
@@ -287,7 +244,11 @@ export default function EnhancedAlertCard({
             {/* Painel de Status do Monitoramento */}
             <div>
               <h3 className="text-lg font-medium mb-3">Status de Monitoramento</h3>
-              <MonitoringStatusPanel {...currentMonitoringStatus} />
+              <MonitoringStatusPanel 
+                status={alert.monitoringStatus}
+                source={alert.monitoringSource}
+                id={alert.monitoringId}
+              />
             </div>
             
             {/* Card de SLA Efetivo (se houver ticket) */}
@@ -312,55 +273,68 @@ export default function EnhancedAlertCard({
                     finalPriority={alert.finalPriority}
                   />
                   
-                  <PriorityMatrix 
-                    highlightTechnical={mapSeverityToTechnicalCriticality(alert.status)}
-                    highlightBusiness={alert.businessCriticality}
-                  />
+                  <div>
+                    <div className="bg-white rounded-lg border p-4">
+                      <h4 className="text-sm font-medium mb-2">Matriz de Prioridade</h4>
+                      <PriorityMatrix
+                        highlightTechnical={alert.technicalCriticality}
+                        highlightBusiness={alert.businessCriticality}
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
             )}
             
-            {/* Histórico de Status */}
-            <MonitoringStatusHistory 
-              alertId={alert.id}
-              statusHistory={statusHistory}
-            />
+            {/* Histórico de mudanças de status */}
+            <div>
+              <h3 className="text-lg font-medium mb-3">Histórico de Status</h3>
+              <MonitoringStatusHistory alertId={alert.id} />
+            </div>
           </div>
         )}
       </CardContent>
-      
-      <CardFooter className="px-4 py-3 bg-gray-50 border-t">
-        <div className="w-full flex justify-between items-center">
-          <div className="flex items-center space-x-2">
-            <Tag className="h-4 w-4 text-gray-500" />
-            <span className="text-sm text-gray-600">
-              {alert.monitoringSource} #{alert.monitoringId || '-'}
-            </span>
-          </div>
-          
-          <div className="flex space-x-2">
-            {!alert.ticketId && (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => onCreateTicket?.(alert.id)}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Criar Chamado
-              </Button>
-            )}
-            
-            {alert.ticketId && (
-              <Button 
-                variant="outline"
-                size="sm"
-                onClick={() => onViewTicket?.(alert.ticketId!)}
-              >
-                <FileText className="h-4 w-4 mr-2" />
-                Ver Chamado #{alert.ticketId}
-              </Button>
-            )}
-          </div>
+      <CardFooter className="px-6 pb-4 pt-0 flex justify-between">
+        <Button 
+          variant="ghost" 
+          onClick={() => setExpanded(!expanded)}
+          className="text-gray-500"
+        >
+          {expanded ? (
+            <><ChevronUp className="h-4 w-4 mr-2" /> Recolher</>
+          ) : (
+            <><ChevronDown className="h-4 w-4 mr-2" /> Expandir</>
+          )}
+        </Button>
+        
+        <div className="flex gap-2">
+          {canCreateTicket && onCreateTicket && (
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => onCreateTicket(alert.id)}
+            >
+              Criar Chamado
+            </Button>
+          )}
+          {canAcknowledge && onAcknowledge && (
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={() => onAcknowledge(alert.id)}
+            >
+              Reconhecer
+            </Button>
+          )}
+          {alert.ticketId && onViewTicket && (
+            <Button 
+              variant="default" 
+              size="sm"
+              onClick={() => onViewTicket(alert.ticketId!)}
+            >
+              Ver Chamado
+            </Button>
+          )}
         </div>
       </CardFooter>
     </Card>

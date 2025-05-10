@@ -1,6 +1,24 @@
 import { useQuery } from "@tanstack/react-query";
-import { useAlerts, Alert } from "./use-alerts";
+import { useAlerts } from "./use-alerts";
 import { addDays, addHours, addMinutes } from "date-fns";
+
+// Definição de tipos obtidos do use-alerts.ts
+type AlertSeverity = "critical" | "high" | "medium" | "low";
+
+interface Alert {
+  id: number;
+  status: AlertSeverity;
+  client: string;
+  asset: string;
+  assetId: number;
+  message: string;
+  time: string;
+  createdAt: string;
+  ticketId?: number;
+  ticketCreatedAt?: string;
+  sla?: string;
+  isAutoTicket?: boolean;
+}
 
 interface EnhancedAlert extends Alert {
   // Campos de monitoramento

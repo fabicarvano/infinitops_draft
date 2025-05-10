@@ -1,165 +1,99 @@
-import { 
-  AlertTriangle, 
-  CheckCircle, 
-  RefreshCw, 
-  BellOff, 
-  Eye,
-  ExternalLink,
-  Clock
-} from "lucide-react";
-import { format, formatDistanceToNow } from "date-fns";
-import { ptBR } from "date-fns/locale";
+import { AlertTriangle, Calendar, Clock, InfoIcon, Tag } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
+// Define interface for component props
 interface MonitoringStatusPanelProps {
   status: "ativo" | "normalizado" | "flapping" | "reconhecido" | "suprimido";
   source: string;
-  sourceId?: string;
-  lastUpdated: string;
-  currentValue?: string;
-  threshold?: string;
-  sourceUrl?: string;
+  monitoringId?: string;
+  lastUpdated?: string;
 }
 
-export default function MonitoringStatusPanel({
-  status,
-  source,
-  sourceId,
-  lastUpdated,
-  currentValue,
-  threshold,
-  sourceUrl
+// Mapping of monitoring status to visual components
+const STATUS_CONFIG = {
+  ativo: {
+    icon: <AlertTriangle className="h-5 w-5 text-red-500" />,
+    title: "Alerta Ativo",
+    description: "O problema ainda está ocorrendo no monitoramento",
+    color: "border-red-300 bg-red-50 text-red-800"
+  },
+  normalizado: {
+    icon: <AlertTriangle className="h-5 w-5 text-green-500" />,
+    title: "Normalizado",
+    description: "O problema foi resolvido no monitoramento",
+    color: "border-green-300 bg-green-50 text-green-800"
+  },
+  flapping: {
+    icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
+    title: "Flapping",
+    description: "O alerta está oscilando entre ativo e normalizado",
+    color: "border-amber-300 bg-amber-50 text-amber-800"
+  },
+  reconhecido: {
+    icon: <AlertTriangle className="h-5 w-5 text-blue-500" />,
+    title: "Reconhecido",
+    description: "O alerta foi reconhecido por um operador",
+    color: "border-blue-300 bg-blue-50 text-blue-800"
+  },
+  suprimido: {
+    icon: <AlertTriangle className="h-5 w-5 text-gray-500" />,
+    title: "Suprimido",
+    description: "O alerta foi suprimido e não gerará novos alertas",
+    color: "border-gray-300 bg-gray-50 text-gray-800"
+  }
+};
+
+export default function MonitoringStatusPanel({ 
+  status, 
+  source, 
+  monitoringId, 
+  lastUpdated 
 }: MonitoringStatusPanelProps) {
-  // Ícone e cor com base no status
-  const getStatusDetails = () => {
-    switch (status) {
-      case "ativo":
-        return {
-          icon: <AlertTriangle className="h-6 w-6" />,
-          color: "text-red-600",
-          bgColor: "bg-red-50",
-          borderColor: "border-red-200",
-          pulseEffect: true,
-          label: "Alerta Ativo"
-        };
-      case "normalizado":
-        return {
-          icon: <CheckCircle className="h-6 w-6" />,
-          color: "text-green-600",
-          bgColor: "bg-green-50",
-          borderColor: "border-green-200",
-          pulseEffect: false,
-          label: "Normalizado"
-        };
-      case "flapping":
-        return {
-          icon: <RefreshCw className="h-6 w-6" />,
-          color: "text-yellow-600",
-          bgColor: "bg-yellow-50", 
-          borderColor: "border-yellow-200",
-          pulseEffect: true,
-          label: "Oscilando"
-        };
-      case "reconhecido":
-        return {
-          icon: <Eye className="h-6 w-6" />,
-          color: "text-blue-600",
-          bgColor: "bg-blue-50",
-          borderColor: "border-blue-200",
-          pulseEffect: false,
-          label: "Reconhecido"
-        };
-      case "suprimido":
-        return {
-          icon: <BellOff className="h-6 w-6" />,
-          color: "text-gray-600",
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          pulseEffect: false,
-          label: "Suprimido"
-        };
-      default:
-        return {
-          icon: <AlertTriangle className="h-6 w-6" />,
-          color: "text-gray-600",
-          bgColor: "bg-gray-50",
-          borderColor: "border-gray-200",
-          pulseEffect: false,
-          label: "Desconhecido"
-        };
-    }
-  };
-
-  const statusDetails = getStatusDetails();
-  const timeAgo = formatDistanceToNow(new Date(lastUpdated), { locale: ptBR, addSuffix: true });
-  const formattedDate = format(new Date(lastUpdated), "dd/MM/yyyy HH:mm:ss", { locale: ptBR });
-
+  const config = STATUS_CONFIG[status];
+  
   return (
-    <div className={`rounded-lg border p-4 ${statusDetails.borderColor} ${statusDetails.bgColor}`}>
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center space-x-2">
-          <div className={`${statusDetails.color} ${statusDetails.pulseEffect ? 'animate-pulse' : ''}`}>
-            {statusDetails.icon}
-          </div>
-          <h3 className={`text-lg font-semibold ${statusDetails.color}`}>
-            {statusDetails.label}
-          </h3>
-        </div>
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-white border border-gray-300">
-          {source}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <p className="text-sm text-gray-500 mb-1">Fonte de Monitoramento</p>
-          <div className="flex items-center justify-between">
-            <p className="font-medium">{source}</p>
-            {sourceUrl && (
-              <a 
-                href={sourceUrl} 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="text-blue-600 hover:text-blue-800 flex items-center space-x-1 text-sm"
-              >
-                <span>Ver no {source}</span>
-                <ExternalLink className="h-3.5 w-3.5" />
-              </a>
-            )}
-          </div>
-          {sourceId && (
-            <p className="text-xs text-gray-500 mt-1">ID: {sourceId}</p>
-          )}
-        </div>
-
-        <div>
-          <p className="text-sm text-gray-500 mb-1">Última Atualização</p>
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-gray-400" />
-            <p className="font-medium">{timeAgo}</p>
-          </div>
-          <p className="text-xs text-gray-500 mt-1">{formattedDate}</p>
-        </div>
-        
-        {(currentValue || threshold) && (
-          <div className="col-span-1 sm:col-span-2 border-t pt-3 mt-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {currentValue && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Valor Atual</p>
-                  <p className="font-mono font-medium">{currentValue}</p>
-                </div>
-              )}
-              
-              {threshold && (
-                <div>
-                  <p className="text-sm text-gray-500 mb-1">Limiar Configurado</p>
-                  <p className="font-mono font-medium">{threshold}</p>
-                </div>
-              )}
+    <Card className={`border ${config.color.includes('border') ? config.color.split(' ')[0] : ''}`}>
+      <CardContent className="p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-start gap-3">
+            <div className={`flex h-9 w-9 items-center justify-center rounded-full ${config.color}`}>
+              {config.icon}
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold">{config.title}</h4>
+              <p className="text-sm text-gray-500">{config.description}</p>
             </div>
           </div>
-        )}
-      </div>
-    </div>
+          <Badge variant="outline" className="capitalize">
+            {status}
+          </Badge>
+        </div>
+        
+        <div className="mt-4 space-y-2">
+          <div className="flex items-center text-sm text-gray-500">
+            <Tag className="mr-2 h-4 w-4" />
+            <span>Fonte de Monitoramento: </span>
+            <span className="ml-1 font-medium text-gray-800">{source}</span>
+          </div>
+          
+          {monitoringId && (
+            <div className="flex items-center text-sm text-gray-500">
+              <InfoIcon className="mr-2 h-4 w-4" />
+              <span>ID no Sistema: </span>
+              <span className="ml-1 font-medium text-gray-800">{monitoringId}</span>
+            </div>
+          )}
+          
+          {lastUpdated && (
+            <div className="flex items-center text-sm text-gray-500">
+              <Clock className="mr-2 h-4 w-4" />
+              <span>Última Atualização: </span>
+              <span className="ml-1 font-medium text-gray-800">{lastUpdated}</span>
+            </div>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
