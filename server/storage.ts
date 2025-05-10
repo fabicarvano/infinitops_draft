@@ -370,6 +370,115 @@ export class MemStorage implements IStorage {
       description: "Alerta gerado para CPU alta",
       createdAt: new Date().toISOString()
     });
+    
+    // Criar um novo cliente com contrato e matriz de ativos completa
+    this.createClient({
+      name: "TechFibra Telecomunicações",
+      status: "active"
+    }).then((client) => {
+      // Criar um contrato ativo para o cliente
+      this.createContract({
+        client_id: client.id,
+        name: "Contrato VIP - Gerenciamento Completo",
+        status: "active",
+        start_date: new Date(),
+        end_date: new Date(Date.now() + 730 * 24 * 60 * 60 * 1000), // 2 anos
+        renewal_type: "automatic",
+        description: "Contrato Premium com suporte completo N1, N2 e N3, incluindo atendimento presencial",
+        technical_contact: "Marina Costa",
+        commercial_contact: "Roberto Vieira"
+      }).then((contract) => {
+        // Criar uma matriz de ativos completa para este contrato
+        this.createAssetMatrix({
+          contract_id: contract.id,
+          name: "Matriz TechFibra - Sistemas Críticos",
+          description: "Matriz completa para gerenciamento de infraestrutura crítica de telecom",
+          
+          // Dados de Suporte N1 - Detalhados
+          support_n1_name: "Equipe NOC - Nível 1",
+          support_n1_email: "noc.n1@techfibra.com",
+          support_n1_phone: "(11) 3522-7788",
+          support_n1_schedule: "24x7x365",
+          support_n1_response_time: "10 minutos",
+          
+          // Dados de Suporte N2 - Especialistas
+          support_n2_name: "Equipe de Especialistas de Rede",
+          support_n2_email: "especialistas@techfibra.com",
+          support_n2_phone: "(11) 3522-7799",
+          support_n2_schedule: "12x7 (8h às 20h)",
+          support_n2_response_time: "30 minutos",
+          
+          // Dados de Suporte N3 - Engenharia
+          support_n3_name: "Equipe de Engenharia de Telecom",
+          support_n3_email: "engenharia@techfibra.com",
+          support_n3_phone: "(11) 3522-7700",
+          support_n3_schedule: "8x5 (9h às 18h)",
+          support_n3_response_time: "2 horas",
+          
+          // Dados do dono do ativo
+          asset_owner_name: "Departamento de TI - TechFibra",
+          asset_owner_email: "ti@techfibra.com",
+          asset_owner_phone: "(11) 3522-7701",
+          asset_owner_department: "Tecnologia da Informação",
+          
+          // Dados de monitoramento
+          monitoring_tool: "Zabbix Enterprise",
+          monitoring_url: "https://zabbix.techfibra.net",
+          monitoring_credentials: "Acesso via SSO",
+          
+          // Dados de atendimento presencial
+          onsite_support_available: true,
+          onsite_support_address: "Av. Paulista, 1000, 5º andar - São Paulo/SP",
+          onsite_support_contact: "Gerência de Operações NOC",
+          onsite_support_schedule: "8x5 (9h às 18h) + Plantão de emergência"
+        }).then((matrix) => {
+          // Criar ativos relacionados a esta matriz
+          this.createAsset({
+            name: "Roteador de Borda",
+            type: "roteador",
+            client_id: client.id,
+            contract_id: contract.id,
+            status: "active",
+            criticality: "critical",
+            hostname: "router-border-1",
+            ip_address: "10.1.1.1",
+            zabbix_id: "RTR-BRD-01"
+          });
+          
+          this.createAsset({
+            name: "Switch Core Principal",
+            type: "switch",
+            client_id: client.id,
+            contract_id: contract.id,
+            status: "active",
+            criticality: "critical",
+            hostname: "sw-core-01",
+            ip_address: "10.1.1.10",
+            zabbix_id: "SW-CORE-01"
+          });
+          
+          this.createAsset({
+            name: "Servidor de Gerenciamento",
+            type: "servidor",
+            client_id: client.id,
+            contract_id: contract.id,
+            status: "active",
+            criticality: "high",
+            hostname: "srv-mgmt-01",
+            ip_address: "10.1.1.100",
+            zabbix_id: "SRV-MGMT-01"
+          });
+          
+          // Criar um alerta para um dos ativos
+          this.createAlert({
+            asset_id: 5, // Roteador de Borda
+            severity: "medium",
+            message: "Instabilidade na interface WAN detectada",
+            status: "open"
+          });
+        });
+      });
+    });
   }
 
   // Implementação dos métodos de Usuários
