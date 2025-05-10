@@ -982,11 +982,11 @@ export function AssetMatrixTabs({
           
           {/* Painel lateral de Ativos */}
           <div className="w-[350px] border-l bg-gray-50 flex flex-col overflow-hidden">
-            <div className="p-4 border-b bg-white">
+            <div className="p-3 border-b bg-white">
               <h3 className="text-lg font-semibold mb-1">Ativos na Matriz</h3>
               <div className="flex items-center justify-between">
                 <p className="text-sm text-gray-500">Total: <span className="font-medium">{assets.length}</span></p>
-                <Button type="button" size="sm" className="mt-2" onClick={handleAddAsset}>
+                <Button type="button" size="sm" className="mt-1" onClick={handleAddAsset}>
                   <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
                   Adicionar Ativo
                 </Button>
@@ -994,10 +994,10 @@ export function AssetMatrixTabs({
             </div>
             
             {/* Lista de ativos adicionados */}
-            <div className="flex-1 overflow-auto p-2">
+            <div className="flex-1 overflow-auto p-2" style={{ maxHeight: "400px" }}>
               {assets.length === 0 ? (
-                <div className="text-center py-8 text-gray-500 flex flex-col items-center">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-16 w-16 text-gray-300 mb-4"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><path d="M6 8h.01"></path><path d="M2 8h20"></path></svg>
+                <div className="text-center py-6 text-gray-500 flex flex-col items-center">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-12 w-12 text-gray-300 mb-3"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><path d="M6 8h.01"></path><path d="M2 8h20"></path></svg>
                   <p className="font-medium mb-1">Nenhum ativo adicionado</p>
                   <p className="text-sm">Adicione ativos usando o botão acima</p>
                 </div>
@@ -1029,7 +1029,7 @@ export function AssetMatrixTabs({
             {/* Removida barra de progresso */}
             
             {/* Botões de ação com layout melhorado */}
-            <div className="p-4 border-t bg-white grid grid-cols-2 gap-2">
+            <div className="p-3 border-t bg-white grid grid-cols-2 gap-2">
               <Button 
                 type="button" 
                 variant="outline" 
