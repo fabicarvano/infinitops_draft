@@ -82,6 +82,11 @@ export default function Clients() {
         const contracts = Array.isArray(contractsResponse) ? contractsResponse : [];
         const assets = Array.isArray(assetsResponse) ? assetsResponse : [];
         
+        // Logs para depuração
+        console.log("Clientes recebidos:", clients);
+        console.log("Contratos recebidos:", contracts);
+        console.log("Ativos recebidos:", assets);
+        
         // Formatar dados para exibição
         const formattedClients = clients.map(client => {
           // Contar contratos e ativos para este cliente
@@ -96,6 +101,8 @@ export default function Clients() {
             status: client.status as ClientStatus
           };
         });
+        
+        console.log("Clientes formatados:", formattedClients);
         
         setClients(formattedClients);
       } catch (error) {
