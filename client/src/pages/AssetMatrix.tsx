@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Server, List } from "lucide-react";
 import { useLocation } from "wouter";
@@ -10,14 +10,47 @@ import {
   TabsTrigger, 
   TabsContent 
 } from "@/components/ui/tabs";
+import { toast } from "@/hooks/use-toast";
 
 export default function AssetMatrix() {
   const [selectedTab, setSelectedTab] = useState("matrix-list");
   const [location, setLocation] = useLocation();
+  const [contractId, setContractId] = useState<number | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [shouldOpenMatrixEditor, setShouldOpenMatrixEditor] = useState(false);
+  
+  // Extrair parâmetros da URL quando a página carrega
+  useEffect(() => {
+    // Obter os parâmetros da URL
+    const params = new URLSearchParams(window.location.search);
+    const contractIdParam = params.get('contractId');
+    const editParam = params.get('edit');
+    
+    if (contractIdParam) {
+      const id = parseInt(contractIdParam);
+      if (!isNaN(id)) {
+        setContractId(id);
+        setIsEditing(editParam === 'true');
+        setShouldOpenMatrixEditor(true);
+        
+        // Notificar o usuário
+        toast({
+          title: isEditing ? "Editar Matriz de Ativos" : "Cadastrar Nova Matriz",
+          description: `${isEditing ? "Atualizando" : "Criando"} matriz para o contrato #${id}.`,
+          className: "bg-blue-50 border-blue-200 text-blue-800",
+        });
+      }
+    }
+  }, []);
 
   // Retornar para a página de ativos principal
   const handleBackToAssets = () => {
-    setLocation("/ativos");
+    // Se veio de contratos, volta para a página de clientes
+    if (contractId) {
+      setLocation("/clientes");
+    } else {
+      setLocation("/ativos");
+    }
   };
 
   return (
@@ -50,7 +83,11 @@ export default function AssetMatrix() {
         
         {/* Tab: Lista de Matrizes */}
         <TabsContent value="matrix-list">
-          <AssetMatrixTable />
+          <AssetMatrixTable 
+            contractId={contractId}
+            isEditing={isEditing}
+            shouldOpenEditor={shouldOpenMatrixEditor}
+          />
         </TabsContent>
         
         {/* Tab: Licenças */}

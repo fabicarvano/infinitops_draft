@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { 
   Server, 
-  FileSearch
+  FileSearch,
+  Edit,
+  Plus
 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
@@ -30,6 +33,12 @@ interface AssetMatrixContract {
   assetCount: number;
   createdAt: string;
   updatedAt: string;
+}
+
+interface AssetMatrixTableProps {
+  contractId?: number | null;
+  isEditing?: boolean;
+  shouldOpenEditor?: boolean;
 }
 
 // Dados de exemplo de matrizes vinculadas a contratos
@@ -74,9 +83,30 @@ const formatDate = (dateString: string) => {
   return date.toLocaleDateString('pt-BR');
 };
 
-export default function AssetMatrixTable() {
+export default function AssetMatrixTable({ 
+  contractId, 
+  isEditing = false, 
+  shouldOpenEditor = false 
+}: AssetMatrixTableProps = {}) {
   const [searchTerm, setSearchTerm] = useState("");
-  const [openDialog, setOpenDialog] = useState(false);
+  const [openDialog, setOpenDialog] = useState(shouldOpenEditor);
+  const [selectedContractId, setSelectedContractId] = useState<number | null>(contractId || null);
+  const { toast } = useToast();
+  
+  // Efeito para tratar mudanças nas propriedades
+  useEffect(() => {
+    if (contractId && shouldOpenEditor) {
+      setSelectedContractId(contractId);
+      setOpenDialog(true);
+      
+      // Notificar o usuário
+      toast({
+        title: isEditing ? "Editar Matriz de Ativos" : "Cadastrar Nova Matriz",
+        description: `${isEditing ? "Atualizando" : "Criando"} matriz para o contrato #${contractId}.`,
+        className: "bg-blue-50 border-blue-200 text-blue-800",
+      });
+    }
+  }, [contractId, shouldOpenEditor, isEditing, toast]);
   
   // Filtrar contratos com base no termo de busca
   const filteredContracts = matrixContractsData.filter(contract => 
@@ -128,6 +158,19 @@ export default function AssetMatrixTable() {
             <FileSearch className="h-4 w-4" />
           </div>
         </div>
+        
+        {/* Adicionar matriz manualmente quando não vem de contrato */}
+        {!contractId && (
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="flex items-center gap-1"
+            onClick={() => setOpenDialog(true)}
+          >
+            <Plus className="h-4 w-4" />
+            <span>Nova Matriz</span>
+          </Button>
+        )}
       </motion.div>
 
       <motion.div variants={itemVariants}>
