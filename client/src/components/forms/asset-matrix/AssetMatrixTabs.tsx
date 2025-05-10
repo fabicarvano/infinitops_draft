@@ -214,7 +214,7 @@ export function AssetMatrixTabs({
               </TabsList>
             
               {/* Conteúdo da aba 1: Dados de Ativos */}
-              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 230px)", paddingBottom: "100px" }}>
+              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 200px)", paddingBottom: "150px" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>1. Dados de Ativos</CardTitle>
@@ -1021,16 +1021,7 @@ export function AssetMatrixTabs({
               )}
             </div>
             
-            {/* Barra de progresso */}
-            <div className="p-4 border-t bg-white">
-              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
-                <div 
-                  className="bg-blue-600 h-2.5 rounded-full" 
-                  style={{ width: `${progressPercentage}%` }}
-                ></div>
-              </div>
-              <p className="text-xs text-gray-500">{progressPercentage}% completo</p>
-            </div>
+            {/* Removida barra de progresso */}
             
             {/* Botões de ação com layout melhorado */}
             <div className="p-4 border-t bg-white grid grid-cols-2 gap-2">
