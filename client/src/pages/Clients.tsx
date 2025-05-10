@@ -153,6 +153,10 @@ export default function Clients() {
             setSelectedContractId(contractId);
             setIsContractDetailsOpen(true);
           }}
+          onManageMatrix={(contractId, hasMatrix) => {
+            // Redirecionar para a página de matriz de ativos com parâmetros
+            window.location.href = `/ativos/matriz?contractId=${contractId}&edit=${hasMatrix ? 'true' : 'false'}`;
+          }}
         />
       </div>
 

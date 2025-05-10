@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/Dashboard";
 import Clients from "@/pages/Clients";
+import Contracts from "@/pages/Contracts";
 import Assets from "@/pages/Assets";
 import AssetMatrix from "@/pages/AssetMatrix";
 import Alerts from "@/pages/Alerts";
@@ -30,6 +31,7 @@ function Router() {
           <Route path="/" component={Dashboard} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/clientes" component={Clients} />
+          <Route path="/contratos" component={Contracts} />
           <Route path="/ativos" component={Assets} />
           <Route path="/ativos/matriz" component={AssetMatrix} />
           <Route path="/alertas" component={Alerts} />
