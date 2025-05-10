@@ -458,7 +458,7 @@ export function AssetMatrixTabs({
                   </CardContent>
                 </Card>
                 
-                <div className="flex justify-end mt-4 space-x-2">
+                <div className="flex justify-end mt-4 mb-10 space-x-2">
                   <Button type="button" variant="outline" onClick={() => navigateToTab("dono-ativo")}>
                     Próximo
                   </Button>
