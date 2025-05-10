@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon } from "lucide-react";
+import { CalendarIcon, Info } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -66,7 +66,7 @@ const contractFormSchema = z.object({
     required_error: "Nível de serviço é obrigatório.",
   }),
   description: z.string().optional(),
-  status: z.enum(["active", "inactive", "pending"]),
+  // Status removido pois será determinado automaticamente
 });
 
 type ContractFormValues = z.infer<typeof contractFormSchema>;
@@ -113,7 +113,7 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
       commercial_contact: "",
       service_level: "standard",
       description: "",
-      status: "pending",
+      // Status removido pois será determinado automaticamente com base na matriz de ativos
     },
   });
 
@@ -152,7 +152,12 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
       
       // Callback para o componente pai
       if (onContractCreated) {
-        onContractCreated(values);
+        // Adicionamos o status como "pending" para compatibilidade com a interface, 
+        // mas no backend será controlado pela matriz de ativos
+        onContractCreated({
+          ...values,
+          status: "pending" as any
+        });
       }
     } catch (error) {
       console.error("Erro ao criar contrato:", error);
@@ -356,35 +361,22 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
                 )}
               />
               
-              {/* Status */}
-              <FormField
-                control={form.control}
-                name="status"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Status</FormLabel>
-                    <Select 
-                      onValueChange={field.onChange} 
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Selecione o status" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="pending">Pendente</SelectItem>
-                        <SelectItem value="active">Ativo</SelectItem>
-                        {/* Opção "Inativo" removida - será definida automaticamente com base na data de término */}
-                      </SelectContent>
-                    </Select>
-                    <FormDescription>
-                      O status "Inativo" é aplicado automaticamente quando a data de término é atingida
-                    </FormDescription>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              {/* Status foi removido - será controlado pela existência da matriz de ativos */}
+              <div className="col-span-2">
+                <div className="bg-blue-50 p-3 rounded-md text-blue-800 text-sm">
+                  <div className="flex items-start">
+                    <Info className="h-5 w-5 mr-2 mt-0.5 flex-shrink-0" />
+                    <div>
+                      <p className="font-medium mb-1">Status do contrato é determinado automaticamente</p>
+                      <ul className="list-disc list-inside text-xs ml-1 space-y-1">
+                        <li>Contratos novos iniciam como "Pendentes" até que uma matriz de ativos seja cadastrada</li>
+                        <li>Contratos com matriz de ativos cadastrada são definidos como "Ativos"</li>
+                        <li>Contratos são automaticamente inativados quando atingem a data de término</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
             
             {/* Descrição / Escopo */}

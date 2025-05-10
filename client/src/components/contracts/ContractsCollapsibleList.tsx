@@ -31,12 +31,14 @@ interface ContractsCollapsibleListProps {
   contracts: Contract[];
   getDaysUntilExpiration: (endDateStr: string) => number;
   onOpenDetails: (contractId: number) => void;
+  onManageMatrix?: (contractId: number, hasMatrix: boolean) => void;
 }
 
 export default function ContractsCollapsibleList({ 
   contracts, 
   getDaysUntilExpiration,
-  onOpenDetails
+  onOpenDetails,
+  onManageMatrix
 }: ContractsCollapsibleListProps) {
   const [isExpanded, setIsExpanded] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
