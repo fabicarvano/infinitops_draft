@@ -32,6 +32,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import { AssetMatrixTabs } from "@/components/forms/asset-matrix/AssetMatrixTabs";
 
 interface AssetMatrixContract {
   id: number;
@@ -196,157 +197,30 @@ export default function AssetMatrixTable({
 
       {/* Modal de criação/edição da matriz de ativos */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="max-w-4xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Server className="h-5 w-5 text-green-600" />
-              {isEditing 
-                ? "Atualizar Matriz de Ativos" 
-                : "Cadastrar Nova Matriz de Ativos"}
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="mt-4">
-            <div className="mb-2">
-              <h4 className="text-sm font-medium">Contrato</h4>
-            </div>
-            
-            {/* Contrato sempre em modo somente visualização com número do contrato */}
-            <Input 
-              className="w-full bg-slate-50" 
-              disabled
-              value={selectedContractId ? 
-                (() => {
-                  const contract = matrixContractsData.find(c => c.id === selectedContractId);
-                  if (contract) {
-                    return `${selectedContractId} - ${contract.contractName} - ${contract.client}`;
-                  } else {
-                    return `${selectedContractId} - Contrato não encontrado`;
-                  }
-                })() :
-                '- Selecione um contrato -'
-              }
-            />
-            
-            {/* Campo de total de ativos é exibido apenas na edição, não na criação */}
-            {isEditing && (
-              <div className="mt-4">
-                <h4 className="text-sm font-medium mb-2">Total de Ativos</h4>
-                <Input 
-                  type="number" 
-                  min="1" 
-                  max="999"
-                  placeholder="Número de ativos" 
-                  className="w-full" 
-                  defaultValue="8"
-                  disabled
-                />
-                <p className="text-xs text-slate-500 mt-1">Campo atualizado automaticamente ao adicionar ou remover ativos</p>
-              </div>
-            )}
-          </div>
-          
-          <div className="mt-6">
-            <h4 className="text-base font-medium mb-3">Ativos Incluídos na Matriz</h4>
-            <Table className="border rounded-md">
-              <TableHeader>
-                <TableRow className="bg-slate-50">
-                  <TableHead className="text-xs w-14">#</TableHead>
-                  <TableHead className="text-xs">Nome do Ativo</TableHead>
-                  <TableHead className="text-xs">Tipo</TableHead>
-                  <TableHead className="text-xs">Criticidade</TableHead>
-                  <TableHead className="text-xs text-center">Status</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {isEditing ? (
-                  // Dados de exemplo para edição
-                  [...Array(4)].map((_, index) => (
-                    <TableRow key={index}>
-                      <TableCell>{index + 1}</TableCell>
-                      <TableCell className="font-medium">
-                        Servidor {['Web', 'DB', 'App', 'Mail'][index]}
-                      </TableCell>
-                      <TableCell>{['Físico', 'Virtual', 'Cloud', 'On-premise'][index]}</TableCell>
-                      <TableCell>
-                        <Badge 
-                          className={[
-                            "bg-red-100 text-red-700", 
-                            "bg-orange-100 text-orange-700",
-                            "bg-yellow-100 text-yellow-700",
-                            "bg-green-100 text-green-700"
-                          ][index]}
-                        >
-                          {['Crítico', 'Alto', 'Médio', 'Baixo'][index]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-center">
-                        <Badge variant="outline" className="border-green-500 text-green-600">
-                          Ativo
-                        </Badge>
-                      </TableCell>
-                    </TableRow>
-                  ))
-                ) : (
-                  <TableRow>
-                    <TableCell colSpan={5} className="text-center py-6 text-slate-500">
-                      Adicione ativos usando o botão abaixo
-                    </TableCell>
-                  </TableRow>
-                )}
-              </TableBody>
-            </Table>
-            
-            <div className="mt-4 flex justify-between">
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-blue-600"
-                >
-                  <Plus className="h-4 w-4 mr-1" />
-                  Adicionar Ativo
-                </Button>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
+          {selectedContractId && (
+            <AssetMatrixTabs 
+              contractId={selectedContractId}
+              contractName={(() => {
+                const contract = matrixContractsData.find(c => c.id === selectedContractId);
+                return contract ? contract.contractName : "Contrato não encontrado";
+              })()}
+              isEdit={isEditing}
+              onCancel={() => setOpenDialog(false)}
+              onSubmit={(data) => {
+                // Aqui seria feita a lógica de salvar a matriz
+                console.log("Dados da matriz:", data);
                 
-                {/* Botão de importação só aparece na criação de nova matriz */}
-                {!isEditing && (
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="text-purple-600"
-                  >
-                    <FileSearch className="h-4 w-4 mr-1" />
-                    Importar Matriz
-                  </Button>
-                )}
-              </div>
-              
-              <div className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setOpenDialog(false)}
-                >
-                  Cancelar
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    // Aqui seria feita a lógica de salvar a matriz
-                    toast({
-                      title: "Matriz de ativos salva",
-                      description: `A matriz de ativos foi ${isEditing ? 'atualizada' : 'cadastrada'} com sucesso.`,
-                      className: "bg-green-50 border-green-200 text-green-800",
-                    });
-                    
-                    setOpenDialog(false);
-                  }}
-                >
-                  {isEditing ? "Atualizar" : "Cadastrar"} Matriz
-                </Button>
-              </div>
-            </div>
-          </div>
+                toast({
+                  title: "Matriz de ativos salva",
+                  description: `A matriz de ativos foi ${isEditing ? 'atualizada' : 'cadastrada'} com sucesso.`,
+                  className: "bg-green-50 border-green-200 text-green-800",
+                });
+                
+                setOpenDialog(false);
+              }}
+            />
+          )}
         </DialogContent>
       </Dialog>
 
