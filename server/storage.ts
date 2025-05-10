@@ -6,7 +6,8 @@ import {
   alerts, type Alert, type InsertAlert, 
   tickets, type Ticket, type InsertTicket,
   activities, type Activity, type InsertActivity,
-  integrations, type Integration, type InsertIntegration
+  integrations, type Integration, type InsertIntegration,
+  assetMatrices, type AssetMatrix, type InsertAssetMatrix
 } from "@shared/schema";
 
 interface Stats {
@@ -80,6 +81,7 @@ export class MemStorage implements IStorage {
   private ticketId: number;
   private activityId: number;
   private integrationId: number;
+  private assetMatrixId: number;
 
   constructor() {
     this.users = new Map();
@@ -90,6 +92,7 @@ export class MemStorage implements IStorage {
     this.tickets = new Map();
     this.activities = new Map();
     this.integrations = new Map();
+    this.assetMatrices = new Map();
     
     this.userId = 1;
     this.clientId = 1;
@@ -97,6 +100,7 @@ export class MemStorage implements IStorage {
     this.assetId = 1;
     this.alertId = 1;
     this.ticketId = 1;
+    this.assetMatrixId = 1;
     this.activityId = 1;
     this.integrationId = 1;
     
