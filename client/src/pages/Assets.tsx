@@ -10,7 +10,9 @@ import {
   Eye, 
   BarChart3, 
   Terminal, 
-  Code 
+  Code,
+  ExternalLink,
+  Clock
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -22,6 +24,24 @@ import {
 } from "@/components/ui/tooltip";
 import AssetsCollapsibleList from "@/components/assets/AssetsCollapsibleList";
 import { motion } from "framer-motion";
+import { Link } from "wouter";
+
+// Tipos para o status do asset e alertas
+type AssetStatus = "active" | "inactive" | "maintenance";
+type AlertStatus = "open" | "acknowledged" | "resolved";
+type AlertSeverity = "critical" | "high" | "medium" | "low";
+
+// Tipo para os dados de alerta mais completo
+interface AssetAlert {
+  id: number;
+  severity: AlertSeverity;
+  status: AlertStatus;
+  message: string;
+  time: string;
+  ticketId?: number;
+  isPending: boolean;
+  pendingSince?: string;
+}
 
 export default function Assets() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -35,7 +55,11 @@ export default function Assets() {
       client: "Empresa ABC", 
       alertCount: 3, 
       criticality: "high",
-      status: "active"
+      status: "active" as AssetStatus,
+      hasOpenTicket: true,
+      hasPendingAlerts: true,
+      pendingSince: "5", // 5 minutos
+      openTicketId: 1001
     },
     {
       id: 2, 
@@ -44,7 +68,11 @@ export default function Assets() {
       client: "Tech Solutions", 
       alertCount: 2, 
       criticality: "medium",
-      status: "active"
+      status: "active" as AssetStatus,
+      hasOpenTicket: false,
+      hasPendingAlerts: true,
+      pendingSince: "2", // 2 minutos
+      openTicketId: undefined
     },
     {
       id: 3, 
@@ -53,7 +81,11 @@ export default function Assets() {
       client: "Empresa XYZ", 
       alertCount: 1, 
       criticality: "low",
-      status: "active"
+      status: "active" as AssetStatus,
+      hasOpenTicket: false,
+      hasPendingAlerts: false,
+      pendingSince: undefined,
+      openTicketId: undefined
     },
     {
       id: 4, 
@@ -62,7 +94,11 @@ export default function Assets() {
       client: "Global Services", 
       alertCount: 4, 
       criticality: "critical",
-      status: "maintenance"
+      status: "maintenance" as AssetStatus,
+      hasOpenTicket: true,
+      hasPendingAlerts: true,
+      pendingSince: "12", // 12 minutos
+      openTicketId: 1004
     },
   ];
 
@@ -125,6 +161,8 @@ export default function Assets() {
     switch (severity) {
       case "critical":
         return <Badge className="bg-red-100 text-red-700">Crítico</Badge>;
+      case "high":
+        return <Badge className="bg-orange-100 text-orange-700">Alto</Badge>;
       case "medium":
         return <Badge className="bg-yellow-100 text-yellow-700">Médio</Badge>;
       case "low":
@@ -132,6 +170,47 @@ export default function Assets() {
       default:
         return <Badge className="bg-slate-100">Indefinido</Badge>;
     }
+  };
+
+  const getStatusBadge = (status: AssetStatus) => {
+    switch (status) {
+      case "active":
+        return <Badge className="bg-green-100 text-green-700">Ativo</Badge>;
+      case "inactive":
+        return <Badge className="bg-slate-100 text-slate-700">Inativo</Badge>;
+      case "maintenance":
+        return <Badge className="bg-blue-100 text-blue-700">Em Manutenção</Badge>;
+      default:
+        return <Badge className="bg-slate-100">Indefinido</Badge>;
+    }
+  };
+
+  const getAlertStatusBadge = (hasOpenTicket: boolean, hasPendingAlerts: boolean) => {
+    if (hasOpenTicket) {
+      return <Badge className="bg-yellow-100 text-yellow-700">Aberto</Badge>;
+    } else if (hasPendingAlerts) {
+      return <Badge className="bg-blue-100 text-blue-700">Pendente</Badge>;
+    } else {
+      return <Badge className="bg-green-100 text-green-700">Normal</Badge>;
+    }
+  };
+
+  const getPendingAlertTimeBadge = (pendingSince?: string) => {
+    if (!pendingSince) return null;
+    
+    const minutes = parseInt(pendingSince);
+    
+    if (minutes >= 10) {
+      return <Badge className="bg-red-100 text-red-700">+10min</Badge>;
+    } else if (minutes >= 5) {
+      return <Badge className="bg-orange-100 text-orange-700">+5min</Badge>;
+    } else if (minutes >= 2) {
+      return <Badge className="bg-yellow-100 text-yellow-700">+2min</Badge>;
+    } else if (minutes >= 1) {
+      return <Badge className="bg-blue-100 text-blue-700">+1min</Badge>;
+    }
+    
+    return null;
   };
 
   const handleGoToTicket = (ticketId?: number) => {
@@ -363,9 +442,11 @@ export default function Assets() {
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Tipo</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Status</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Alertas</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Chamados</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Criticidade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[140px]">Ação</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[100px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -382,10 +463,19 @@ export default function Assets() {
                   <TableCell className="font-medium truncate max-w-[150px] lg:max-w-none">{asset.name}</TableCell>
                   <TableCell className="truncate max-w-[100px] lg:max-w-none">{asset.type}</TableCell>
                   <TableCell className="truncate max-w-[120px] lg:max-w-none">{asset.client}</TableCell>
+                  <TableCell>{getStatusBadge(asset.status)}</TableCell>
                   <TableCell>
                     <Badge className="bg-red-100 text-red-700 hover:bg-red-200">
                       {asset.alertCount} {asset.alertCount === 1 ? 'alerta' : 'alertas'}
                     </Badge>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex items-center gap-2">
+                      {getAlertStatusBadge(asset.hasOpenTicket, asset.hasPendingAlerts)}
+                      {asset.pendingSince && asset.hasPendingAlerts && (
+                        getPendingAlertTimeBadge(asset.pendingSince)
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell>{getCriticalityBadge(asset.criticality)}</TableCell>
                   <TableCell>
@@ -393,53 +483,19 @@ export default function Assets() {
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <motion.button 
-                              className="h-8 w-8 rounded-md inline-flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                              whileHover={{ scale: 1.01 }}
-                              whileTap={{ scale: 0.99 }}
-                            >
-                              <Eye className="h-4 w-4" />
-                              <span className="sr-only">Detalhes</span>
-                            </motion.button>
+                            <Link to={`/alertas?ativo=${asset.id}`}>
+                              <motion.button 
+                                className="h-8 w-8 rounded-md inline-flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                                whileHover={{ scale: 1.01 }}
+                                whileTap={{ scale: 0.99 }}
+                              >
+                                <ExternalLink className="h-4 w-4" />
+                                <span className="sr-only">Ver Alertas</span>
+                              </motion.button>
+                            </Link>
                           </TooltipTrigger>
                           <TooltipContent>
-                            <p>Ver detalhes</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <motion.button
-                              className="h-8 w-8 rounded-md inline-flex items-center justify-center text-green-600 hover:text-green-800 hover:bg-green-50"
-                              whileHover={{ scale: 1.01 }}
-                              whileTap={{ scale: 0.99 }}
-                            >
-                              <BarChart3 className="h-4 w-4" />
-                              <span className="sr-only">Monitoramento</span>
-                            </motion.button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Dados de monitoramento (Zabbix)</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                      
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <motion.button
-                              className="h-8 w-8 rounded-md inline-flex items-center justify-center text-purple-600 hover:text-purple-800 hover:bg-purple-50"
-                              whileHover={{ scale: 1.01 }}
-                              whileTap={{ scale: 0.99 }}
-                            >
-                              <Code className="h-4 w-4" />
-                              <span className="sr-only">Scripts</span>
-                            </motion.button>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Scripts configurados (ping, traceroute, etc)</p>
+                            <p>Ver alertas deste ativo</p>
                           </TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
