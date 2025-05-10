@@ -177,7 +177,7 @@ export function AssetMatrixTabs({
       <Form {...form}>
         <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-1 overflow-hidden">
           {/* Conteúdo principal (lado esquerdo) */}
-          <div className="flex-1 flex flex-col overflow-hidden p-6">
+          <div className="flex-1 flex flex-col overflow-hidden p-6 pb-20">
             {/* Campo de Contrato (somente leitura) */}
             <Card className="mb-4">
               <CardContent className="pt-6">
@@ -214,7 +214,7 @@ export function AssetMatrixTabs({
               </TabsList>
             
               {/* Conteúdo da aba 1: Dados de Ativos */}
-              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 250px)" }}>
+              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 230px)", paddingBottom: "100px" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>1. Dados de Ativos</CardTitle>
