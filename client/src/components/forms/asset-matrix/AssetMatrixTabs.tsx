@@ -299,7 +299,7 @@ export function AssetMatrixTabs({
                               </SelectContent>
                             </Select>
                             <FormDescription className="text-xs">
-                              0 é crítico para o negócio, 5 não impacta o negócio
+                              Escala de criticidade: 0 (crítico, indisponibilidade causa parada total) até 5 (não impacta operações do cliente)
                             </FormDescription>
                             <FormMessage />
                           </FormItem>
@@ -859,7 +859,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 6: Acionamento Presencial */}
-              <TabsContent value="acionamento-presencial" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="acionamento-presencial" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>6. Acionamento Presencial</CardTitle>
@@ -960,7 +960,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 7: Monitoramento (desabilitado, será preenchido via API) */}
-              <TabsContent value="monitoramento" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="monitoramento" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>7. Dados do Monitoramento</CardTitle>
