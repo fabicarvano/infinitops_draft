@@ -212,12 +212,14 @@ export default function AssetMatrixTable({
               <p className="text-xs text-slate-500">ID da Matriz: Será gerado automaticamente</p>
             </div>
             
-            {/* Contrato sempre em modo somente visualização */}
-            <div className="px-3 py-2 border rounded-md bg-slate-50 text-slate-700 font-medium">
-              {matrixContractsData.find(c => c.id === selectedContractId)?.contractName || ''} 
-              {matrixContractsData.find(c => c.id === selectedContractId)?.client ? 
-                ' - ' + matrixContractsData.find(c => c.id === selectedContractId)?.client : ''}
-            </div>
+            {/* Contrato sempre em modo somente visualização exatamente igual à imagem */}
+            <Input 
+              className="w-full bg-slate-50" 
+              disabled
+              value={matrixContractsData.find(c => c.id === selectedContractId)?.contractName ?
+                `${matrixContractsData.find(c => c.id === selectedContractId)?.contractName} - ${matrixContractsData.find(c => c.id === selectedContractId)?.client}` :
+                ''}
+            />
             
             {/* Campo de total de ativos é exibido apenas na edição, não na criação */}
             {isEditing && (
