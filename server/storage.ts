@@ -448,11 +448,12 @@ export class MemStorage implements IStorage {
       createdAt: new Date().toISOString()
     });
     
-    // Criar um novo cliente com contrato e matriz de ativos completa
-    this.createClient({
-      name: "TechFibra Telecomunicações",
-      status: "active"
-    }).then((client) => {
+    // Usar o cliente TechFibra existente (ID 4) para adicionar contrato e matriz de ativos completa
+    this.getClient(4).then((client) => {
+      if (!client) {
+        console.error("Cliente TechFibra não encontrado");
+        return;
+      }
       // Criar um contrato ativo para o cliente
       this.createContract({
         client_id: client.id,

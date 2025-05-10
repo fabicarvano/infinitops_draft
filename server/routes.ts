@@ -366,6 +366,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Error fetching integrations" });
     }
   });
+  
+  // Asset Matrices routes
+  app.get("/api/asset-matrices", async (req, res) => {
+    try {
+      const matrices = await storage.getAssetMatrices();
+      res.json(matrices);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching asset matrices" });
+    }
+  });
+  
+  app.get("/api/contracts/:contractId/asset-matrix", async (req, res) => {
+    try {
+      const contractId = parseInt(req.params.contractId);
+      const matrix = await storage.getAssetMatrixByContract(contractId);
+      if (!matrix) {
+        return res.status(404).json({ message: "Asset matrix not found for this contract" });
+      }
+      res.json(matrix);
+    } catch (error) {
+      res.status(500).json({ message: "Error fetching asset matrix" });
+    }
+  });
+  
+  app.post("/api/asset-matrices", async (req, res) => {
+    try {
+      const validatedData = insertAssetMatrixSchema.parse(req.body);
+      const matrix = await storage.createAssetMatrix(validatedData);
+      res.status(201).json(matrix);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid asset matrix data", errors: error.errors });
+      }
+      res.status(500).json({ message: "Error creating asset matrix" });
+    }
+  });
 
   app.get("/api/integrations/:id", async (req, res) => {
     try {
