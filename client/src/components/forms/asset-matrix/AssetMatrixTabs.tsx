@@ -960,7 +960,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 7: Monitoramento (desabilitado, será preenchido via API) */}
-              <TabsContent value="monitoramento" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="monitoramento" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>7. Dados do Monitoramento</CardTitle>
