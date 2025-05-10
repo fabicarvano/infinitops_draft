@@ -24,6 +24,13 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { motion } from "framer-motion";
 
 interface AssetMatrixContract {
@@ -173,6 +180,141 @@ export default function AssetMatrixTable({
         )}
       </motion.div>
 
+      {/* Modal de criação/edição da matriz de ativos */}
+      <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+        <DialogContent className="max-w-4xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Server className="h-5 w-5 text-green-600" />
+              {isEditing 
+                ? "Atualizar Matriz de Ativos" 
+                : "Cadastrar Nova Matriz de Ativos"}
+            </DialogTitle>
+          </DialogHeader>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+            <div>
+              <h4 className="text-sm font-medium mb-2">Contrato</h4>
+              <Select defaultValue={selectedContractId?.toString() || ""}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione um contrato" />
+                </SelectTrigger>
+                <SelectContent>
+                  {matrixContractsData.map(contract => (
+                    <SelectItem 
+                      key={contract.id} 
+                      value={contract.id.toString()}
+                    >
+                      {contract.contractName} - {contract.client}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <h4 className="text-sm font-medium mb-2">Total de Ativos</h4>
+              <Input 
+                type="number" 
+                min="1" 
+                max="999"
+                placeholder="Número de ativos" 
+                className="w-full" 
+                defaultValue={isEditing ? "8" : ""}
+              />
+            </div>
+          </div>
+          
+          <div className="mt-6">
+            <h4 className="text-base font-medium mb-3">Ativos Incluídos na Matriz</h4>
+            <Table className="border rounded-md">
+              <TableHeader>
+                <TableRow className="bg-slate-50">
+                  <TableHead className="text-xs w-14">#</TableHead>
+                  <TableHead className="text-xs">Nome do Ativo</TableHead>
+                  <TableHead className="text-xs">Tipo</TableHead>
+                  <TableHead className="text-xs">Criticidade</TableHead>
+                  <TableHead className="text-xs text-center">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {isEditing ? (
+                  // Dados de exemplo para edição
+                  [...Array(4)].map((_, index) => (
+                    <TableRow key={index}>
+                      <TableCell>{index + 1}</TableCell>
+                      <TableCell className="font-medium">
+                        Servidor {['Web', 'DB', 'App', 'Mail'][index]}
+                      </TableCell>
+                      <TableCell>{['Físico', 'Virtual', 'Cloud', 'On-premise'][index]}</TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={[
+                            "bg-red-100 text-red-700", 
+                            "bg-orange-100 text-orange-700",
+                            "bg-yellow-100 text-yellow-700",
+                            "bg-green-100 text-green-700"
+                          ][index]}
+                        >
+                          {['Crítico', 'Alto', 'Médio', 'Baixo'][index]}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-center">
+                        <Badge variant="outline" className="border-green-500 text-green-600">
+                          Ativo
+                        </Badge>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={5} className="text-center py-6 text-slate-500">
+                      Adicione ativos usando o botão abaixo
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+            
+            <div className="mt-4 flex justify-between">
+              <Button
+                variant="outline"
+                size="sm"
+                className="text-blue-600"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar Ativo
+              </Button>
+              
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpenDialog(false)}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => {
+                    // Aqui seria feita a lógica de salvar a matriz
+                    // Exemplo simples:
+                    toast({
+                      title: "Matriz de ativos salva",
+                      description: "A matriz de ativos foi salva com sucesso.",
+                      className: "bg-green-50 border-green-200 text-green-800",
+                    });
+                    setOpenDialog(false);
+                  }}
+                >
+                  {isEditing ? "Atualizar" : "Cadastrar"} Matriz
+                </Button>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <motion.div variants={itemVariants}>
         <Card className="shadow-sm border border-slate-200">
           <CardHeader className="pb-3">
@@ -211,6 +353,29 @@ export default function AssetMatrixTable({
                       <TableCell>{formatDate(contract.updatedAt)}</TableCell>
                       <TableCell>
                         <div className="flex items-center justify-end gap-2">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <Button 
+                                  variant="ghost" 
+                                  size="icon"
+                                  className="h-8 w-8 text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                                  onClick={() => {
+                                    setSelectedContractId(contract.id);
+                                    setIsEditing(true);
+                                    setOpenDialog(true);
+                                  }}
+                                >
+                                  <Edit className="h-4 w-4" />
+                                  <span className="sr-only">Editar Matriz</span>
+                                </Button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Editar Matriz</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                          
                           <TooltipProvider>
                             <Tooltip>
                               <TooltipTrigger asChild>
