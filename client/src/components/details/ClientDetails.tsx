@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -17,7 +18,8 @@ import {
   MapPin, 
   User, 
   Clock, 
-  BarChart3
+  BarChart3,
+  FileText
 } from "lucide-react";
 import {
   Card,
@@ -48,11 +50,11 @@ interface ClientDetailsProps {
 }
 
 export default function ClientDetails({ open, onOpenChange, clientId }: ClientDetailsProps) {
-  // Em um app real, isso seria carregado de uma API
+  const [, setLocation] = useLocation();
   const [client, setClient] = useState<ClientData | null>(null);
-  const [contractCount, setContractCount] = useState(3);
-  const [assetCount, setAssetCount] = useState(12);
-  const [openTickets, setOpenTickets] = useState(2);
+  const [contractCount, setContractCount] = useState(0);
+  const [assetCount, setAssetCount] = useState(0);
+  const [openTickets, setOpenTickets] = useState(0);
   const [loading, setLoading] = useState(false);
 
   // Carregar dados do cliente quando o componente abrir
@@ -60,22 +62,44 @@ export default function ClientDetails({ open, onOpenChange, clientId }: ClientDe
     if (open && clientId) {
       setLoading(true);
       
-      // Simular carregamento de dados
-      setTimeout(() => {
-        setClient({
-          id: clientId,
-          name: "Tech Solutions",
-          status: "active",
-          email: "contato@techsolutions.com",
-          phone: "(11) 3456-7890",
-          address: "Av. Paulista, 1000, São Paulo - SP",
-          contactName: "Carlos Silva",
-          segment: "Tecnologia",
-          createdAt: "2024-04-05T10:30:00Z",
-          updatedAt: "2025-04-10T14:45:00Z"
-        });
-        setLoading(false);
-      }, 500);
+      // Carregar dados da API
+      const fetchClientData = async () => {
+        try {
+          // Obter dados do cliente
+          const clientResponse = await fetch(`/api/clients/${clientId}`).then(res => res.json());
+          
+          // Obter contratos deste cliente
+          const contractsResponse = await fetch(`/api/contracts`).then(res => res.json());
+          const clientContracts = Array.isArray(contractsResponse) 
+            ? contractsResponse.filter(contract => contract.client_id === clientId)
+            : [];
+          
+          // Obter ativos deste cliente
+          const assetsResponse = await fetch(`/api/assets`).then(res => res.json());
+          const clientAssets = Array.isArray(assetsResponse)
+            ? assetsResponse.filter(asset => asset.client_id === clientId)
+            : [];
+          
+          console.log('Detalhes do cliente:', clientResponse);
+          console.log('Contratos do cliente:', clientContracts);
+          console.log('Ativos do cliente:', clientAssets);
+          
+          // Atualizar estados
+          setClient(clientResponse);
+          setContractCount(clientContracts.length);
+          setAssetCount(clientAssets.length);
+          
+          // Para tickets, poderíamos ter uma API específica, por enquanto mantemos o valor fixo
+          setOpenTickets(Math.floor(Math.random() * 3) + 1); // Simulação: 1-3 tickets abertos
+          
+          setLoading(false);
+        } catch (error) {
+          console.error('Erro ao carregar dados do cliente:', error);
+          setLoading(false);
+        }
+      };
+      
+      fetchClientData();
     } else {
       setClient(null);
     }
@@ -208,7 +232,12 @@ export default function ClientDetails({ open, onOpenChange, clientId }: ClientDe
                     variant="outline" 
                     size="sm"
                     className="mt-2"
+                    onClick={() => {
+                      onOpenChange(false); // Fechar o modal
+                      setLocation(`/contratos?cliente=${clientId}`); // Redirecionar para a página de contratos com filtro
+                    }}
                   >
+                    <FileText className="h-4 w-4 mr-1" />
                     Ver contratos
                   </Button>
                 </div>

@@ -17,6 +17,7 @@ interface Contract {
   id: number;
   name: string;
   client: string;
+  client_id?: number;  // Para filtragem
   endDate: string;
   status: ContractStatus;
   serviceLevel: "standard" | "premium" | "vip";
@@ -24,10 +25,12 @@ interface Contract {
 
 export default function ContractsPage() {
   const [contracts, setContracts] = useState<Contract[]>([]);
+  const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
   const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
-  const [, setLocation] = useLocation();
+  const [clientFilter, setClientFilter] = useState<number | null>(null);
+  const [location, setLocation] = useLocation();
 
   // Animações
   const containerVariants = {
@@ -90,6 +93,7 @@ export default function ContractsPage() {
             id: contract.id,
             name: contract.name,
             client: clientName,
+            client_id: contract.client_id, // Adicionado para filtragem
             endDate: formattedEndDate,
             status: contract.status as ContractStatus,
             serviceLevel: serviceLevel
@@ -110,6 +114,33 @@ export default function ContractsPage() {
     
     fetchData();
   }, []);
+  
+  // Processar parâmetros de consulta na URL para filtragem
+  useEffect(() => {
+    if (location) {
+      const params = new URLSearchParams(location.split('?')[1]);
+      const clienteParam = params.get('cliente');
+      
+      if (clienteParam) {
+        const clientId = parseInt(clienteParam);
+        setClientFilter(clientId);
+        console.log(`Aplicando filtro para cliente ID: ${clientId}`);
+        
+        // Filtrar contratos para este cliente
+        if (contracts.length > 0) {
+          const filtered = contracts.filter(contract => 
+            'client_id' in contract ? contract.client_id === clientId : false
+          );
+          console.log('Contratos filtrados:', filtered);
+          setFilteredContracts(filtered);
+        }
+      } else {
+        // Sem filtro de cliente
+        setClientFilter(null);
+        setFilteredContracts(contracts);
+      }
+    }
+  }, [location, contracts]);
 
   // Função para calcular dias até expiração
   const getDaysUntilExpiration = (endDateStr: string) => {
@@ -156,6 +187,13 @@ export default function ContractsPage() {
     setLocation(`/ativos/matriz?contractId=${contractId}&edit=${hasMatrix ? 'true' : 'false'}`);
   };
 
+  // Determinar se há filtro ativo e buscar nome do cliente se necessário
+  const hasClientFilter = clientFilter !== null;
+  // Título da página muda quando tem filtro
+  const pageTitle = hasClientFilter 
+    ? `Contratos${filteredContracts.length > 0 ? ' - ' + filteredContracts[0].client : ''}`
+    : 'Contratos';
+
   return (
     <motion.div
       initial="hidden"
@@ -164,7 +202,21 @@ export default function ContractsPage() {
       className="space-y-6"
     >
       <motion.div variants={itemVariants} className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-2xl font-bold tracking-tight">Contratos</h2>
+        <div>
+          <h2 className="text-2xl font-bold tracking-tight">{pageTitle}</h2>
+          {hasClientFilter && (
+            <div className="flex items-center mt-2">
+              <Button 
+                variant="link" 
+                size="sm" 
+                className="text-green-700 p-0 h-auto"
+                onClick={() => setLocation('/contratos')}
+              >
+                ← Voltar para todos os contratos
+              </Button>
+            </div>
+          )}
+        </div>
         <Button
           onClick={() => setIsCreateModalOpen(true)}
           className="bg-green-700 hover:bg-green-800"
@@ -176,7 +228,7 @@ export default function ContractsPage() {
 
       <motion.div variants={itemVariants}>
         <ContractsCollapsibleList 
-          contracts={contracts}
+          contracts={filteredContracts.length > 0 ? filteredContracts : contracts}
           getDaysUntilExpiration={getDaysUntilExpiration}
           onOpenDetails={handleOpenContractDetails}
           onManageMatrix={handleManageMatrix}
