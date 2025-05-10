@@ -441,16 +441,25 @@ export default function Assets() {
                       whileHover={{ scale: 1.01 }}
                       whileTap={{ scale: 0.99 }}
                     >
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        className="px-2 text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800"
-                        asChild
-                      >
-                        <Link to={`/alertas?asset=${asset.id}`}>
-                          <ExternalLink className="h-4 w-4" />
-                        </Link>
-                      </Button>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="px-2 text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800"
+                              asChild
+                            >
+                              <Link to={`/alertas?search=${encodeURIComponent(asset.name)}`}>
+                                <ExternalLink className="h-4 w-4" />
+                              </Link>
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p>Ver alertas</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </motion.div>
                   </TableCell>
                 </motion.tr>

@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { useLocation } from "wouter";
 import { 
   Search, 
   Filter, 
@@ -47,8 +48,23 @@ interface Alert {
 type FilterType = "critical" | "open" | "pending" | null;
 
 export default function Alerts() {
+  const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>(null);
+
+  // Função para extrair parâmetros da URL
+  const getURLParameter = (paramName: string): string | null => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(paramName);
+  };
+
+  // Ao carregar a página, verificar se existe parâmetro de busca na URL
+  useEffect(() => {
+    const searchParam = getURLParameter("search");
+    if (searchParam) {
+      setSearchTerm(decodeURIComponent(searchParam));
+    }
+  }, [location]);
 
   // Função para mapear códigos de severidade da API para valores do sistema
   const mapApiSeverityToSystem = (apiSeverity: ApiSeverity): SystemSeverity => {
