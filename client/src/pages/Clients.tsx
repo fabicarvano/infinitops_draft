@@ -73,9 +73,9 @@ export default function Clients() {
         setIsLoadingClients(true);
         
         // Obter dados dos clientes, contratos e ativos
-        const clientsResponse = await apiRequest('/api/clients');
-        const contractsResponse = await apiRequest('/api/contracts');
-        const assetsResponse = await apiRequest('/api/assets');
+        const clientsResponse = await fetch('/api/clients').then(res => res.json());
+        const contractsResponse = await fetch('/api/contracts').then(res => res.json());
+        const assetsResponse = await fetch('/api/assets').then(res => res.json());
         
         // Garantir que os dados são arrays
         const clients = Array.isArray(clientsResponse) ? clientsResponse : [];
