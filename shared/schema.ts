@@ -97,6 +97,15 @@ export const integrations = pgTable("integrations", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
+export const assetMatrices = pgTable("asset_matrices", {
+  id: serial("id").primaryKey(),
+  contract_id: integer("contract_id").notNull().references(() => contracts.id).unique(),
+  name: text("name").notNull(),
+  description: text("description"),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -145,6 +154,12 @@ export const insertIntegrationSchema = createInsertSchema(integrations).omit({
   updated_at: true
 });
 
+export const insertAssetMatrixSchema = createInsertSchema(assetMatrices).omit({
+  id: true,
+  created_at: true,
+  updated_at: true
+});
+
 // Types
 export type InsertUser = z.infer<typeof insertUserSchema>;
 export type User = typeof users.$inferSelect;
@@ -169,3 +184,6 @@ export type Activity = typeof activities.$inferSelect;
 
 export type InsertIntegration = z.infer<typeof insertIntegrationSchema>;
 export type Integration = typeof integrations.$inferSelect;
+
+export type InsertAssetMatrix = z.infer<typeof insertAssetMatrixSchema>;
+export type AssetMatrix = typeof assetMatrices.$inferSelect;
