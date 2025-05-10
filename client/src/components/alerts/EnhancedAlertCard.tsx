@@ -247,7 +247,7 @@ export default function EnhancedAlertCard({
               <MonitoringStatusPanel 
                 status={alert.monitoringStatus}
                 source={alert.monitoringSource}
-                id={alert.monitoringId}
+                monitoringId={alert.monitoringId}
               />
             </div>
             

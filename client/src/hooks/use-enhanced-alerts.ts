@@ -4,6 +4,9 @@ import { addDays, addHours, addMinutes } from "date-fns";
 
 // Definição de tipos obtidos do use-alerts.ts
 type AlertSeverity = "critical" | "high" | "medium" | "low";
+type TechnicalCriticality = "Information" | "Warning" | "Average" | "High" | "Disaster";
+type BusinessCriticality = 0 | 1 | 2 | 3 | 4 | 5;
+type PriorityLevel = "Crítica" | "Muito Alta" | "Alta" | "Média" | "Baixa" | "Muito Baixa";
 
 interface Alert {
   id: number;
@@ -27,10 +30,10 @@ interface EnhancedAlert extends Alert {
   monitoringId?: string;
   
   // Campos de SLA
-  finalPriority: string;
+  finalPriority: PriorityLevel;
   serviceLevel: string;
-  technicalCriticality: string;
-  businessCriticality: number;
+  technicalCriticality: TechnicalCriticality;
+  businessCriticality: BusinessCriticality;
   
   // Tempos e prazos de SLA
   firstResponseTime: number;
