@@ -203,7 +203,7 @@ export function AssetMatrixTabs({
             </Card>
             
             {/* Sistema de abas */}
-            <Tabs value={activeTab} onValueChange={navigateToTab} className="w-full flex-1 flex flex-col">
+            <Tabs value={activeTab} onValueChange={navigateToTab} className="w-full flex-1 flex flex-col overflow-visible">
               <TabsList className="grid grid-cols-7 w-full mb-2">
                 <TabsTrigger value="dados-ativos">Dados de Ativos</TabsTrigger>
                 <TabsTrigger value="dono-ativo">Dono do Ativo</TabsTrigger>
@@ -215,7 +215,7 @@ export function AssetMatrixTabs({
               </TabsList>
             
               {/* Conteúdo da aba 1: Dados de Ativos */}
-              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "none", paddingBottom: "300px" }}>
+              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 200px)", paddingBottom: "250px" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>1. Dados de Ativos</CardTitle>
