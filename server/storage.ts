@@ -221,11 +221,48 @@ export class MemStorage implements IStorage {
       technical_contact: "Carlos Silva",
       commercial_contact: "Ana Martins"
     }).then((contract) => {
-      // Criar uma matriz de ativos para este contrato
+      // Criar uma matriz de ativos para este contrato com dados de N1 e N2
       this.createAssetMatrix({
         contract_id: contract.id,
         name: "Matriz Principal",
-        description: "Matriz de ativos completa com informações de suporte N1 e N2"
+        description: "Matriz de ativos completa com informações de suporte N1 e N2",
+        
+        // Dados de Suporte N1
+        support_n1_name: "Equipe de Suporte N1",
+        support_n1_email: "suporte.n1@empresa.com.br",
+        support_n1_phone: "(11) 5555-1111",
+        support_n1_schedule: "24x7",
+        support_n1_response_time: "15 minutos",
+        
+        // Dados de Suporte N2
+        support_n2_name: "Equipe de Suporte N2",
+        support_n2_email: "suporte.n2@empresa.com.br",
+        support_n2_phone: "(11) 5555-2222",
+        support_n2_schedule: "8x5",
+        support_n2_response_time: "2 horas",
+        
+        // Dados de Suporte N3
+        support_n3_name: "Equipe de Suporte N3",
+        support_n3_email: "suporte.n3@empresa.com.br",
+        support_n3_phone: "(11) 5555-3333",
+        support_n3_schedule: "8x5",
+        support_n3_response_time: "4 horas",
+        
+        // Dados do dono do ativo
+        asset_owner_name: "João da Silva",
+        asset_owner_email: "joao.silva@cliente.com.br",
+        asset_owner_phone: "(11) 98765-4321",
+        asset_owner_department: "TI",
+        
+        // Dados de monitoramento
+        monitoring_tool: "Zabbix",
+        monitoring_url: "https://zabbix.empresa.com.br",
+        
+        // Dados de atendimento presencial
+        onsite_support_available: true,
+        onsite_support_address: "Av. Paulista, 1000, São Paulo, SP",
+        onsite_support_contact: "Maria Souza (11) 99999-8888",
+        onsite_support_schedule: "8x5 (dias úteis, 9h às 18h)"
       }).then((matrix) => {
         // Criar alguns ativos para esta matriz
         this.createAsset({

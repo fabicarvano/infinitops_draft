@@ -102,6 +102,45 @@ export const assetMatrices = pgTable("asset_matrices", {
   contract_id: integer("contract_id").notNull().references(() => contracts.id).unique(),
   name: text("name").notNull(),
   description: text("description"),
+  
+  // Suporte N1
+  support_n1_name: text("support_n1_name"),
+  support_n1_email: text("support_n1_email"),
+  support_n1_phone: text("support_n1_phone"),
+  support_n1_schedule: text("support_n1_schedule"),
+  support_n1_response_time: text("support_n1_response_time"),
+  
+  // Suporte N2
+  support_n2_name: text("support_n2_name"),
+  support_n2_email: text("support_n2_email"),
+  support_n2_phone: text("support_n2_phone"),
+  support_n2_schedule: text("support_n2_schedule"),
+  support_n2_response_time: text("support_n2_response_time"),
+  
+  // Suporte N3
+  support_n3_name: text("support_n3_name"),
+  support_n3_email: text("support_n3_email"),
+  support_n3_phone: text("support_n3_phone"),
+  support_n3_schedule: text("support_n3_schedule"),
+  support_n3_response_time: text("support_n3_response_time"),
+  
+  // Dados do dono do ativo
+  asset_owner_name: text("asset_owner_name"),
+  asset_owner_email: text("asset_owner_email"),
+  asset_owner_phone: text("asset_owner_phone"),
+  asset_owner_department: text("asset_owner_department"),
+  
+  // Dados de monitoramento
+  monitoring_tool: text("monitoring_tool"),
+  monitoring_url: text("monitoring_url"),
+  monitoring_credentials: text("monitoring_credentials"),
+  
+  // Dados de atendimento presencial
+  onsite_support_available: boolean("onsite_support_available"),
+  onsite_support_address: text("onsite_support_address"),
+  onsite_support_contact: text("onsite_support_contact"),
+  onsite_support_schedule: text("onsite_support_schedule"),
+  
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
