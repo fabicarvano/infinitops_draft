@@ -80,30 +80,81 @@ export default function ContractDetails({ open, onOpenChange, contractId }: Cont
     return diffDays;
   };
 
+  // Função auxiliar para determinar o nível de serviço
+  const determineServiceLevel = (contractName: string): "standard" | "premium" | "vip" => {
+    const name = contractName.toLowerCase();
+    if (name.includes('vip')) return "vip";
+    if (name.includes('premium')) return "premium";
+    return "standard";
+  };
+  
   // Carregar dados do contrato quando o componente abrir
   useEffect(() => {
     if (open && contractId) {
       setLoading(true);
       
-      // Simular carregamento de dados
-      setTimeout(() => {
-        setContract({
-          id: contractId,
-          name: "Suporte 24x7",
-          clientId: 1,
-          clientName: "Tech Solutions",
-          description: "Contrato de suporte técnico 24x7 com tempo de resposta garantido.",
-          status: "active",
-          startDate: "2024-04-10T00:00:00Z",
-          endDate: "2025-04-13T23:59:59Z",
-          serviceLevel: "vip",
-          technicalContact: "Roberto Almeida",
-          commercialContact: "Patrícia Souza",
-          createdAt: "2024-04-05T10:30:00Z",
-          updatedAt: "2025-04-10T14:45:00Z"
-        });
-        setLoading(false);
-      }, 500);
+      // Buscar dados da API
+      const fetchContractData = async () => {
+        try {
+          // Obter dados do contrato
+          const contractResponse = await fetch(`/api/contracts`).then(res => res.json());
+          const contractData = Array.isArray(contractResponse) 
+            ? contractResponse.find(c => c.id === contractId) 
+            : null;
+          
+          if (!contractData) {
+            console.error('Contrato não encontrado:', contractId);
+            setLoading(false);
+            return;
+          }
+          
+          // Obter dados do cliente
+          const clientsResponse = await fetch(`/api/clients`).then(res => res.json());
+          const clients = Array.isArray(clientsResponse) ? clientsResponse : [];
+          const client = clients.find(c => c.id === contractData.client_id);
+          
+          // Obter ativos vinculados a este contrato
+          const assetsResponse = await fetch(`/api/assets`).then(res => res.json());
+          const contractAssets = Array.isArray(assetsResponse) 
+            ? assetsResponse.filter(asset => asset.contract_id === contractId)
+            : [];
+          
+          console.log('Dados do contrato:', contractData);
+          console.log('Dados do cliente:', client);
+          console.log('Ativos do contrato:', contractAssets);
+          
+          // Formatar dados para exibição
+          const startDate = new Date(contractData.start_date);
+          const endDate = new Date(contractData.end_date);
+          
+          // Conversão para o formato do componente
+          setContract({
+            id: contractData.id,
+            name: contractData.name,
+            clientId: contractData.client_id,
+            clientName: client ? client.name : `Cliente ID ${contractData.client_id}`,
+            description: contractData.description || '',
+            status: contractData.status as "active" | "inactive" | "pending",
+            startDate: startDate.toISOString().split('T')[0],
+            endDate: endDate.toISOString().split('T')[0],
+            serviceLevel: determineServiceLevel(contractData.name),
+            technicalContact: contractData.technical_contact || '',
+            commercialContact: contractData.commercial_contact || '',
+            createdAt: contractData.created_at || new Date().toISOString(),
+            updatedAt: contractData.updated_at || new Date().toISOString()
+          });
+          
+          // Atualizar contagem de ativos
+          setAssetCount(contractAssets.length);
+          
+          setLoading(false);
+        } catch (error) {
+          console.error('Erro ao carregar dados do contrato:', error);
+          setLoading(false);
+        }
+      };
+      
+      fetchContractData();
     } else {
       setContract(null);
     }

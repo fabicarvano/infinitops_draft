@@ -28,7 +28,7 @@ export default function ContractsPage() {
   const [filteredContracts, setFilteredContracts] = useState<Contract[]>([]);
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isDetailModalOpen, setIsDetailModalOpen] = useState(false);
-  const [selectedContractId, setSelectedContractId] = useState<number | null>(null);
+  const [selectedContractId, setSelectedContractId] = useState<number | undefined>(undefined);
   const [clientFilter, setClientFilter] = useState<number | null>(null);
   const [location, setLocation] = useLocation();
 
@@ -247,7 +247,6 @@ export default function ContractsPage() {
         open={isDetailModalOpen}
         onOpenChange={setIsDetailModalOpen}
         contractId={selectedContractId}
-        getDaysUntilExpiration={getDaysUntilExpiration}
       />
     </motion.div>
   );
