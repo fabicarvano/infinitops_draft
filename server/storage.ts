@@ -9,6 +9,8 @@ import {
   integrations, type Integration, type InsertIntegration,
   assetMatrices, type AssetMatrix, type InsertAssetMatrix
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, and, desc } from "drizzle-orm";
 
 interface Stats {
   totalClients: number;
@@ -550,4 +552,166 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  // Implementação dos métodos de Usuários
+  async getUsers(): Promise<User[]> {
+    return await db.select().from(users);
+  }
+  
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+  
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+  
+  async createUser(user: InsertUser): Promise<User> {
+    const [newUser] = await db.insert(users).values(user).returning();
+    return newUser;
+  }
+  
+  // Implementação dos métodos de Clientes
+  async getClients(): Promise<Client[]> {
+    return await db.select().from(clients);
+  }
+  
+  async getClient(id: number): Promise<Client | undefined> {
+    const [client] = await db.select().from(clients).where(eq(clients.id, id));
+    return client;
+  }
+  
+  async createClient(client: InsertClient): Promise<Client> {
+    const [newClient] = await db.insert(clients).values(client).returning();
+    return newClient;
+  }
+  
+  // Implementação dos métodos de Contratos
+  async getContracts(): Promise<Contract[]> {
+    return await db.select().from(contracts);
+  }
+  
+  async getContract(id: number): Promise<Contract | undefined> {
+    const [contract] = await db.select().from(contracts).where(eq(contracts.id, id));
+    return contract;
+  }
+  
+  async getContractsByClient(clientId: number): Promise<Contract[]> {
+    return await db.select().from(contracts).where(eq(contracts.client_id, clientId));
+  }
+  
+  async createContract(contract: InsertContract): Promise<Contract> {
+    const [newContract] = await db.insert(contracts).values(contract).returning();
+    return newContract;
+  }
+  
+  // Implementação dos métodos de Ativos
+  async getAssets(): Promise<Asset[]> {
+    return await db.select().from(assets);
+  }
+  
+  async getAsset(id: number): Promise<Asset | undefined> {
+    const [asset] = await db.select().from(assets).where(eq(assets.id, id));
+    return asset;
+  }
+  
+  async getAssetsByClient(clientId: number): Promise<Asset[]> {
+    return await db.select().from(assets).where(eq(assets.client_id, clientId));
+  }
+  
+  async createAsset(asset: InsertAsset): Promise<Asset> {
+    const [newAsset] = await db.insert(assets).values(asset).returning();
+    return newAsset;
+  }
+  
+  // Implementação dos métodos de Alertas
+  async getAlerts(): Promise<Alert[]> {
+    return await db.select().from(alerts).orderBy(desc(alerts.created_at));
+  }
+  
+  async getAlertsByAsset(assetId: number): Promise<Alert[]> {
+    return await db.select().from(alerts).where(eq(alerts.asset_id, assetId)).orderBy(desc(alerts.created_at));
+  }
+  
+  async getAlert(id: number): Promise<Alert | undefined> {
+    const [alert] = await db.select().from(alerts).where(eq(alerts.id, id));
+    return alert;
+  }
+  
+  async createAlert(alert: InsertAlert): Promise<Alert> {
+    const [newAlert] = await db.insert(alerts).values(alert).returning();
+    return newAlert;
+  }
+  
+  // Implementação dos métodos de Chamados
+  async getTickets(): Promise<Ticket[]> {
+    return await db.select().from(tickets).orderBy(desc(tickets.created_at));
+  }
+  
+  async getTicket(id: number): Promise<Ticket | undefined> {
+    const [ticket] = await db.select().from(tickets).where(eq(tickets.id, id));
+    return ticket;
+  }
+  
+  async getTicketsByAsset(assetId: number): Promise<Ticket[]> {
+    return await db.select().from(tickets).where(eq(tickets.asset_id, assetId)).orderBy(desc(tickets.created_at));
+  }
+  
+  async createTicket(ticket: InsertTicket): Promise<Ticket> {
+    const [newTicket] = await db.insert(tickets).values(ticket).returning();
+    return newTicket;
+  }
+  
+  // Implementação dos métodos de Atividades
+  async getActivities(): Promise<Activity[]> {
+    return await db.select().from(activities).orderBy(desc(activities.created_at));
+  }
+  
+  async createActivity(activity: InsertActivity): Promise<Activity> {
+    const [newActivity] = await db.insert(activities).values(activity).returning();
+    return newActivity;
+  }
+  
+  // Implementação dos métodos de Integrações
+  async getIntegrations(): Promise<Integration[]> {
+    return await db.select().from(integrations);
+  }
+  
+  async getIntegration(id: number): Promise<Integration | undefined> {
+    const [integration] = await db.select().from(integrations).where(eq(integrations.id, id));
+    return integration;
+  }
+  
+  async createIntegration(integration: InsertIntegration): Promise<Integration> {
+    const [newIntegration] = await db.insert(integrations).values(integration).returning();
+    return newIntegration;
+  }
+  
+  // Implementação dos métodos de Matriz de Ativos
+  async getAssetMatrices(): Promise<AssetMatrix[]> {
+    return await db.select().from(assetMatrices);
+  }
+  
+  async getAssetMatrix(id: number): Promise<AssetMatrix | undefined> {
+    const [matrix] = await db.select().from(assetMatrices).where(eq(assetMatrices.id, id));
+    return matrix;
+  }
+  
+  async getAssetMatrixByContract(contractId: number): Promise<AssetMatrix | undefined> {
+    const [matrix] = await db.select().from(assetMatrices).where(eq(assetMatrices.contract_id, contractId));
+    return matrix;
+  }
+  
+  async createAssetMatrix(assetMatrix: InsertAssetMatrix): Promise<AssetMatrix> {
+    const [newMatrix] = await db.insert(assetMatrices).values(assetMatrix).returning();
+    return newMatrix;
+  }
+}
+
+// Usando o banco de dados PostgreSQL para persistência dos dados
+export const storage = new DatabaseStorage();
+
+// Para usar o armazenamento em memória apenas para desenvolvimento, descomente a linha abaixo
+// export const storage = new MemStorage();
