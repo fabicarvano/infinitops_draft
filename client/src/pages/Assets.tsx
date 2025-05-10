@@ -22,6 +22,14 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import AssetsCollapsibleList from "@/components/assets/AssetsCollapsibleList";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
@@ -43,8 +51,50 @@ interface AssetAlert {
   pendingSince?: string;
 }
 
+// Tipo para os tickets/chamados
+interface Ticket {
+  id: number;
+  assetId: number;
+  title: string;
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  createdAt: string;
+}
+
 export default function Assets() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedAssetTickets, setSelectedAssetTickets] = useState<Ticket[]>([]);
+  const [isTicketDialogOpen, setIsTicketDialogOpen] = useState(false);
+  const [selectedAssetName, setSelectedAssetName] = useState("");
+
+  // Dados de exemplo para chamados
+  const tickets: Ticket[] = [
+    { id: 1001, assetId: 1, title: "CPU alto em servidor web", status: "open", createdAt: "2025-05-09T12:30:00Z" },
+    { id: 1002, assetId: 1, title: "Memória alta em servidor web", status: "in_progress", createdAt: "2025-05-09T14:45:00Z" },
+    { id: 1003, assetId: 3, title: "Lentidão em queries do banco", status: "open", createdAt: "2025-05-09T16:20:00Z" },
+    { id: 1004, assetId: 4, title: "Erro de leitura em disco", status: "open", createdAt: "2025-05-09T18:10:00Z" },
+    { id: 1005, assetId: 2, title: "Falha em conexão redundante", status: "open", createdAt: "2025-05-10T08:25:00Z" },
+    { id: 1006, assetId: 1, title: "Erro em processo de backup", status: "open", createdAt: "2025-05-10T09:15:00Z" },
+    { id: 1007, assetId: 4, title: "Alerta de temperatura no storage", status: "open", createdAt: "2025-05-10T10:05:00Z" },
+    { id: 1008, assetId: 3, title: "Espaço em disco crítico", status: "open", createdAt: "2025-05-10T10:30:00Z" },
+  ];
+
+  // Função para contar chamados abertos por ativo
+  const countOpenTickets = (assetId: number) => {
+    return tickets.filter(ticket => ticket.assetId === assetId && ['open', 'in_progress'].includes(ticket.status)).length;
+  };
+
+  // Função para buscar chamados por ativo
+  const getTicketsByAsset = (assetId: number) => {
+    return tickets.filter(ticket => ticket.assetId === assetId && ['open', 'in_progress'].includes(ticket.status));
+  };
+
+  // Função para abrir o diálogo de chamados
+  const handleShowTickets = (assetId: number, assetName: string) => {
+    const assetTickets = getTicketsByAsset(assetId);
+    setSelectedAssetTickets(assetTickets);
+    setSelectedAssetName(assetName);
+    setIsTicketDialogOpen(true);
+  };
 
   // Dados de exemplo para ativos com alertas
   const assetsWithAlerts = [
@@ -54,53 +104,56 @@ export default function Assets() {
       type: "Servidor", 
       client: "Empresa ABC", 
       alertCount: 3, 
+      ticketCount: countOpenTickets(1),
       criticality: "high",
       status: "active" as AssetStatus,
       hasOpenTicket: true,
       hasPendingAlerts: true,
       pendingSince: "5", // 5 minutos
-      openTicketId: 1001
     },
     {
       id: 2, 
       name: "FW-MAIN-01", 
       type: "Firewall", 
       client: "Tech Solutions", 
-      alertCount: 2, 
+      alertCount: 2,
+      ticketCount: countOpenTickets(2),
       criticality: "medium",
       status: "active" as AssetStatus,
       hasOpenTicket: false,
       hasPendingAlerts: true,
       pendingSince: "2", // 2 minutos
-      openTicketId: undefined
     },
     {
       id: 3, 
       name: "DB-SQL-03", 
       type: "Banco de Dados", 
       client: "Empresa XYZ", 
-      alertCount: 1, 
+      alertCount: 1,
+      ticketCount: countOpenTickets(3),
       criticality: "low",
       status: "active" as AssetStatus,
       hasOpenTicket: false,
       hasPendingAlerts: false,
       pendingSince: undefined,
-      openTicketId: undefined
     },
     {
       id: 4, 
       name: "STORAGE-01", 
       type: "Storage", 
       client: "Global Services", 
-      alertCount: 4, 
+      alertCount: 4,
+      ticketCount: countOpenTickets(4),
       criticality: "critical",
       status: "maintenance" as AssetStatus,
       hasOpenTicket: true,
       hasPendingAlerts: true,
       pendingSince: "12", // 12 minutos
-      openTicketId: 1004
     },
   ];
+  
+  // Ordenar os ativos com base no número de chamados (do maior para o menor)
+  const sortedAssetsWithAlerts = [...assetsWithAlerts].sort((a, b) => b.ticketCount - a.ticketCount);
 
   // Dados de exemplo para alertas recentes
   const recentAlerts = [
