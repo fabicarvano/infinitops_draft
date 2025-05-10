@@ -214,7 +214,7 @@ export function AssetMatrixTabs({
               </TabsList>
             
               {/* Conteúdo da aba 1: Dados de Ativos */}
-              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>1. Dados de Ativos</CardTitle>
@@ -461,7 +461,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 2: Dono do Ativo */}
-              <TabsContent value="dono-ativo" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="dono-ativo" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>2. Dono do Ativo</CardTitle>
@@ -550,7 +550,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 3: Suporte N1 */}
-              <TabsContent value="suporte-n1" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="suporte-n1" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>3. Suporte N1</CardTitle>
@@ -653,7 +653,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 4: Suporte N2 */}
-              <TabsContent value="suporte-n2" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="suporte-n2" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>4. Suporte N2</CardTitle>
@@ -756,7 +756,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 5: Suporte N3 */}
-              <TabsContent value="suporte-n3" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="suporte-n3" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>5. Suporte N3</CardTitle>
@@ -859,7 +859,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 6: Acionamento Presencial */}
-              <TabsContent value="acionamento-presencial" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
+              <TabsContent value="acionamento-presencial" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 300px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>6. Acionamento Presencial</CardTitle>
