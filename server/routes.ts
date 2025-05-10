@@ -15,13 +15,102 @@ import {
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  // Users routes
+  // Rotas de Usuários (Users)
   app.get("/api/users", async (req, res) => {
     try {
       const users = await storage.getUsers();
       res.json(users);
     } catch (error) {
       res.status(500).json({ message: "Error fetching users" });
+    }
+  });
+  
+  // Rotas de Clientes (Clients)
+  app.get("/api/clients", async (req, res) => {
+    try {
+      const clients = await storage.getClients();
+      res.json(clients);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar clientes" });
+    }
+  });
+  
+  app.get("/api/clients/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const client = await storage.getClient(id);
+      if (!client) {
+        return res.status(404).json({ message: "Cliente não encontrado" });
+      }
+      res.json(client);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar cliente" });
+    }
+  });
+  
+  // Rotas de Contratos (Contracts)
+  app.get("/api/contracts", async (req, res) => {
+    try {
+      const contracts = await storage.getContracts();
+      res.json(contracts);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar contratos" });
+    }
+  });
+  
+  app.get("/api/contracts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const contract = await storage.getContract(id);
+      if (!contract) {
+        return res.status(404).json({ message: "Contrato não encontrado" });
+      }
+      res.json(contract);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar contrato" });
+    }
+  });
+  
+  app.get("/api/clients/:clientId/contracts", async (req, res) => {
+    try {
+      const clientId = parseInt(req.params.clientId);
+      const contracts = await storage.getContractsByClient(clientId);
+      res.json(contracts);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar contratos do cliente" });
+    }
+  });
+  
+  // Rotas de Ativos (Assets)
+  app.get("/api/assets", async (req, res) => {
+    try {
+      const assets = await storage.getAssets();
+      res.json(assets);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar ativos" });
+    }
+  });
+  
+  app.get("/api/assets/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const asset = await storage.getAsset(id);
+      if (!asset) {
+        return res.status(404).json({ message: "Ativo não encontrado" });
+      }
+      res.json(asset);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar ativo" });
+    }
+  });
+  
+  app.get("/api/clients/:clientId/assets", async (req, res) => {
+    try {
+      const clientId = parseInt(req.params.clientId);
+      const assets = await storage.getAssetsByClient(clientId);
+      res.json(assets);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar ativos do cliente" });
     }
   });
 

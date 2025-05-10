@@ -123,92 +123,169 @@ export class MemStorage implements IStorage {
       username: "admin",
       name: "Admin NOC",
       email: "admin@ccocore.com",
+      password: "admin123", // Nunca usar senhas simples em produção
       role: "admin"
     });
     
     // Inserir clientes de demonstração
     const client1 = this.createClient({
       name: "Acme Corp",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "active"
     });
     
     const client2 = this.createClient({
       name: "Tech Solutions",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "active"
     });
     
     const client3 = this.createClient({
       name: "Global Services",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "active"
+    });
+    
+    // Adicionar o cliente TechFibra Telecomunicações
+    const techFibra = this.createClient({
+      name: "TechFibra Telecomunicações",
+      status: "active"
     });
     
     // Criar contratos
     this.createContract({
-      clientId: 1,
+      client_id: 1,
       name: "Suporte Padrão",
       status: "active",
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-      renewalType: "client",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      start_date: new Date(),
+      end_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+      renewal_type: "client",
+      description: "Contrato de suporte padrão",
+      technical_contact: "José Silva",
+      commercial_contact: "Maria Souza"
     });
     
     this.createContract({
-      clientId: 2,
+      client_id: 2,
       name: "Suporte Premium",
       status: "active",
-      startDate: new Date().toISOString(),
-      endDate: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString(),
-      renewalType: "internal",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      start_date: new Date(Date.now() - 60 * 24 * 60 * 60 * 1000),
+      end_date: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      renewal_type: "internal",
+      description: "Contrato de suporte premium",
+      technical_contact: "Fernando Costa",
+      commercial_contact: "Roberto Dias"
+    });
+    
+    // Adicionar contrato VIP para TechFibra
+    const techFibraContrato = this.createContract({
+      client_id: 4, // TechFibra
+      name: "Suporte VIP",
+      status: "active",
+      start_date: new Date(),
+      end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 ano
+      renewal_type: "auto",
+      description: "Contrato de suporte VIP com atendimento prioritário",
+      technical_contact: "Carlos Nascimento",
+      commercial_contact: "Luciana Pereira"
+    }).then((contract) => {
+      // Criar uma matriz de ativos para o contrato VIP da TechFibra
+      this.createAssetMatrix({
+        contract_id: contract.id,
+        name: "Matriz TechFibra VIP",
+        description: "Matriz de ativos completa da TechFibra com atendimento VIP",
+        
+        // Dados de Suporte N1
+        support_n1_name: "Equipe VIP de Suporte N1",
+        support_n1_email: "vip.n1@techfibra.com.br",
+        support_n1_phone: "(11) 4444-1111",
+        support_n1_schedule: "24x7",
+        support_n1_response_time: "5 minutos",
+        
+        // Dados de Suporte N2
+        support_n2_name: "Equipe VIP de Suporte N2",
+        support_n2_email: "vip.n2@techfibra.com.br",
+        support_n2_phone: "(11) 4444-2222",
+        support_n2_schedule: "24x7",
+        support_n2_response_time: "30 minutos",
+        
+        // Dados de Suporte N3
+        support_n3_name: "Equipe VIP de Suporte N3",
+        support_n3_email: "vip.n3@techfibra.com.br",
+        support_n3_phone: "(11) 4444-3333",
+        support_n3_schedule: "24x7",
+        support_n3_response_time: "2 horas",
+        
+        // Dados do dono do ativo
+        asset_owner_name: "Roberto Mendes",
+        asset_owner_email: "roberto.mendes@techfibra.com.br",
+        asset_owner_phone: "(11) 98765-0000",
+        asset_owner_department: "Infraestrutura",
+        
+        // Dados de monitoramento
+        monitoring_tool: "Zabbix Enterprise",
+        monitoring_url: "https://zabbix.techfibra.com.br",
+        
+        // Dados de atendimento presencial
+        onsite_support_available: true,
+        onsite_support_address: "Rua dos Andradas, 500, São Paulo, SP",
+        onsite_support_contact: "Marcos Oliveira (11) 97777-6666",
+        onsite_support_schedule: "24x7"
+      });
     });
     
     // Criar ativos
     this.createAsset({
-      clientId: 1,
-      contractId: 1,
+      client_id: 1,
+      contract_id: 1,
       name: "Servidor Web",
       type: "server",
-      ipAddress: "192.168.1.10",
+      ip_address: "192.168.1.10",
       hostname: "srv-web-01",
       criticality: "high",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "active"
     });
     
     this.createAsset({
-      clientId: 1,
-      contractId: 1,
+      client_id: 1,
+      contract_id: 1,
       name: "Servidor DB",
       type: "server",
-      ipAddress: "192.168.1.11",
+      ip_address: "192.168.1.11",
       hostname: "srv-db-01",
       criticality: "critical",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "active"
     });
     
     this.createAsset({
-      clientId: 2,
-      contractId: 2,
+      client_id: 2,
+      contract_id: 2,
       name: "Firewall",
       type: "network",
-      ipAddress: "192.168.1.1",
+      ip_address: "192.168.1.1",
       hostname: "fw-01",
       criticality: "critical",
-      status: "active",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "active"
+    });
+    
+    // Adicionar ativos para TechFibra
+    this.createAsset({
+      client_id: 4,
+      contract_id: 3,
+      name: "Switch Core Principal",
+      type: "network",
+      ip_address: "192.168.10.1",
+      hostname: "switch-core-01",
+      criticality: "critical",
+      status: "active"
+    });
+    
+    this.createAsset({
+      client_id: 4,
+      contract_id: 3,
+      name: "Servidor de Gerenciamento",
+      type: "server",
+      ip_address: "192.168.10.10",
+      hostname: "srv-mgmt-01",
+      criticality: "high",
+      status: "active"
     });
     
     // Criar um contrato ativo com matriz de ativos
