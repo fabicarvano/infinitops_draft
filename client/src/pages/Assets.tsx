@@ -5,6 +5,7 @@ import {
   Search, 
   Server, 
   AlertTriangle, 
+  AlertOctagon,
   ArrowUpRight, 
   TicketPlus, 
   Eye, 
@@ -356,9 +357,11 @@ export default function Assets() {
         <AssetsCollapsibleList />
       </motion.div>
 
-      {/* Últimos alertas gerados */}
+
+
+      {/* Últimos Alertas Gerados */}
       <motion.div 
-        className="card overflow-hidden mb-6"
+        className="card overflow-hidden"
         variants={itemVariants}
         initial={{ opacity: 0.9, y: 3 }}
         animate={{ opacity: 1, y: 0 }}
@@ -371,8 +374,8 @@ export default function Assets() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.08, duration: 0.15, ease: "easeOut" }}
           >
-            <div className="bg-yellow-50 p-2 rounded-lg mr-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-600" />
+            <div className="bg-orange-50 p-2 rounded-lg mr-3">
+              <AlertOctagon className="h-5 w-5 text-orange-600" />
             </div>
             <h3 className="title text-lg">Últimos Alertas Gerados</h3>
           </motion.div>
@@ -395,115 +398,15 @@ export default function Assets() {
             <TableHeader>
               <TableRow className="hover:bg-transparent border-b border-slate-200">
                 <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Ativo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Severidade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Tempo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[150px]">Chamado</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {recentAlerts.map((alert, i) => (
-                <motion.tr
-                  key={alert.id}
-                  custom={i}
-                  variants={tableRowVariants}
-                  className="border-b border-slate-100 hover:bg-slate-50"
-                  initial="hidden"
-                  animate="visible"
-                  whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
-                >
-                  <TableCell className="font-medium truncate max-w-[120px] lg:max-w-none">{alert.asset}</TableCell>
-                  <TableCell className="truncate max-w-[120px] lg:max-w-none">{alert.client}</TableCell>
-                  <TableCell className="truncate max-w-[180px] lg:max-w-none">{alert.message}</TableCell>
-                  <TableCell>{getSeverityBadge(alert.severity)}</TableCell>
-                  <TableCell>{alert.time}</TableCell>
-                  <TableCell className="text-right">
-                    <motion.div
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                    >
-                      <Button 
-                        size="sm" 
-                        variant={alert.ticketId ? "outline" : "default"}
-                        className={
-                          alert.ticketId 
-                            ? "text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800" 
-                            : "bg-green-700 hover:bg-green-800"
-                        }
-                        onClick={() => handleGoToTicket(alert.ticketId)}
-                      >
-                        {alert.ticketId ? (
-                          <>
-                            <ArrowUpRight className="mr-1 h-4 w-4" />
-                            Chamado #{alert.ticketId}
-                          </>
-                        ) : (
-                          <>
-                            <TicketPlus className="mr-1 h-4 w-4" />
-                            Criar Chamado
-                          </>
-                        )}
-                      </Button>
-                    </motion.div>
-                  </TableCell>
-                </motion.tr>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </motion.div>
-
-      {/* Ativos com mais alertas */}
-      <motion.div 
-        className="card overflow-hidden"
-        variants={itemVariants}
-        initial={{ opacity: 0.9, y: 3 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05, duration: 0.15, ease: "easeOut" }}
-      >
-        <div className="px-5 py-4 border-b border-slate-100 flex justify-between items-center">
-          <motion.div 
-            className="flex items-center"
-            initial={{ opacity: 0.9, x: -3 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.08, duration: 0.15, ease: "easeOut" }}
-          >
-            <div className="bg-red-50 p-2 rounded-lg mr-3">
-              <AlertTriangle className="h-5 w-5 text-red-600" />
-            </div>
-            <h3 className="title text-lg">Ativos com Mais Alertas</h3>
-          </motion.div>
-          <motion.div
-            variants={buttonVariants}
-            whileHover="hover"
-            whileTap="tap"
-          >
-            <Button 
-              variant="outline" 
-              size="sm" 
-              className="text-green-700 border-green-200 hover:bg-green-50 hover:text-green-800"
-            >
-              Ver todos
-            </Button>
-          </motion.div>
-        </div>
-        <div className="overflow-x-auto">
-          <Table className="min-w-[650px]">
-            <TableHeader>
-              <TableRow className="hover:bg-transparent border-b border-slate-200">
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Nome</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Tipo</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[120px]">Cliente</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Status</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Alertas</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Chamados</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[100px]">Criticidade</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[100px]">Ação</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[180px]">Cliente</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[75px]">Alertas</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Chamados</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[90px]">Ação</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
-              {assetsWithAlerts.map((asset, i) => (
+              {sortedAssetsWithAlerts.map((asset, i) => (
                 <motion.tr
                   key={asset.id}
                   custom={i}
@@ -513,46 +416,42 @@ export default function Assets() {
                   animate="visible"
                   whileHover={{ backgroundColor: "rgba(248, 250, 252, 0.3)" }}
                 >
-                  <TableCell className="font-medium truncate max-w-[150px] lg:max-w-none">{asset.name}</TableCell>
+                  <TableCell className="font-medium truncate max-w-[120px] lg:max-w-none">{asset.name}</TableCell>
                   <TableCell className="truncate max-w-[100px] lg:max-w-none">{asset.type}</TableCell>
-                  <TableCell className="truncate max-w-[120px] lg:max-w-none">{asset.client}</TableCell>
-                  <TableCell>{getStatusBadge(asset.status)}</TableCell>
+                  <TableCell className="truncate max-w-[180px] lg:max-w-none">{asset.client}</TableCell>
                   <TableCell>
-                    <Badge className="bg-red-100 text-red-700 hover:bg-red-200">
-                      {asset.alertCount} {asset.alertCount === 1 ? 'alerta' : 'alertas'}
-                    </Badge>
+                    <Badge className="bg-slate-100 text-slate-700">{asset.alertCount}</Badge>
                   </TableCell>
                   <TableCell>
-                    <div className="flex items-center gap-2">
-                      {getAlertStatusBadge(asset.hasOpenTicket, asset.hasPendingAlerts)}
-                      {asset.pendingSince && asset.hasPendingAlerts && (
-                        getPendingAlertTimeBadge(asset.pendingSince)
-                      )}
-                    </div>
+                    {asset.ticketCount > 0 ? (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="px-3 py-1 h-7 text-yellow-700 border-yellow-200 bg-yellow-50 hover:bg-yellow-100 hover:text-yellow-800"
+                        onClick={() => handleShowTickets(asset.id, asset.name)}
+                      >
+                        {asset.ticketCount}
+                      </Button>
+                    ) : (
+                      <Badge className="bg-slate-100 text-slate-700">0</Badge>
+                    )}
                   </TableCell>
-                  <TableCell>{getCriticalityBadge(asset.criticality)}</TableCell>
-                  <TableCell>
-                    <div className="flex items-center justify-end gap-2">
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger asChild>
-                            <Link to={`/alertas?ativo=${asset.id}`}>
-                              <motion.button 
-                                className="h-8 w-8 rounded-md inline-flex items-center justify-center text-blue-600 hover:text-blue-800 hover:bg-blue-50"
-                                whileHover={{ scale: 1.01 }}
-                                whileTap={{ scale: 0.99 }}
-                              >
-                                <ExternalLink className="h-4 w-4" />
-                                <span className="sr-only">Ver Alertas</span>
-                              </motion.button>
-                            </Link>
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p>Ver alertas deste ativo</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
+                  <TableCell className="text-right">
+                    <motion.div
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        className="px-2 text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800"
+                        asChild
+                      >
+                        <Link to={`/alertas?asset=${asset.id}`}>
+                          <ExternalLink className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    </motion.div>
                   </TableCell>
                 </motion.tr>
               ))}
@@ -560,6 +459,61 @@ export default function Assets() {
           </Table>
         </div>
       </motion.div>
+      
+      {/* Dialog para listar chamados */}
+      <Dialog open={isTicketDialogOpen} onOpenChange={setIsTicketDialogOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Chamados para {selectedAssetName}</DialogTitle>
+            <DialogDescription>
+              Chamados abertos associados a este ativo.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[300px] overflow-y-auto">
+            <Table>
+              <TableHeader>
+                <TableRow className="hover:bg-transparent border-b border-slate-200">
+                  <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Chamado</TableHead>
+                  <TableHead className="text-xs text-slate-500 uppercase font-medium">Título</TableHead>
+                  <TableHead className="text-xs text-slate-500 uppercase font-medium w-[90px]">Status</TableHead>
+                  <TableHead className="text-xs text-slate-500 uppercase font-medium text-right w-[60px]">Ação</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {selectedAssetTickets.map((ticket) => (
+                  <TableRow key={ticket.id} className="border-b border-slate-100 hover:bg-slate-50">
+                    <TableCell className="font-medium">#{ticket.id}</TableCell>
+                    <TableCell className="truncate max-w-[180px]">{ticket.title}</TableCell>
+                    <TableCell>
+                      {ticket.status === "open" ? (
+                        <Badge className="bg-yellow-100 text-yellow-700">Aberto</Badge>
+                      ) : (
+                        <Badge className="bg-blue-100 text-blue-700">Em Andamento</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="px-2 text-blue-700 border-blue-200 hover:bg-blue-50 hover:text-blue-800"
+                        onClick={() => {
+                          setIsTicketDialogOpen(false);
+                          handleGoToTicket(ticket.id);
+                        }}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+          <DialogFooter>
+            <Button onClick={() => setIsTicketDialogOpen(false)}>Fechar</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </motion.div>
   );
 }
