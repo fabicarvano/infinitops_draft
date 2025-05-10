@@ -6,7 +6,10 @@ import {
   FileText, 
   CalendarClock,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Grid,
+  Edit,
+  Plus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -256,6 +259,51 @@ export default function ContractsCollapsibleList({
                       </TableCell>
                       <TableCell className="text-right">
                         <div className="flex space-x-1 justify-end">
+                          {/* Botão para gerenciar matriz de ativos */}
+                          {onManageMatrix && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className={
+                                      effectiveStatus === "active" 
+                                        ? "text-purple-600 hover:text-purple-800 hover:bg-purple-50" 
+                                        : "text-green-600 hover:text-green-800 hover:bg-green-50"
+                                    }
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      // O valor "active" indica que já existe uma matriz
+                                      onManageMatrix(contract.id, effectiveStatus === "active");
+                                    }}
+                                    disabled={effectiveStatus === "inactive"}
+                                  >
+                                    {effectiveStatus === "active" ? (
+                                      <>
+                                        <Grid className="h-4 w-4 mr-1" />
+                                        <Edit className="h-3 w-3" />
+                                      </>
+                                    ) : (
+                                      <>
+                                        <Grid className="h-4 w-4 mr-1" />
+                                        <Plus className="h-3 w-3" />
+                                      </>
+                                    )}
+                                  </Button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  {effectiveStatus === "active" 
+                                    ? "Atualizar matriz de ativos" 
+                                    : effectiveStatus === "pending"
+                                      ? "Cadastrar matriz de ativos"
+                                      : "Contrato inativo"}
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                          
+                          {/* Botão de detalhes */}
                           <Button
                             variant="ghost"
                             size="sm"
