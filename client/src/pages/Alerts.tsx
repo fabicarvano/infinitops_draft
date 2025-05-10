@@ -191,8 +191,9 @@ export default function Alerts() {
     (!alert.isAcknowledged || !alert.ticketId) // Não reconhecido OU sem chamado
   );
 
-  // Contagem de alertas por severidade
+  // Contagem de alertas por severidade e chamados
   const criticalAlerts = alerts.filter(alert => alert.severity === "critico");
+  const openTickets = alerts.filter(alert => alert.ticketId !== undefined);
   const mediumAlerts = alerts.filter(alert => 
     ["medio", "aviso", "informativo", "nao_classificado"].includes(alert.severity)
   );
@@ -291,16 +292,16 @@ export default function Alerts() {
       return <Badge className="bg-green-100 text-green-700">Reconhecido</Badge>;
     }
     
-    // Status Aberto (quando tem chamado)
+    // Status Aberto (quando tem chamado) - agora com cor amarela
     if (alert.ticketId) {
-      return <Badge className="bg-blue-100 text-blue-700">Aberto</Badge>;
+      return <Badge className="bg-yellow-100 text-yellow-700">Aberto</Badge>;
     }
     
-    // Status Pendente (quando não tem chamado e não foi reconhecido)
+    // Status Pendente (quando não tem chamado e não foi reconhecido) - agora com cor azul
     // Para alertas pendentes, adicionamos o indicador de tempo
     return (
       <div className="flex items-center">
-        <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>
+        <Badge className="bg-blue-100 text-blue-700">Pendente</Badge>
         {getTimeWithoutActionIndicator(alert.time)}
       </div>
     );
@@ -381,23 +382,23 @@ export default function Alerts() {
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center">
                 <div className="bg-yellow-50 p-2 rounded-lg mr-3">
-                  <Bell className="h-5 w-5 text-yellow-600" />
+                  <TicketPlus className="h-5 w-5 text-yellow-600" />
                 </div>
                 <div>
-                  <Badge className="bg-yellow-100 text-yellow-700 mb-1">Médio</Badge>
-                  <h3 className="font-medium">{mediumAlerts.length} alertas de atenção</h3>
+                  <Badge className="bg-yellow-100 text-yellow-700 mb-1">Aberto</Badge>
+                  <h3 className="font-medium">{openTickets.length} chamados abertos</h3>
                 </div>
               </div>
             </div>
             <p className="text-slate-500 text-sm mb-4">
-              Alertas que precisam ser monitorados
+              Chamados que estão em atendimento
             </p>
             <Button 
               size="sm" 
               variant="outline" 
               className="w-full border-yellow-200 text-yellow-700 hover:bg-yellow-50"
             >
-              Ver alertas de atenção
+              Ver chamados abertos
             </Button>
           </div>
         </div>
