@@ -53,53 +53,62 @@ export default function ContractsPage() {
     }
   };
 
-  // Carregar contratos (simulação)
+  // Carregar contratos da API
   useEffect(() => {
-    // Em um app real, isso seria uma chamada para API
-    const mockContracts: Contract[] = [
-      { 
-        id: 1, 
-        name: "Suporte 24x7", 
-        client: "Tech Solutions", 
-        endDate: "2025-12-23", 
-        status: "active", 
-        serviceLevel: "premium" 
-      },
-      { 
-        id: 2, 
-        name: "Monitoramento Preventivo", 
-        client: "Empresa ABC", 
-        endDate: "2025-09-30", 
-        status: "pending",
-        serviceLevel: "standard" 
-      },
-      { 
-        id: 3, 
-        name: "Backup & Recovery", 
-        client: "Global Services", 
-        endDate: "2025-05-15", 
-        status: "active",
-        serviceLevel: "vip" 
-      },
-      { 
-        id: 4, 
-        name: "Consultoria de Infraestrutura", 
-        client: "Data Systems", 
-        endDate: "2025-07-10", 
-        status: "active",
-        serviceLevel: "premium" 
-      },
-      { 
-        id: 5, 
-        name: "Monitoramento de Servidores", 
-        client: "Empresa XYZ", 
-        endDate: "2024-04-25", 
-        status: "inactive",
-        serviceLevel: "standard" 
+    const fetchData = async () => {
+      try {
+        // Obter dados dos clientes e contratos
+        const clientsResponse = await fetch('/api/clients').then(res => res.json());
+        const contractsResponse = await fetch('/api/contracts').then(res => res.json());
+        
+        // Garantir que os dados são arrays
+        const clients = Array.isArray(clientsResponse) ? clientsResponse : [];
+        const contracts = Array.isArray(contractsResponse) ? contractsResponse : [];
+        
+        console.log('Clientes recebidos:', clients);
+        console.log('Contratos recebidos:', contracts);
+        
+        // Mapear contratos para formato adequado para o componente
+        const formattedContracts = contracts.map(contract => {
+          // Encontrar nome do cliente pelo ID
+          const client = clients.find(c => c.id === contract.client_id);
+          const clientName = client ? client.name : `Cliente ID ${contract.client_id}`;
+          
+          // Formatar data de término para "YYYY-MM-DD" (formato esperado pelo componente)
+          const endDate = new Date(contract.end_date);
+          const formattedEndDate = format(endDate, "yyyy-MM-dd");
+          
+          // Determinar nível de serviço com base no nome do contrato
+          let serviceLevel: "standard" | "premium" | "vip" = "standard";
+          if (contract.name.toLowerCase().includes('premium')) {
+            serviceLevel = "premium";
+          } else if (contract.name.toLowerCase().includes('vip')) {
+            serviceLevel = "vip";
+          }
+          
+          return {
+            id: contract.id,
+            name: contract.name,
+            client: clientName,
+            endDate: formattedEndDate,
+            status: contract.status as ContractStatus,
+            serviceLevel: serviceLevel
+          };
+        });
+        
+        console.log('Contratos formatados:', formattedContracts);
+        setContracts(formattedContracts);
+      } catch (error) {
+        console.error("Erro ao carregar dados:", error);
+        toast({
+          title: "Erro ao carregar dados",
+          description: "Ocorreu um erro ao buscar dados do servidor.",
+          variant: "destructive"
+        });
       }
-    ];
+    };
     
-    setContracts(mockContracts);
+    fetchData();
   }, []);
 
   // Função para calcular dias até expiração
