@@ -61,6 +61,12 @@ export interface IStorage {
   getIntegrations(): Promise<Integration[]>;
   getIntegration(id: number): Promise<Integration | undefined>;
   createIntegration(integration: InsertIntegration): Promise<Integration>;
+  
+  // Matriz de Ativos
+  getAssetMatrices(): Promise<AssetMatrix[]>;
+  getAssetMatrix(id: number): Promise<AssetMatrix | undefined>; 
+  getAssetMatrixByContract(contractId: number): Promise<AssetMatrix | undefined>;
+  createAssetMatrix(assetMatrix: InsertAssetMatrix): Promise<AssetMatrix>;
 }
 
 export class MemStorage implements IStorage {
@@ -202,14 +208,66 @@ export class MemStorage implements IStorage {
       updatedAt: new Date().toISOString()
     });
     
+    // Criar um contrato ativo com matriz de ativos
+    this.createContract({
+      client_id: 1,
+      name: "Contrato com Matriz Ativa",
+      status: "active",
+      start_date: new Date(),
+      end_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
+      renewal_type: "client",
+      description: "Contrato demonstrativo com matriz de ativos preenchida",
+      technical_contact: "Carlos Silva",
+      commercial_contact: "Ana Martins"
+    }).then((contract) => {
+      // Criar uma matriz de ativos para este contrato
+      this.createAssetMatrix({
+        contract_id: contract.id,
+        name: "Matriz Principal",
+        description: "Matriz de ativos completa com informações de suporte N1 e N2"
+      }).then((matrix) => {
+        // Criar alguns ativos para esta matriz
+        this.createAsset({
+          name: "Servidor de Aplicação",
+          type: "servidor",
+          client_id: 1,
+          contract_id: contract.id,
+          status: "active",
+          criticality: "high",
+          hostname: "srv-app-01",
+          ip_address: "192.168.1.100",
+          zabbix_id: "SRV-APP-01"
+        });
+        
+        this.createAsset({
+          name: "Firewall Principal",
+          type: "firewall",
+          client_id: 1,
+          contract_id: contract.id,
+          status: "active",
+          criticality: "critical",
+          hostname: "fw-main-01",
+          ip_address: "192.168.1.1",
+          zabbix_id: "FW-MAIN-01"
+        });
+        
+        // Criar atividade de criação de matriz
+        this.createActivity({
+          description: "Matriz de ativos criada para o contrato",
+          action_type: "create",
+          resource_type: "asset_matrix",
+          resource_id: matrix.id,
+          user_id: 1
+        });
+      });
+    });
+    
     // Criar alertas
     this.createAlert({
-      assetId: 1,
+      asset_id: 1,
       severity: "medium",
       message: "CPU acima de 80%",
-      status: "open",
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      status: "open"
     });
     
     this.createAlert({
@@ -426,6 +484,31 @@ export class MemStorage implements IStorage {
     const newIntegration: Integration = { ...integration, id };
     this.integrations.set(id, newIntegration);
     return newIntegration;
+  }
+  
+  // Implementação dos métodos de Matriz de Ativos
+  async getAssetMatrices(): Promise<AssetMatrix[]> {
+    return Array.from(this.assetMatrices.values());
+  }
+  
+  async getAssetMatrix(id: number): Promise<AssetMatrix | undefined> {
+    return this.assetMatrices.get(id);
+  }
+  
+  async getAssetMatrixByContract(contractId: number): Promise<AssetMatrix | undefined> {
+    return Array.from(this.assetMatrices.values()).find(matrix => matrix.contract_id === contractId);
+  }
+  
+  async createAssetMatrix(assetMatrix: InsertAssetMatrix): Promise<AssetMatrix> {
+    const id = this.assetMatrixId++;
+    const newAssetMatrix: AssetMatrix = { 
+      ...assetMatrix, 
+      id,
+      created_at: new Date(),
+      updated_at: new Date()
+    };
+    this.assetMatrices.set(id, newAssetMatrix);
+    return newAssetMatrix;
   }
 }
 
