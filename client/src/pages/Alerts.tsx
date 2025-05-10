@@ -391,7 +391,7 @@ export default function Alerts() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {/* Card de Alertas Críticos */}
-        <div className="card overflow-hidden border-l-4 border-l-red-500">
+        <div className={`card overflow-hidden border-l-4 border-l-red-500 transition-all duration-200 ${activeFilter === "critical" ? "ring-2 ring-red-400 shadow-lg" : ""}`}>
           <div className="p-5">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center">
@@ -403,6 +403,19 @@ export default function Alerts() {
                   <h3 className="font-medium">{criticalAlerts.length} alertas críticos</h3>
                 </div>
               </div>
+              {activeFilter === "critical" && (
+                <Button 
+                  size="sm"
+                  variant="ghost" 
+                  className="h-7 w-7 p-0 rounded-full text-red-600 hover:text-red-700 hover:bg-red-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilter(null);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <p className="text-slate-500 text-sm mb-4">
               Alertas que precisam de atenção imediata
@@ -410,15 +423,19 @@ export default function Alerts() {
             <Button 
               size="sm" 
               variant="outline" 
-              className="w-full border-red-200 text-red-700 hover:bg-red-50"
+              className={`w-full ${activeFilter === "critical" 
+                ? "bg-red-50 border-red-300 text-red-700 hover:bg-red-100" 
+                : "border-red-200 text-red-700 hover:bg-red-50"}`}
+              onClick={() => handleFilter("critical")}
             >
-              Ver alertas críticos
+              {activeFilter === "critical" ? "Filtro ativo" : "Ver alertas críticos"}
+              {activeFilter === "critical" && <Filter className="ml-2 h-3 w-3" />}
             </Button>
           </div>
         </div>
         
-        {/* Card de Alertas de Atenção */}
-        <div className="card overflow-hidden border-l-4 border-l-yellow-500">
+        {/* Card de Alertas Abertos (Chamados) */}
+        <div className={`card overflow-hidden border-l-4 border-l-yellow-500 transition-all duration-200 ${activeFilter === "open" ? "ring-2 ring-yellow-400 shadow-lg" : ""}`}>
           <div className="p-5">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center">
@@ -430,6 +447,19 @@ export default function Alerts() {
                   <h3 className="font-medium">{openTickets.length} chamados abertos</h3>
                 </div>
               </div>
+              {activeFilter === "open" && (
+                <Button 
+                  size="sm"
+                  variant="ghost" 
+                  className="h-7 w-7 p-0 rounded-full text-yellow-600 hover:text-yellow-700 hover:bg-yellow-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilter(null);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <p className="text-slate-500 text-sm mb-4">
               Chamados que estão em atendimento
@@ -437,15 +467,19 @@ export default function Alerts() {
             <Button 
               size="sm" 
               variant="outline" 
-              className="w-full border-yellow-200 text-yellow-700 hover:bg-yellow-50"
+              className={`w-full ${activeFilter === "open" 
+                ? "bg-yellow-50 border-yellow-300 text-yellow-700 hover:bg-yellow-100" 
+                : "border-yellow-200 text-yellow-700 hover:bg-yellow-50"}`}
+              onClick={() => handleFilter("open")}
             >
-              Ver chamados abertos
+              {activeFilter === "open" ? "Filtro ativo" : "Ver chamados abertos"}
+              {activeFilter === "open" && <Filter className="ml-2 h-3 w-3" />}
             </Button>
           </div>
         </div>
 
-        {/* Card de Alertas sem Chamados */}
-        <div className="card overflow-hidden border-l-4 border-l-blue-500">
+        {/* Card de Alertas Pendentes */}
+        <div className={`card overflow-hidden border-l-4 border-l-blue-500 transition-all duration-200 ${activeFilter === "pending" ? "ring-2 ring-blue-400 shadow-lg" : ""}`}>
           <div className="p-5">
             <div className="flex justify-between items-start mb-4">
               <div className="flex items-center">
@@ -457,6 +491,19 @@ export default function Alerts() {
                   <h3 className="font-medium">{pendingAlerts.length} alertas sem chamados</h3>
                 </div>
               </div>
+              {activeFilter === "pending" && (
+                <Button 
+                  size="sm"
+                  variant="ghost" 
+                  className="h-7 w-7 p-0 rounded-full text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveFilter(null);
+                  }}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              )}
             </div>
             <p className="text-slate-500 text-sm mb-4">
               Alertas que precisam ser reconhecidos ou terem chamados abertos
@@ -464,9 +511,13 @@ export default function Alerts() {
             <Button 
               size="sm" 
               variant="outline" 
-              className="w-full border-blue-200 text-blue-700 hover:bg-blue-50"
+              className={`w-full ${activeFilter === "pending" 
+                ? "bg-blue-50 border-blue-300 text-blue-700 hover:bg-blue-100" 
+                : "border-blue-200 text-blue-700 hover:bg-blue-50"}`}
+              onClick={() => handleFilter("pending")}
             >
-              Ver alertas pendentes
+              {activeFilter === "pending" ? "Filtro ativo" : "Ver alertas pendentes"}
+              {activeFilter === "pending" && <Filter className="ml-2 h-3 w-3" />}
             </Button>
           </div>
         </div>
