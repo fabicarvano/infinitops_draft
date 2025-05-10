@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -10,9 +10,11 @@ import {
   AlertTriangle,
   AlertCircle,
   Eye,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -48,22 +50,69 @@ export default function Clients() {
     return diffDays;
   };
 
-  // Dados de exemplo para clientes (como estado atualizável)
+  // Modelo para clientes
   type ClientStatus = "active" | "inactive";
   
-  const [clients, setClients] = useState<Array<{
+  interface ClientData {
     id: number;
     name: string;
     contracts: number;
     assets: number;
     status: ClientStatus;
-  }>>([
-    { id: 1, name: "Empresa ABC", contracts: 3, assets: 12, status: "active" },
-    { id: 2, name: "Tech Solutions", contracts: 1, assets: 5, status: "active" },
-    { id: 3, name: "Empresa XYZ", contracts: 2, assets: 8, status: "active" },
-    { id: 4, name: "Global Services", contracts: 1, assets: 3, status: "inactive" },
-    { id: 5, name: "Data Systems", contracts: 4, assets: 15, status: "active" },
-  ]);
+  }
+  
+  // Estados para gerenciar clientes
+  const [clients, setClients] = useState<ClientData[]>([]);
+  const [isLoadingClients, setIsLoadingClients] = useState<boolean>(true);
+  
+  // Buscar clientes da API ao carregar o componente
+  useEffect(() => {
+    const fetchClients = async () => {
+      try {
+        setIsLoadingClients(true);
+        
+        // Buscar todos os clientes
+        const allClients = await apiRequest('/api/clients');
+        
+        // Buscar contratos para contagem
+        const allContracts = await apiRequest('/api/contracts');
+        
+        // Buscar ativos para contagem
+        const allAssets = await apiRequest('/api/assets');
+        
+        // Transformar os dados para o formato necessário para a UI
+        const clientsData = Array.isArray(allClients) ? allClients : [];
+        const contractsData = Array.isArray(allContracts) ? allContracts : [];
+        const assetsData = Array.isArray(allAssets) ? allAssets : [];
+        
+        const formattedClients = clientsData.map((client: any) => {
+          const clientContracts = contractsData.filter((contract: any) => contract.client_id === client.id);
+          const clientAssets = assetsData.filter((asset: any) => asset.client_id === client.id);
+          
+          return {
+            id: client.id,
+            name: client.name,
+            contracts: clientContracts.length,
+            assets: clientAssets.length,
+            status: client.status as ClientStatus
+          };
+        });
+        
+        setClients(formattedClients);
+      } catch (error) {
+        console.error("Erro ao buscar clientes:", error);
+        toast({
+          title: "Erro ao carregar clientes",
+          description: "Não foi possível buscar os dados dos clientes. Verifique a conexão.",
+          variant: "destructive"
+        });
+      } finally {
+        setIsLoadingClients(false);
+      }
+    };
+    
+    fetchClients();
+  }, [toast]);
 
   // Níveis de atendimento possíveis
   type ServiceLevelType = "standard" | "premium" | "vip";
@@ -132,18 +181,25 @@ export default function Clients() {
     <div className="relative">
       <div className="mb-6">
         {/* Lista de Clientes com Interface Colapsável */}
-        <ClientsCollapsibleList
-          clients={clients}
-          onOpenDetails={(clientId) => {
-            setSelectedClientId(clientId);
-            setIsClientDetailsOpen(true);
-          }}
-          onOpenContractForm={(clientId) => {
-            setSelectedClientId(clientId);
-            setIsContractFormOpen(true);
-          }}
-          onOpenClientForm={() => setIsClientFormOpen(true)}
-        />
+        {isLoadingClients ? (
+          <div className="card p-8 mb-6 flex justify-center items-center">
+            <Loader2 className="h-8 w-8 animate-spin text-green-600 mr-2" />
+            <span className="text-green-700 font-medium">Carregando clientes...</span>
+          </div>
+        ) : (
+          <ClientsCollapsibleList
+            clients={clients}
+            onOpenDetails={(clientId) => {
+              setSelectedClientId(clientId);
+              setIsClientDetailsOpen(true);
+            }}
+            onOpenContractForm={(clientId) => {
+              setSelectedClientId(clientId);
+              setIsContractFormOpen(true);
+            }}
+            onOpenClientForm={() => setIsClientFormOpen(true)}
+          />
+        )}
         
         {/* Lista de Contratos com Interface Colapsável */}
         <ContractsCollapsibleList
