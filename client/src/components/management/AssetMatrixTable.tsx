@@ -192,19 +192,6 @@ export default function AssetMatrixTable({
             <FileSearch className="h-4 w-4" />
           </div>
         </div>
-        
-        {/* Adicionar matriz manualmente quando não vem de contrato */}
-        {!contractId && (
-          <Button 
-            variant="default" 
-            size="sm" 
-            className="flex items-center gap-1"
-            onClick={() => setOpenDialog(true)}
-          >
-            <Plus className="h-4 w-4" />
-            <span>Nova Matriz</span>
-          </Button>
-        )}
       </motion.div>
 
       {/* Modal de criação/edição da matriz de ativos */}
@@ -222,36 +209,15 @@ export default function AssetMatrixTable({
           <div className="mt-4">
             <div className="flex items-center justify-between mb-2">
               <h4 className="text-sm font-medium">Contrato</h4>
-              <p className="text-xs text-slate-500">ID da Matriz: {isEditing ? "MTX" + (selectedContractId ? selectedContractId + 100 : '') : "Será gerado automaticamente"}</p>
+              <p className="text-xs text-slate-500">ID da Matriz: Será gerado automaticamente</p>
             </div>
             
-            {/* Quando vem do link de contrato, o contrato já está selecionado e bloqueado */}
-            {contractId ? (
-              <div className="px-3 py-2 border rounded-md bg-slate-50 text-slate-700 font-medium">
-                {matrixContractsData.find(c => c.id === contractId)?.contractName} - {matrixContractsData.find(c => c.id === contractId)?.client}
-              </div>
-            ) : (
-              <Select 
-                defaultValue={selectedContractId?.toString() || ""}
-                onValueChange={(value) => setSelectedContractId(parseInt(value))}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione um contrato" />
-                </SelectTrigger>
-                <SelectContent>
-                  {matrixContractsData
-                    .filter(contract => !matricesData.some(matrix => matrix.contractId === contract.id))
-                    .map(contract => (
-                      <SelectItem 
-                        key={contract.id} 
-                        value={contract.id.toString()}
-                      >
-                        {contract.contractName} - {contract.client}
-                      </SelectItem>
-                    ))}
-                </SelectContent>
-              </Select>
-            )}
+            {/* Contrato sempre em modo somente visualização */}
+            <div className="px-3 py-2 border rounded-md bg-slate-50 text-slate-700 font-medium">
+              {matrixContractsData.find(c => c.id === selectedContractId)?.contractName || ''} 
+              {matrixContractsData.find(c => c.id === selectedContractId)?.client ? 
+                ' - ' + matrixContractsData.find(c => c.id === selectedContractId)?.client : ''}
+            </div>
             
             {/* Campo de total de ativos é exibido apenas na edição, não na criação */}
             {isEditing && (
@@ -333,14 +299,17 @@ export default function AssetMatrixTable({
                   Adicionar Ativo
                 </Button>
                 
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="text-purple-600"
-                >
-                  <FileSearch className="h-4 w-4 mr-1" />
-                  Importar Matriz
-                </Button>
+                {/* Botão de importação só aparece na criação de nova matriz */}
+                {!isEditing && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="text-purple-600"
+                  >
+                    <FileSearch className="h-4 w-4 mr-1" />
+                    Importar Matriz
+                  </Button>
+                )}
               </div>
               
               <div className="flex gap-2">
@@ -355,14 +324,9 @@ export default function AssetMatrixTable({
                   size="sm"
                   onClick={() => {
                     // Aqui seria feita a lógica de salvar a matriz
-                    // Exemplo simples:
-                    const matrixId = isEditing ? 
-                      selectedContractId ? selectedContractId + 100 : 0 : 
-                      selectedContractId ? selectedContractId + 100 : 0;
-                    
                     toast({
                       title: "Matriz de ativos salva",
-                      description: `A matriz de ativos MTX${matrixId} foi ${isEditing ? 'atualizada' : 'cadastrada'} com sucesso.`,
+                      description: `A matriz de ativos foi ${isEditing ? 'atualizada' : 'cadastrada'} com sucesso.`,
                       className: "bg-green-50 border-green-200 text-green-800",
                     });
                     
