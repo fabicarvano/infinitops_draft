@@ -33,6 +33,9 @@ export const contracts = pgTable("contracts", {
   technical_contact: text("technical_contact"),
   commercial_contact: text("commercial_contact"),
   renewal_type: text("renewal_type").notNull(),
+  service_level_type: text("service_level_type").notNull().default("standard"), // platinum, premium, standard, custom
+  service_level_agreement: text("service_level_agreement"), // JSON com matriz de SLA para diferentes níveis de criticidade
+  use_business_criticality_adjustment: boolean("use_business_criticality_adjustment").notNull().default(true), // Switch para habilitar/desabilitar ajuste por criticidade
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
@@ -45,7 +48,8 @@ export const assets = pgTable("assets", {
   type: text("type").notNull(),
   ip_address: text("ip_address"),
   hostname: text("hostname"),
-  criticality: text("criticality").notNull().default("medium"),
+  criticality: text("criticality").notNull().default("medium"), // Criticidade técnica (herdada do alerta)
+  business_criticality: integer("business_criticality").notNull().default(3), // Criticidade de negócio (0-5, onde 0 é crítico)
   status: text("status").notNull().default("active"),
   zabbix_id: text("zabbix_id"),
   created_at: timestamp("created_at").notNull().defaultNow(),
@@ -55,12 +59,29 @@ export const assets = pgTable("assets", {
 export const alerts = pgTable("alerts", {
   id: serial("id").primaryKey(),
   asset_id: integer("asset_id").notNull().references(() => assets.id),
-  severity: text("severity").notNull(),
+  severity: text("severity").notNull(), // critical, high, medium, low
   message: text("message").notNull(),
   status: text("status").notNull().default("open"),
+  
+  // Campos para status do monitoramento
+  monitoring_status: text("monitoring_status").notNull().default("ativo"), // ativo, normalizado, flapping, reconhecido, suprimido
+  monitoring_source: text("monitoring_source"), // Zabbix, Nagios, etc.
+  monitoring_id: text("monitoring_id"), // ID do alerta no sistema de monitoramento
+  
+  // Campos para SLA e prioridade
+  technical_criticality: text("technical_criticality"), // Disaster, High, Average, Warning, Information
+  final_priority: text("final_priority"), // Crítica, Muito Alta, Alta, Média, Baixa, Muito Baixa
+  
+  // Campos para tempos ajustados
+  adjusted_response_time: integer("adjusted_response_time"), // Tempo de resposta após ajustes (minutos)
+  adjusted_resolution_time: integer("adjusted_resolution_time"), // Tempo de resolução após ajustes (minutos)
+  sla_deadline: timestamp("sla_deadline"), // Prazo final para resolução
+
+  // Referência ao ticket
+  ticket_id: integer("ticket_id").references(() => tickets.id),
+  
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
-  ticket_id: integer("ticket_id").references(() => tickets.id),
 });
 
 export const tickets = pgTable("tickets", {
@@ -70,6 +91,19 @@ export const tickets = pgTable("tickets", {
   description: text("description").notNull(),
   status: text("status").notNull().default("open"),
   priority: text("priority").notNull().default("medium"),
+  
+  // Campos para SLA efetivo
+  final_priority: text("final_priority"), // Crítica, Muito Alta, Alta, Média, Baixa, Muito Baixa
+  first_response_time: integer("first_response_time"), // Tempo base para primeiro atendimento (minutos)
+  resolution_time: integer("resolution_time"), // Tempo base para resolução (minutos)
+  first_response_deadline: timestamp("first_response_deadline"), // Prazo para primeiro atendimento
+  resolution_deadline: timestamp("resolution_deadline"), // Prazo para resolução
+  service_hours: text("service_hours"), // 24x7, Seg-Sex 06h-23h, Seg-Sex 09h-18h
+  adjustment_factor: numeric("adjustment_factor").notNull().default(1.0), // Fator de ajuste aplicado (0.5, 0.75, 0.9, 1.0)
+  is_adjustment_enabled: boolean("is_adjustment_enabled").notNull().default(true), // Se o ajuste por criticidade está habilitado
+  sla_paused: boolean("sla_paused").notNull().default(false), // Se o SLA está pausado
+  sla_violated: boolean("sla_violated").notNull().default(false), // Se o SLA foi violado
+  
   assignee_id: integer("assignee_id").references(() => users.id),
   created_by: integer("created_by").notNull().references(() => users.id),
   glpi_id: text("glpi_id"),
