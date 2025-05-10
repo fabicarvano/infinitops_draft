@@ -13,6 +13,7 @@ import {
   AlertCircle, 
   CheckCircle, 
   AlertOctagon,
+  Clock,
   FileText,
   Info
 } from "lucide-react";
@@ -234,6 +235,55 @@ export default function Alerts() {
     }
   };
 
+  // Função para calcular indicador de tempo para alertas pendentes
+  const getTimeWithoutActionIndicator = (timeString: string) => {
+    // Nesta função de demonstração, vamos usar o formato "Xm atrás" e "Xh Ym atrás" para simular
+    // Em um ambiente real, usaríamos timestamps reais e cálculos de diferença de tempo
+    
+    // Extrair a informação de tempo do formato "Xm atrás" ou "Xh Ym atrás"
+    let minutes = 0;
+    
+    if (timeString.includes('h') && timeString.includes('m')) {
+      // Formato "Xh Ym atrás"
+      const hourPart = parseInt(timeString.split('h')[0]);
+      const minutePart = parseInt(timeString.split('h')[1].split('m')[0].trim());
+      minutes = hourPart * 60 + minutePart;
+    } else if (timeString.includes('h')) {
+      // Formato "Xh atrás"
+      const hours = parseInt(timeString.split('h')[0]);
+      minutes = hours * 60;
+    } else if (timeString.includes('m')) {
+      // Formato "Xm atrás"
+      minutes = parseInt(timeString.split('m')[0]);
+    }
+    
+    // Baseado no tempo, retornamos um indicador diferente
+    if (minutes >= 10) {
+      return <div className="flex items-center ml-2 text-red-600">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+10min</span>
+      </div>;
+    } else if (minutes >= 5) {
+      return <div className="flex items-center ml-2 text-orange-600">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+5min</span>
+      </div>;
+    } else if (minutes >= 2) {
+      return <div className="flex items-center ml-2 text-yellow-600">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+2min</span>
+      </div>;
+    } else if (minutes >= 1) {
+      return <div className="flex items-center ml-2 text-yellow-500">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+1min</span>
+      </div>;
+    }
+    
+    // Menos de 1 minuto, não mostramos indicador
+    return null;
+  };
+
   // Simplificando os status de acordo com as regras de negócio
   const getStatusBadge = (alert: Alert) => {
     // Status Reconhecido
@@ -247,7 +297,13 @@ export default function Alerts() {
     }
     
     // Status Pendente (quando não tem chamado e não foi reconhecido)
-    return <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>;
+    // Para alertas pendentes, adicionamos o indicador de tempo
+    return (
+      <div className="flex items-center">
+        <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>
+        {getTimeWithoutActionIndicator(alert.time)}
+      </div>
+    );
   };
 
   // Funções para gerenciar ações nos alertas
@@ -400,7 +456,7 @@ export default function Alerts() {
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Ativo</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Mensagem</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium">Status</TableHead>
-                <TableHead className="text-xs text-slate-500 uppercase font-medium">Tempo</TableHead>
+                <TableHead className="text-xs text-slate-500 uppercase font-medium">Início</TableHead>
                 <TableHead className="text-xs text-slate-500 uppercase font-medium text-right">Ação</TableHead>
               </TableRow>
             </TableHeader>
