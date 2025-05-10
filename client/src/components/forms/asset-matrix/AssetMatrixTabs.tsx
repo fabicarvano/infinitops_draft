@@ -167,7 +167,7 @@ export function AssetMatrixTabs({
   const progressPercentage = assets.length > 0 ? Math.min(100, assets.length * 20) : 0;
   
   return (
-    <div className="h-[85vh] flex flex-col">
+    <div className="h-[90vh] flex flex-col">
       <div className="flex justify-between items-center p-6 border-b">
         <h2 className="text-2xl font-bold">
           {isEdit ? "Atualizar Matriz de Ativos" : "Cadastrar Matriz de Ativos"}
@@ -203,7 +203,7 @@ export function AssetMatrixTabs({
             
             {/* Sistema de abas */}
             <Tabs value={activeTab} onValueChange={navigateToTab} className="w-full flex-1 flex flex-col">
-              <TabsList className="grid grid-cols-7 w-full">
+              <TabsList className="grid grid-cols-7 w-full mb-2">
                 <TabsTrigger value="dados-ativos">Dados de Ativos</TabsTrigger>
                 <TabsTrigger value="dono-ativo">Dono do Ativo</TabsTrigger>
                 <TabsTrigger value="suporte-n1">Suporte N1</TabsTrigger>
@@ -214,7 +214,7 @@ export function AssetMatrixTabs({
               </TabsList>
             
               {/* Conteúdo da aba 1: Dados de Ativos */}
-              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "calc(100vh - 200px)", paddingBottom: "150px" }}>
+              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ height: "100%", maxHeight: "none", paddingBottom: "300px" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>1. Dados de Ativos</CardTitle>
@@ -429,7 +429,11 @@ export function AssetMatrixTabs({
                           <FormItem>
                             <FormLabel>Endereço</FormLabel>
                             <FormControl>
-                              <Input placeholder="Endereço completo" {...field} />
+                              <Textarea 
+                                placeholder="Endereço completo" 
+                                className="min-h-[100px]"
+                                {...field} 
+                              />
                             </FormControl>
                             <FormMessage />
                           </FormItem>
