@@ -710,8 +710,8 @@ export class DatabaseStorage implements IStorage {
   }
 }
 
-// Usando o banco de dados PostgreSQL para persistência dos dados
-export const storage = new DatabaseStorage();
+// Usando o armazenamento em memória para desenvolvimento
+export const storage = new MemStorage();
 
-// Para usar o armazenamento em memória apenas para desenvolvimento, descomente a linha abaixo
-// export const storage = new MemStorage();
+// Para usar o banco de dados PostgreSQL para persistência, descomente a linha abaixo
+// export const storage = new DatabaseStorage();
