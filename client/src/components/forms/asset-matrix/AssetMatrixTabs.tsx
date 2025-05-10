@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
@@ -19,6 +19,8 @@ const assetMatrixFormSchema = z.object({
   hostname: z.string().min(1, { message: "Hostname é obrigatório" }),
   ip: z.string().min(1, { message: "IP é obrigatório" }),
   tipo: z.string().min(1, { message: "Tipo é obrigatório" }),
+  // Novo campo para criticidade de negócio
+  criticidadeNegocio: z.enum(["0", "1", "2", "3", "4", "5"]).default("3"),
   localizacao: z.string().optional(),
   datacenter: z.enum(["externo", "interno"]).optional(),
   edificio: z.string().optional(),
@@ -104,6 +106,7 @@ export function AssetMatrixTabs({
     hostname: "",
     ip: "",
     tipo: "",
+    criticidadeNegocio: "3", // Valor padrão para criticidade
     localizacao: "",
     datacenter: "interno",
     donoNome: "",
@@ -211,7 +214,7 @@ export function AssetMatrixTabs({
               </TabsList>
             
               {/* Conteúdo da aba 1: Dados de Ativos */}
-              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="dados-ativos" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>1. Dados de Ativos</CardTitle>
@@ -273,6 +276,38 @@ export function AssetMatrixTabs({
                         )}
                       />
                       
+                      {/* Novo campo de criticidade do negócio */}
+                      <FormField
+                        control={form.control}
+                        name="criticidadeNegocio"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Criticidade do Negócio <span className="text-red-500">*</span></FormLabel>
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger>
+                                  <SelectValue placeholder="Selecione a criticidade" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                <SelectItem value="0">0 - Crítico para o negócio</SelectItem>
+                                <SelectItem value="1">1 - Impacto muito alto</SelectItem>
+                                <SelectItem value="2">2 - Impacto alto</SelectItem>
+                                <SelectItem value="3">3 - Impacto médio</SelectItem>
+                                <SelectItem value="4">4 - Impacto baixo</SelectItem>
+                                <SelectItem value="5">5 - Não impacta o negócio</SelectItem>
+                              </SelectContent>
+                            </Select>
+                            <FormDescription className="text-xs">
+                              0 é crítico para o negócio, 5 não impacta o negócio
+                            </FormDescription>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
                         control={form.control}
                         name="localizacao"
@@ -426,7 +461,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 2: Dono do Ativo */}
-              <TabsContent value="dono-ativo" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="dono-ativo" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>2. Dono do Ativo</CardTitle>
@@ -515,7 +550,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 3: Suporte N1 */}
-              <TabsContent value="suporte-n1" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="suporte-n1" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>3. Suporte N1</CardTitle>
@@ -618,7 +653,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 4: Suporte N2 */}
-              <TabsContent value="suporte-n2" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="suporte-n2" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>4. Suporte N2</CardTitle>
@@ -721,7 +756,7 @@ export function AssetMatrixTabs({
               </TabsContent>
               
               {/* Conteúdo da aba 5: Suporte N3 */}
-              <TabsContent value="suporte-n3" className="border rounded-lg p-4 flex-1 overflow-auto">
+              <TabsContent value="suporte-n3" className="border rounded-lg p-4 flex-1 overflow-y-auto" style={{ maxHeight: "calc(100% - 50px)" }}>
                 <Card>
                   <CardHeader>
                     <CardTitle>5. Suporte N3</CardTitle>
@@ -997,27 +1032,44 @@ export function AssetMatrixTabs({
               <p className="text-xs text-gray-500">{progressPercentage}% completo</p>
             </div>
             
-            {/* Botões de ação */}
-            <div className="p-4 border-t flex justify-between bg-white">
-              <Button type="button" variant="outline" onClick={onCancel}>
+            {/* Botões de ação com layout melhorado */}
+            <div className="p-4 border-t bg-white grid grid-cols-2 gap-2">
+              <Button 
+                type="button" 
+                variant="outline" 
+                onClick={onCancel}
+                className="w-full"
+              >
                 Cancelar
               </Button>
               
-              <div className="space-x-2">
-                {/* Botão de importar matriz (apenas no cadastro) */}
-                {!isEdit && (
-                  <Button type="button" variant="secondary" onClick={handleImportMatrix}>
+              {!isEdit ? (
+                <>
+                  <Button 
+                    type="button" 
+                    variant="secondary" 
+                    onClick={handleImportMatrix}
+                    className="w-full col-span-1"
+                  >
                     Importar Matriz
                   </Button>
-                )}
-                
+                  <Button 
+                    type="submit"
+                    disabled={assets.length === 0}
+                    className="w-full col-span-2"
+                  >
+                    Salvar Matriz
+                  </Button>
+                </>
+              ) : (
                 <Button 
                   type="submit"
                   disabled={assets.length === 0}
+                  className="w-full col-span-1"
                 >
-                  {isEdit ? "Atualizar Matriz" : "Salvar Matriz"}
+                  Atualizar Matriz
                 </Button>
-              </div>
+              )}
             </div>
           </div>
         </form>
