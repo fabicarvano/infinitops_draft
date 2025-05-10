@@ -207,17 +207,16 @@ export default function AssetMatrixTable({
           </DialogHeader>
           
           <div className="mt-4">
-            <div className="flex items-center justify-between mb-2">
+            <div className="mb-2">
               <h4 className="text-sm font-medium">Contrato</h4>
-              <p className="text-xs text-slate-500">ID da Matriz: Será gerado automaticamente</p>
             </div>
             
-            {/* Contrato sempre em modo somente visualização exatamente igual à imagem */}
+            {/* Contrato sempre em modo somente visualização com número do contrato */}
             <Input 
               className="w-full bg-slate-50" 
               disabled
-              value={matrixContractsData.find(c => c.id === selectedContractId)?.contractName ?
-                `${matrixContractsData.find(c => c.id === selectedContractId)?.contractName} - ${matrixContractsData.find(c => c.id === selectedContractId)?.client}` :
+              value={selectedContractId ? 
+                `${selectedContractId} - ${matrixContractsData.find(c => c.id === selectedContractId)?.contractName} - ${matrixContractsData.find(c => c.id === selectedContractId)?.client}` :
                 ''}
             />
             
