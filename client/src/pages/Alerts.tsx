@@ -22,6 +22,8 @@ type ApiSeverity = "0" | "1" | "2" | "3" | "4" | "5";
 type AlertSeverity = "not_classified" | "information" | "warning" | "average" | "high" | "disaster";
 type SystemSeverity = "nao_classificado" | "informativo" | "aviso" | "medio" | "alto" | "critico";
 type AlertStatus = "open" | "acknowledged" | "resolved";
+type TicketStatus = "aberto" | "pendente" | "reconhecido" | "resolvido";
+type TicketCreationType = "automatico" | "manual"; // apenas para histórico interno
 
 interface Alert {
   id: number;
@@ -34,6 +36,8 @@ interface Alert {
   time: string;
   status: AlertStatus;
   ticketId?: number;
+  ticketStatus?: TicketStatus;
+  ticketCreationType?: TicketCreationType; // apenas para histórico interno
   isAcknowledged: boolean;
 }
 
@@ -230,25 +234,20 @@ export default function Alerts() {
     }
   };
 
+  // Simplificando os status de acordo com as regras de negócio
   const getStatusBadge = (alert: Alert) => {
-    // Alerta crítico/alto: sempre mostra chamado automático
-    if (isHighSeverity(alert.severity)) {
-      if (alert.ticketId) {
-        return <Badge className="bg-purple-100 text-purple-700">Chamado Automático #{alert.ticketId}</Badge>;
-      } else {
-        // Aguardando criação automática
-        return <Badge className="bg-purple-100 text-purple-700">Aguardando chamado automático</Badge>;
-      }
-    }
-    
-    // Casos para alertas de severidade média, baixa, etc.
+    // Status Reconhecido
     if (alert.isAcknowledged) {
       return <Badge className="bg-green-100 text-green-700">Reconhecido</Badge>;
-    } else if (alert.ticketId) {
-      return <Badge className="bg-blue-100 text-blue-700">Chamado #{alert.ticketId}</Badge>;
-    } else {
-      return <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>;
     }
+    
+    // Status Aberto (quando tem chamado)
+    if (alert.ticketId) {
+      return <Badge className="bg-blue-100 text-blue-700">Aberto</Badge>;
+    }
+    
+    // Status Pendente (quando não tem chamado e não foi reconhecido)
+    return <Badge className="bg-yellow-100 text-yellow-700">Pendente</Badge>;
   };
 
   // Funções para gerenciar ações nos alertas
@@ -257,12 +256,18 @@ export default function Alerts() {
       alert(`Redirecionando para o chamado #${ticketId}`);
     } else {
       alert("Criando um novo chamado para este alerta");
+      // Em um sistema real, registraríamos no histórico se foi criado manualmente
+      // ticketCreationType: "manual"
     }
   };
 
   const handleAcknowledge = (alertId: number) => {
     alert(`Reconhecendo alerta #${alertId}`);
     // Na implementação real, chamaríamos uma API para reconhecer o alerta
+    // que atualizaria o status para "acknowledged" e definiria isAcknowledged = true
+    
+    // Após reconhecer um alerta, não é mais possível criar um chamado para ele
+    // Quando o alerta é reconhecido, isso é registrado no histórico para fins de auditoria
   };
 
   return (
@@ -428,7 +433,7 @@ export default function Alerts() {
                           onClick={() => handleGoToTicket(alert.ticketId)}
                         >
                           <FileText className="mr-1 h-4 w-4" />
-                          {alert.ticketId ? `Chamado #${alert.ticketId}` : "Aguardando chamado"}
+                          Ver Chamado
                         </Button>
                       ) : (
                         /* Alertas de menor severidade: reconhecer ou criar chamado */
@@ -445,7 +450,8 @@ export default function Alerts() {
                             </Button>
                           )}
                           
-                          {!alert.ticketId && (
+                          {/* Só mostramos o botão "Criar Chamado" se o alerta NÃO tiver chamado E NÃO estiver reconhecido */}
+                          {!alert.ticketId && !alert.isAcknowledged && (
                             <Button 
                               size="sm" 
                               variant="default"
