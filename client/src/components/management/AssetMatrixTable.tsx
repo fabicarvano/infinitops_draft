@@ -216,8 +216,16 @@ export default function AssetMatrixTable({
               className="w-full bg-slate-50" 
               disabled
               value={selectedContractId ? 
-                `${selectedContractId} - ${matrixContractsData.find(c => c.id === selectedContractId)?.contractName} - ${matrixContractsData.find(c => c.id === selectedContractId)?.client}` :
-                ''}
+                (() => {
+                  const contract = matrixContractsData.find(c => c.id === selectedContractId);
+                  if (contract) {
+                    return `${selectedContractId} - ${contract.contractName} - ${contract.client}`;
+                  } else {
+                    return `${selectedContractId} - Contrato não encontrado`;
+                  }
+                })() :
+                '- Selecione um contrato -'
+              }
             />
             
             {/* Campo de total de ativos é exibido apenas na edição, não na criação */}
