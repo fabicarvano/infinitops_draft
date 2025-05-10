@@ -42,13 +42,21 @@ interface AssetMatrixContract {
   updatedAt: string;
 }
 
+interface AssetMatrix {
+  id: number;
+  contractId: number;
+  assetCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 interface AssetMatrixTableProps {
   contractId?: number | null;
   isEditing?: boolean;
   shouldOpenEditor?: boolean;
 }
 
-// Dados de exemplo de matrizes vinculadas a contratos
+// Dados de exemplo de contratos disponíveis
 const matrixContractsData: AssetMatrixContract[] = [
   {
     id: 1,
@@ -84,6 +92,24 @@ const matrixContractsData: AssetMatrixContract[] = [
   }
 ];
 
+// Dados de exemplo de matrizes já cadastradas
+const matricesData: AssetMatrix[] = [
+  {
+    id: 101,
+    contractId: 1,
+    assetCount: 12,
+    createdAt: "2025-02-15T10:30:00Z",
+    updatedAt: "2025-04-05T14:45:00Z"
+  },
+  {
+    id: 102,
+    contractId: 3,
+    assetCount: 15,
+    createdAt: "2025-03-08T13:40:00Z", 
+    updatedAt: "2025-04-12T16:30:00Z"
+  }
+];
+
 // Função para formatar datas
 const formatDate = (dateString: string) => {
   const date = new Date(dateString);
@@ -92,12 +118,13 @@ const formatDate = (dateString: string) => {
 
 export default function AssetMatrixTable({ 
   contractId, 
-  isEditing = false, 
+  isEditing: isEditingProp = false, 
   shouldOpenEditor = false 
 }: AssetMatrixTableProps = {}) {
   const [searchTerm, setSearchTerm] = useState("");
   const [openDialog, setOpenDialog] = useState(shouldOpenEditor);
   const [selectedContractId, setSelectedContractId] = useState<number | null>(contractId || null);
+  const [isEditing, setIsEditing] = useState(isEditingProp);
   const { toast } = useToast();
   
   // Efeito para tratar mudanças nas propriedades
@@ -192,37 +219,56 @@ export default function AssetMatrixTable({
             </DialogTitle>
           </DialogHeader>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-            <div>
-              <h4 className="text-sm font-medium mb-2">Contrato</h4>
-              <Select defaultValue={selectedContractId?.toString() || ""}>
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-2">
+              <h4 className="text-sm font-medium">Contrato</h4>
+              <p className="text-xs text-slate-500">ID da Matriz: {isEditing ? "MTX" + (selectedContractId ? selectedContractId + 100 : '') : "Será gerado automaticamente"}</p>
+            </div>
+            
+            {/* Quando vem do link de contrato, o contrato já está selecionado e bloqueado */}
+            {contractId ? (
+              <div className="px-3 py-2 border rounded-md bg-slate-50 text-slate-700 font-medium">
+                {matrixContractsData.find(c => c.id === contractId)?.contractName} - {matrixContractsData.find(c => c.id === contractId)?.client}
+              </div>
+            ) : (
+              <Select 
+                defaultValue={selectedContractId?.toString() || ""}
+                onValueChange={(value) => setSelectedContractId(parseInt(value))}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Selecione um contrato" />
                 </SelectTrigger>
                 <SelectContent>
-                  {matrixContractsData.map(contract => (
-                    <SelectItem 
-                      key={contract.id} 
-                      value={contract.id.toString()}
-                    >
-                      {contract.contractName} - {contract.client}
-                    </SelectItem>
-                  ))}
+                  {matrixContractsData
+                    .filter(contract => !matricesData.some(matrix => matrix.contractId === contract.id))
+                    .map(contract => (
+                      <SelectItem 
+                        key={contract.id} 
+                        value={contract.id.toString()}
+                      >
+                        {contract.contractName} - {contract.client}
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
-            </div>
+            )}
             
-            <div>
-              <h4 className="text-sm font-medium mb-2">Total de Ativos</h4>
-              <Input 
-                type="number" 
-                min="1" 
-                max="999"
-                placeholder="Número de ativos" 
-                className="w-full" 
-                defaultValue={isEditing ? "8" : ""}
-              />
-            </div>
+            {/* Campo de total de ativos é exibido apenas na edição, não na criação */}
+            {isEditing && (
+              <div className="mt-4">
+                <h4 className="text-sm font-medium mb-2">Total de Ativos</h4>
+                <Input 
+                  type="number" 
+                  min="1" 
+                  max="999"
+                  placeholder="Número de ativos" 
+                  className="w-full" 
+                  defaultValue="8"
+                  disabled
+                />
+                <p className="text-xs text-slate-500 mt-1">Campo atualizado automaticamente ao adicionar ou remover ativos</p>
+              </div>
+            )}
           </div>
           
           <div className="mt-6">
@@ -277,14 +323,25 @@ export default function AssetMatrixTable({
             </Table>
             
             <div className="mt-4 flex justify-between">
-              <Button
-                variant="outline"
-                size="sm"
-                className="text-blue-600"
-              >
-                <Plus className="h-4 w-4 mr-1" />
-                Adicionar Ativo
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-blue-600"
+                >
+                  <Plus className="h-4 w-4 mr-1" />
+                  Adicionar Ativo
+                </Button>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="text-purple-600"
+                >
+                  <FileSearch className="h-4 w-4 mr-1" />
+                  Importar Matriz
+                </Button>
+              </div>
               
               <div className="flex gap-2">
                 <Button
@@ -299,11 +356,16 @@ export default function AssetMatrixTable({
                   onClick={() => {
                     // Aqui seria feita a lógica de salvar a matriz
                     // Exemplo simples:
+                    const matrixId = isEditing ? 
+                      selectedContractId ? selectedContractId + 100 : 0 : 
+                      selectedContractId ? selectedContractId + 100 : 0;
+                    
                     toast({
                       title: "Matriz de ativos salva",
-                      description: "A matriz de ativos foi salva com sucesso.",
+                      description: `A matriz de ativos MTX${matrixId} foi ${isEditing ? 'atualizada' : 'cadastrada'} com sucesso.`,
                       className: "bg-green-50 border-green-200 text-green-800",
                     });
+                    
                     setOpenDialog(false);
                   }}
                 >
