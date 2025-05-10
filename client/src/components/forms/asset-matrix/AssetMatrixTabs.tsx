@@ -132,49 +132,51 @@ export function AssetMatrixTabs({
   };
   
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-3xl font-bold">
+    <div className="h-[85vh] flex flex-col">
+      <div className="flex justify-between items-center p-6 border-b">
+        <h2 className="text-2xl font-bold">
           {isEdit ? "Atualizar Matriz de Ativos" : "Cadastrar Matriz de Ativos"}
         </h2>
       </div>
       
       <Form {...form}>
-        <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-          {/* Campo de Contrato (somente leitura) */}
-          <Card>
-            <CardContent className="pt-6">
-              <FormField
-                control={form.control}
-                name="contractId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contrato</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        disabled
-                        value={`#${contractId} - ${contractName}`}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </CardContent>
-          </Card>
-          
-          {/* Sistema de abas */}
-          <Tabs value={activeTab} onValueChange={navigateToTab} className="w-full">
-            <TabsList className="grid grid-cols-7 w-full">
-              <TabsTrigger value="dados-ativos">Dados de Ativos</TabsTrigger>
-              <TabsTrigger value="dono-ativo">Dono do Ativo</TabsTrigger>
-              <TabsTrigger value="suporte-n1">Suporte N1</TabsTrigger>
-              <TabsTrigger value="suporte-n2">Suporte N2</TabsTrigger>
-              <TabsTrigger value="suporte-n3">Suporte N3</TabsTrigger>
-              <TabsTrigger value="acionamento-presencial">Acionamento Presencial</TabsTrigger>
-              <TabsTrigger value="monitoramento" disabled>Monitoramento</TabsTrigger>
-            </TabsList>
+        <form onSubmit={form.handleSubmit(handleSubmit)} className="flex flex-1 overflow-hidden">
+          {/* Conteúdo principal (lado esquerdo) */}
+          <div className="flex-1 flex flex-col overflow-hidden p-6">
+            {/* Campo de Contrato (somente leitura) */}
+            <Card className="mb-4">
+              <CardContent className="pt-6">
+                <FormField
+                  control={form.control}
+                  name="contractId"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Contrato</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          disabled
+                          value={`#${contractId} - ${contractName}`}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </CardContent>
+            </Card>
+            
+            {/* Sistema de abas */}
+            <Tabs value={activeTab} onValueChange={navigateToTab} className="w-full flex-1 flex flex-col">
+              <TabsList className="grid grid-cols-7 w-full">
+                <TabsTrigger value="dados-ativos">Dados de Ativos</TabsTrigger>
+                <TabsTrigger value="dono-ativo">Dono do Ativo</TabsTrigger>
+                <TabsTrigger value="suporte-n1">Suporte N1</TabsTrigger>
+                <TabsTrigger value="suporte-n2">Suporte N2</TabsTrigger>
+                <TabsTrigger value="suporte-n3">Suporte N3</TabsTrigger>
+                <TabsTrigger value="acionamento-presencial">Acionamento Presencial</TabsTrigger>
+                <TabsTrigger value="monitoramento" disabled>Monitoramento</TabsTrigger>
+              </TabsList>
             
             {/* Conteúdo da aba 1: Dados de Ativos */}
             <TabsContent value="dados-ativos" className="border rounded-lg p-4">
@@ -905,24 +907,57 @@ export function AssetMatrixTabs({
             </TabsContent>
           </Tabs>
           
-          {/* Botões de ação */}
-          <div className="flex justify-between">
-            <div className="space-x-2">
+          </div>
+          
+          {/* Painel lateral de Ativos */}
+          <div className="w-[350px] border-l bg-gray-50 flex flex-col overflow-hidden">
+            <div className="p-4 border-b bg-white">
+              <h3 className="text-lg font-semibold mb-1">Ativos na Matriz</h3>
+              <div className="flex items-center justify-between">
+                <p className="text-sm text-gray-500">Total: <span className="font-medium">0</span></p>
+                <Button type="button" size="sm" className="mt-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 mr-1"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  Adicionar Ativo
+                </Button>
+              </div>
+            </div>
+            
+            {/* Lista de ativos adicionados */}
+            <div className="flex-1 overflow-auto p-2">
+              <div className="text-center py-8 text-gray-500 flex flex-col items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-16 w-16 text-gray-300 mb-4"><rect x="2" y="4" width="20" height="16" rx="2" ry="2"></rect><path d="M6 8h.01"></path><path d="M2 8h20"></path></svg>
+                <p className="font-medium mb-1">Nenhum ativo adicionado</p>
+                <p className="text-sm">Adicione ativos usando o botão acima</p>
+              </div>
+            </div>
+            
+            {/* Barra de progresso */}
+            <div className="p-4 border-t bg-white">
+              <div className="w-full bg-gray-200 rounded-full h-2.5 mb-2">
+                <div className="bg-blue-600 h-2.5 rounded-full w-0"></div>
+              </div>
+              <p className="text-xs text-gray-500">0% completo</p>
+            </div>
+            
+            {/* Botões de ação */}
+            <div className="p-4 border-t flex justify-between bg-white">
               <Button type="button" variant="outline" onClick={onCancel}>
                 Cancelar
               </Button>
               
-              {/* Botão de importar matriz (apenas no cadastro) */}
-              {!isEdit && (
-                <Button type="button" variant="secondary" onClick={handleImportMatrix}>
-                  Importar Matriz
+              <div className="space-x-2">
+                {/* Botão de importar matriz (apenas no cadastro) */}
+                {!isEdit && (
+                  <Button type="button" variant="secondary" onClick={handleImportMatrix}>
+                    Importar Matriz
+                  </Button>
+                )}
+                
+                <Button type="submit">
+                  {isEdit ? "Atualizar Matriz" : "Salvar Matriz"}
                 </Button>
-              )}
+              </div>
             </div>
-            
-            <Button type="submit">
-              {isEdit ? "Atualizar Matriz" : "Salvar Matriz"}
-            </Button>
           </div>
         </form>
       </Form>
