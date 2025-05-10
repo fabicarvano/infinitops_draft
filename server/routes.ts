@@ -605,6 +605,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
 
   // Simular novos alertas a cada 30 segundos
+  // DESATIVADO: Alertas simulados desativados conforme solicitado
+  /*
   setInterval(async () => {
     try {
       // Criar um alerta simulado (na prática, isso viria de sistemas externos como Zabbix)
@@ -638,8 +640,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Erro ao criar alerta simulado:', error);
     }
   }, 30000);
+  */
   
   // Simular abertura de chamados VIP ocasionalmente (a cada 15 segundos para teste)
+  // DESATIVADO: Chamados VIP simulados desativados conforme solicitado
+  /*
   setInterval(async () => {
     try {
       // 40% de chance de gerar um novo chamado VIP
@@ -674,6 +679,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.error('Erro ao criar notificação de chamado VIP:', error);
     }
   }, 15000);
+  */
 
   return httpServer;
 }
