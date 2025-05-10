@@ -78,6 +78,7 @@ export class MemStorage implements IStorage {
   private tickets: Map<number, Ticket>;
   private activities: Map<number, Activity>;
   private integrations: Map<number, Integration>;
+  private assetMatrices: Map<number, AssetMatrix>;
   
   private userId: number;
   private clientId: number;
