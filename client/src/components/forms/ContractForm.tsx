@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import * as z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { CalendarIcon, Info } from "lucide-react";
+import { CalendarIcon, Info, HelpCircle } from "lucide-react";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
 
@@ -38,7 +38,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Calendar } from "@/components/ui/calendar";
+import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 
 // Schema de validação para o formulário de contrato
@@ -62,9 +69,10 @@ const contractFormSchema = z.object({
   commercial_contact: z.string().min(3, {
     message: "Responsável comercial é obrigatório.",
   }),
-  service_level: z.enum(["standard", "premium", "vip"], {
+  service_level_type: z.enum(["standard", "premium", "platinum", "custom"], {
     required_error: "Nível de serviço é obrigatório.",
   }),
+  use_business_criticality_adjustment: z.boolean().default(true),
   description: z.string().optional(),
   // Status removido pois será determinado automaticamente
 });
@@ -111,7 +119,8 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
       end_date: new Date(new Date().setMonth(new Date().getMonth() + 12)), // 12 meses
       technical_contact: "",
       commercial_contact: "",
-      service_level: "standard",
+      service_level_type: "standard",
+      use_business_criticality_adjustment: true,
       description: "",
       // Status removido pois será determinado automaticamente com base na matriz de ativos
     },
@@ -152,12 +161,8 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
       
       // Callback para o componente pai
       if (onContractCreated) {
-        // Adicionamos o status como "pending" para compatibilidade com a interface, 
-        // mas no backend será controlado pela matriz de ativos
-        onContractCreated({
-          ...values,
-          status: "pending" as any
-        });
+        // No backend, o status será controlado pela matriz de ativos
+        onContractCreated(values);
       }
     } catch (error) {
       console.error("Erro ao criar contrato:", error);
@@ -307,7 +312,7 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
               {/* Nível de Serviço */}
               <FormField
                 control={form.control}
-                name="service_level"
+                name="service_level_type"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Nível de Serviço</FormLabel>
@@ -323,10 +328,53 @@ export default function ContractForm({ open, onOpenChange, onContractCreated, cl
                       <SelectContent>
                         <SelectItem value="standard">Standard</SelectItem>
                         <SelectItem value="premium">Premium</SelectItem>
-                        <SelectItem value="vip">VIP</SelectItem>
+                        <SelectItem value="platinum">Platinum</SelectItem>
+                        <SelectItem value="custom">Personalizado</SelectItem>
                       </SelectContent>
                     </Select>
                     <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Switch para Ajuste por Criticidade */}
+              <FormField
+                control={form.control}
+                name="use_business_criticality_adjustment"
+                render={({ field }) => (
+                  <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3">
+                    <div className="space-y-0.5">
+                      <FormLabel className="text-base">
+                        Ajuste por Criticidade de Negócio
+                      </FormLabel>
+                      <FormDescription>
+                        Reduz tempos de SLA para ativos críticos
+                      </FormDescription>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <HelpCircle className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent className="max-w-xs">
+                            <p>Quando ativado, aplica fatores de ajuste aos tempos de SLA com base na criticidade do negócio:</p>
+                            <ul className="list-disc list-inside text-xs mt-1 space-y-1">
+                              <li>Criticidade 0: Redução de 50% nos tempos</li>
+                              <li>Criticidade 1: Redução de 25% nos tempos</li>
+                              <li>Criticidade 2: Redução de 10% nos tempos</li>
+                              <li>Criticidade 3-5: Sem ajuste</li>
+                            </ul>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
                   </FormItem>
                 )}
               />

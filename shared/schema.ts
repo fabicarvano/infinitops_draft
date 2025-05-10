@@ -49,7 +49,7 @@ export const assets = pgTable("assets", {
   ip_address: text("ip_address"),
   hostname: text("hostname"),
   criticality: text("criticality").notNull().default("medium"), // Criticidade técnica (herdada do alerta)
-  business_criticality: integer("business_criticality").notNull().default(3), // Criticidade de negócio (0-5, onde 0 é crítico)
+  business_criticality: integer("business_criticality").notNull().default("3"), // Criticidade de negócio (0-5, onde 0 é crítico)
   status: text("status").notNull().default("active"),
   zabbix_id: text("zabbix_id"),
   created_at: timestamp("created_at").notNull().defaultNow(),
