@@ -11,6 +11,7 @@ import AssetMatrix from "@/pages/AssetMatrix";
 import Alerts from "@/pages/Alerts";
 import Tickets from "@/pages/Tickets";
 import Settings from "@/pages/Settings";
+import SlaDemo from "@/pages/SlaDemo";
 import BasicLayout from "@/components/layout/BasicLayout";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -37,6 +38,7 @@ function Router() {
           <Route path="/alertas" component={Alerts} />
           <Route path="/chamados" component={Tickets} />
           <Route path="/configuracoes" component={Settings} />
+          <Route path="/sla-demo" component={SlaDemo} />
           <Route component={NotFound} />
         </Switch>
       </motion.div>
