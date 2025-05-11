@@ -1,8 +1,9 @@
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { format } from "date-fns";
+import { AlertTriangle, Clock } from "lucide-react";
 
 type SupportAvailabilityType = "24x7" | "comercial" | "unificado" | "sem_equipe";
+type AlertStatus = "Aberto" | "Pendente" | "Reconhecido" | "Resolvido";
 
 interface SupportTeam {
   name: string;
@@ -16,15 +17,23 @@ interface SupportTeam {
 interface SupportContactsPanelProps {
   assetId: number;
   assetType: string;
+  severity: string; // "critical", "high", "medium", "low"
   serviceLevel: string; // "Platinum", "Premium", "Standard" ou "Personalizado"
   serviceHours: string; // "24x7", "Seg-Sex 06h-23h", etc.
+  ticketId?: number;
+  isAcknowledged?: boolean;
+  time?: string;
 }
 
 export default function SupportContactsPanel({
   assetId,
   assetType,
+  severity,
   serviceLevel,
-  serviceHours
+  serviceHours,
+  ticketId,
+  isAcknowledged,
+  time
 }: SupportContactsPanelProps) {
   // Determinar o tipo de disponibilidade baseado no nível de serviço
   const availabilityType: SupportAvailabilityType = 
@@ -39,6 +48,19 @@ export default function SupportContactsPanel({
   const currentHour = new Date().getHours();
   const currentDay = new Date().getDay(); // 0 = Domingo, 1-5 = Seg-Sex, 6 = Sábado
   const isBusinessHours = currentDay >= 1 && currentDay <= 5 && currentHour >= 8 && currentHour < 18;
+  
+  // Determinar o status do alerta com a mesma lógica usada na tabela de alertas ativos
+  const alertStatus: AlertStatus = isAcknowledged 
+    ? "Reconhecido" 
+    : ticketId 
+      ? "Aberto" 
+      : "Pendente";
+  
+  // Determinar se o alerta é de alta severidade (crítico ou alto)
+  const isHighSeverity = severity === "critical" || severity === "high";
+  
+  // Verificar se um chamado automático seria aberto (alta severidade)
+  const wouldAutoCreateTicket = isHighSeverity && !ticketId;
   
   // Flags para determinar o que exibir
   const has24x7Support = availabilityType === "24x7";
@@ -90,11 +112,80 @@ export default function SupportContactsPanel({
     instructions: "Em caso de emergência, ligue para o número acima e informe o código do ativo."
   };
   
+  // Função para calcular indicador de tempo para alertas pendentes
+  const getTimeWithoutActionIndicator = (timeString?: string) => {
+    if (!timeString) return null;
+    
+    // Extrair a informação de tempo do formato "Xm atrás" ou "Xh Ym atrás"
+    let minutes = 0;
+    
+    if (timeString.includes('h') && timeString.includes('m')) {
+      // Formato "Xh Ym atrás"
+      const hourPart = parseInt(timeString.split('h')[0]);
+      const minutePart = parseInt(timeString.split('h')[1].split('m')[0].trim());
+      minutes = hourPart * 60 + minutePart;
+    } else if (timeString.includes('h')) {
+      // Formato "Xh atrás"
+      const hours = parseInt(timeString.split('h')[0]);
+      minutes = hours * 60;
+    } else if (timeString.includes('m')) {
+      // Formato "Xm atrás"
+      minutes = parseInt(timeString.split('m')[0]);
+    }
+    
+    // Baseado no tempo, retornamos um indicador diferente
+    if (minutes >= 10) {
+      return <div className="flex items-center ml-2 text-red-600">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+10min</span>
+      </div>;
+    } else if (minutes >= 5) {
+      return <div className="flex items-center ml-2 text-orange-600">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+5min</span>
+      </div>;
+    } else if (minutes >= 2) {
+      return <div className="flex items-center ml-2 text-yellow-600">
+        <Clock className="h-3 w-3 mr-1" />
+        <span className="text-xs font-medium">+2min</span>
+      </div>;
+    }
+    
+    // Menos de 2 minutos, não mostramos indicador
+    return null;
+  };
+  
   return (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <h3 className="text-lg font-medium">Contatos de Suporte</h3>
+          <div className="flex items-center">
+            <h3 className="text-lg font-medium">Contatos de Suporte</h3>
+            
+            {/* Status do alerta com mesma lógica da tabela de alertas ativos */}
+            <div className="ml-4 flex items-center">
+              {alertStatus === "Reconhecido" && (
+                <Badge className="bg-green-100 text-green-700">Reconhecido</Badge>
+              )}
+              
+              {alertStatus === "Aberto" && (
+                <Badge className="bg-yellow-100 text-yellow-700">Aberto</Badge>
+              )}
+              
+              {alertStatus === "Pendente" && (
+                <div className="flex items-center">
+                  <Badge className="bg-blue-100 text-blue-700">Pendente</Badge>
+                  {getTimeWithoutActionIndicator(time)}
+                </div>
+              )}
+              
+              {wouldAutoCreateTicket && (
+                <div className="ml-2">
+                  <Badge className="bg-purple-100 text-purple-700">Chamado automático</Badge>
+                </div>
+              )}
+            </div>
+          </div>
           
           {/* Indicador de disponibilidade */}
           {has24x7Support && (

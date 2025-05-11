@@ -429,8 +429,12 @@ export default function SlaDemo() {
                         <SupportContactsPanel 
                           assetId={alert.assetId}
                           assetType={alert.asset}
+                          severity={alert.status}
                           serviceLevel={alert.serviceLevel}
                           serviceHours={alert.serviceHours}
+                          ticketId={alert.ticketId}
+                          isAcknowledged={alert.monitoringStatus === "reconhecido"}
+                          time={alert.time}
                         />
                       </div>
                     </div>
