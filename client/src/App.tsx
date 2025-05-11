@@ -7,6 +7,7 @@ import Dashboard from "@/pages/Dashboard";
 import Clients from "@/pages/Clients";
 import Contracts from "@/pages/Contracts";
 import Assets from "@/pages/Assets";
+import AssetDetails from "@/pages/AssetDetails";
 import AssetMatrix from "@/pages/AssetMatrix";
 import Alerts from "@/pages/Alerts";
 import Tickets from "@/pages/Tickets";
