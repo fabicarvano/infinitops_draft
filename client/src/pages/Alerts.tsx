@@ -885,6 +885,7 @@ export default function Alerts() {
                         <div>
                           <h4 className="text-lg font-medium mb-3">Dados de Monitoramento</h4>
                           <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                            {console.log("Alerta expandido:", alert)}
                             <AlertMonitoringInfo 
                               alertId={alert.id} 
                               assetId={alert.assetId} 

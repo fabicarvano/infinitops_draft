@@ -175,7 +175,14 @@ export class MonitoringService {
       const alert = await alertResponse.json();
       
       // Buscar dados do ativo associado ao alerta
-      const assetState = await this.getAssetMonitoringState(alert.asset_id);
+      // Em produção, asset_id seria o nome esperado, mas vamos verificar várias possibilidades
+      const assetId = alert.asset_id || alert.assetId;
+      if (!assetId) {
+        console.error("ID do ativo não encontrado no alerta:", alert);
+        return undefined;
+      }
+      
+      const assetState = await this.getAssetMonitoringState(assetId);
       if (!assetState) {
         return undefined;
       }
