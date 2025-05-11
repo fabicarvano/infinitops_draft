@@ -318,6 +318,88 @@ export default function Alerts() {
     alert.message.toLowerCase().includes(searchTerm.toLowerCase())
   );
   
+  // Transformar alertas para o formato do SLA-Demo
+  const demoAlerts: DemoAlert[] = filteredAlerts.map(alert => {
+    // Determinar criticidade de negócio simulada (baseada no ID do ativo)
+    const businessCriticality = (alert.assetId % 6) as BusinessCriticality;
+    
+    // Determinar criticidade técnica
+    const technicalCriticality = mapSeverityToTechnicalCriticality(alert.severity);
+    
+    // Calcular valores de SLA
+    const slaValues = calculateSlaValues(technicalCriticality, businessCriticality);
+    
+    // Verificar se o alerta está reconhecido
+    const isAcknowledged = alert.isAcknowledged || acknowledged.includes(alert.id);
+    
+    // Verificar se o alerta tem chamado (original ou criado pelo usuário)
+    const ticketId = alert.ticketId || (createdTickets.includes(alert.id) ? 1000 + alert.id : undefined);
+    
+    // Criar data de criação do alerta (para demonstração, usamos a data atual - X minutos)
+    const createdAt = (() => {
+      const now = new Date();
+      let timeString = alert.time;
+      
+      if (timeString.includes('h') && timeString.includes('m')) {
+        // Formato "Xh Ym atrás"
+        const hourPart = parseInt(timeString.split('h')[0]);
+        const minutePart = parseInt(timeString.split('h')[1].split('m')[0].trim());
+        return new Date(now.getTime() - (hourPart * 60 + minutePart) * 60000).toISOString();
+      } else if (timeString.includes('h')) {
+        // Formato "Xh atrás"
+        const hours = parseInt(timeString.split('h')[0]);
+        return new Date(now.getTime() - hours * 60 * 60000).toISOString();
+      } else if (timeString.includes('m')) {
+        // Formato "Xm atrás"
+        const minutes = parseInt(timeString.split('m')[0]);
+        return new Date(now.getTime() - minutes * 60000).toISOString();
+      }
+      
+      return new Date().toISOString();
+    })();
+    
+    // Data de criação do chamado (se existir)
+    const ticketCreatedAt = ticketId 
+      ? new Date(Date.parse(createdAt) + 60000).toISOString() // 1 minuto após a criação do alerta
+      : undefined;
+      
+    // Determinar status de monitoramento
+    let monitoringStatus: MonitoringStatus = "ativo";
+    if (isAcknowledged) monitoringStatus = "reconhecido";
+    
+    return {
+      id: alert.id,
+      status: mapSystemToSlaDemoSeverity(alert.severity),
+      client: alert.client,
+      asset: alert.asset,
+      assetId: alert.assetId,
+      message: alert.message,
+      time: alert.time,
+      createdAt,
+      // Campos de monitoramento
+      monitoringStatus,
+      monitoringSource: "Zabbix",
+      monitoringId: `ZBX-${alert.id}`,
+      // Campos de SLA
+      ticketId,
+      ticketCreatedAt,
+      finalPriority: slaValues.finalPriority,
+      serviceLevel: businessCriticality >= 3 ? "Platinum" : (businessCriticality >= 1 ? "Premium" : "Standard"),
+      technicalCriticality,
+      businessCriticality,
+      // Tempos e prazos de SLA
+      firstResponseTime: slaValues.firstResponseTime,
+      resolutionTime: slaValues.resolutionTime,
+      firstResponseDeadline: slaValues.firstResponseDeadline,
+      resolutionDeadline: slaValues.resolutionDeadline,
+      serviceHours: slaValues.serviceHours,
+      adjustmentFactor: slaValues.adjustmentFactor,
+      isAdjustmentEnabled: businessCriticality > 0,
+      slaPaused: false,
+      slaViolated: false
+    };
+  });
+  
   // Função para aplicar ou remover um filtro
   const handleFilter = (filterType: FilterType) => {
     // Se o mesmo filtro já estiver ativo, desativamos
@@ -436,25 +518,178 @@ export default function Alerts() {
       </div>
     );
   };
+  
+  // Mapear severidade do sistema para o formato SLA-Demo
+  const mapSystemToSlaDemoSeverity = (severity: SystemSeverity): SlaDemoSeverity => {
+    switch (severity) {
+      case "critico": return "critical";
+      case "alto": return "high";
+      case "medio": return "medium";
+      case "aviso": 
+      case "informativo": 
+      case "nao_classificado":
+      default: return "low";
+    }
+  };
+  
+  // Mapear status do alerta para o formato MonitoringStatus
+  const mapStatusToMonitoringStatus = (alert: Alert): MonitoringStatus => {
+    if (alert.isAcknowledged) return "reconhecido";
+    if (alert.status === "resolved") return "normalizado";
+    return "ativo";
+  };
+  
+  // Mapear criticidade técnica com base na severidade do alerta
+  const mapSeverityToTechnicalCriticality = (severity: SystemSeverity): TechnicalCriticality => {
+    switch (severity) {
+      case "critico": return "Disaster";
+      case "alto": return "High";
+      case "medio": return "Average";
+      case "aviso": return "Warning";
+      case "informativo": 
+      case "nao_classificado":
+      default: return "Information";
+    }
+  };
+  
+  // Calcular valores de SLA com base na criticidade técnica e de negócio
+  const calculateSlaValues = (techCriticality: TechnicalCriticality, businessCriticality: BusinessCriticality): {
+    firstResponseTime: number;
+    resolutionTime: number;
+    firstResponseDeadline: string;
+    resolutionDeadline: string;
+    serviceHours: string;
+    adjustmentFactor: number;
+    finalPriority: PriorityLevel;
+  } => {
+    // Tempos base de SLA baseados na criticidade técnica
+    let baseFirstResponse: number;
+    let baseResolution: number;
+    let serviceHours: string;
+    
+    switch (techCriticality) {
+      case "Disaster":
+        baseFirstResponse = 15; // 15 minutos
+        baseResolution = 120; // 2 horas
+        serviceHours = "24x7";
+        break;
+      case "High":
+        baseFirstResponse = 30; // 30 minutos
+        baseResolution = 240; // 4 horas
+        serviceHours = "24x7";
+        break;
+      case "Average":
+        baseFirstResponse = 60; // 1 hora
+        baseResolution = 480; // 8 horas
+        serviceHours = "8x5";
+        break;
+      case "Warning":
+        baseFirstResponse = 120; // 2 horas
+        baseResolution = 1440; // 24 horas
+        serviceHours = "8x5";
+        break;
+      case "Information":
+      default:
+        baseFirstResponse = 240; // 4 horas
+        baseResolution = 2880; // 48 horas
+        serviceHours = "8x5";
+        break;
+    }
+    
+    // Fator de ajuste baseado na criticidade de negócio (0-5)
+    // Quanto maior a criticidade, menor o tempo (maior a prioridade)
+    const adjustmentFactor = businessCriticality === 0 ? 1 : 1 - (businessCriticality * 0.1);
+    
+    // Aplicar o fator de ajuste
+    const firstResponseTime = Math.round(baseFirstResponse * adjustmentFactor);
+    const resolutionTime = Math.round(baseResolution * adjustmentFactor);
+    
+    // Calcular prazos (simplificado para demonstração - apenas adicionamos os minutos à data atual)
+    const now = new Date();
+    const firstResponseDeadline = new Date(now.getTime() + firstResponseTime * 60000).toISOString();
+    const resolutionDeadline = new Date(now.getTime() + resolutionTime * 60000).toISOString();
+    
+    // Determinar prioridade final com base nas criticidades combinadas
+    let finalPriority: PriorityLevel;
+    const totalScore = (["Disaster", "High", "Average", "Warning", "Information"].indexOf(techCriticality) + 1) + (5 - businessCriticality);
+    
+    if (totalScore <= 2) finalPriority = "Crítica";
+    else if (totalScore <= 4) finalPriority = "Muito Alta";
+    else if (totalScore <= 6) finalPriority = "Alta";
+    else if (totalScore <= 8) finalPriority = "Média";
+    else if (totalScore <= 10) finalPriority = "Baixa";
+    else finalPriority = "Muito Baixa";
+    
+    return {
+      firstResponseTime,
+      resolutionTime,
+      firstResponseDeadline,
+      resolutionDeadline,
+      serviceHours,
+      adjustmentFactor,
+      finalPriority
+    };
+  };
+  
+  // Função para expandir/recolher alertas
+  const toggleExpandAlert = (alertId: number) => {
+    setExpandedAlerts(prev => 
+      prev.includes(alertId)
+        ? prev.filter(id => id !== alertId)
+        : [...prev, alertId]
+    );
+  };
+  
+  // Handler para reconhecer alertas
+  const handleAcknowledge = (alertId: number) => {
+    // Encontrar o alerta
+    const alert = alerts.find(a => a.id === alertId);
+    
+    // Verificar se o alerta está pendente (sem chamado e não reconhecido)
+    if (!alert || alert.ticketId || alert.isAcknowledged) {
+      toast({
+        title: "Ação não permitida",
+        description: "Apenas alertas pendentes podem ser reconhecidos.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    setAcknowledged(prev => [...prev, alertId]);
+    
+    toast({
+      title: "Alerta reconhecido",
+      description: `Alerta #${alertId} foi reconhecido com sucesso.`,
+      variant: "default",
+    });
+  };
+  
+  // Handler para criar chamados
+  const handleCreateTicket = (alertId: number) => {
+    setCreatedTickets(prev => [...prev, alertId]);
+    
+    // Verificar se o alerta é de alta severidade (crítico ou alto)
+    const alert = alerts.find(a => a.id === alertId);
+    const alertIsHighSeverity = alert && (alert.severity === "critico" || alert.severity === "alto");
+    
+    toast({
+      title: "Chamado criado",
+      description: `Chamado para o alerta #${alertId} foi criado com sucesso.`,
+      variant: "default",
+    });
+  };
 
   // Funções para gerenciar ações nos alertas
   const handleGoToTicket = (ticketId?: number) => {
     if (ticketId) {
-      alert(`Redirecionando para o chamado #${ticketId}`);
+      toast({
+        title: "Redirecionando",
+        description: `Indo para o chamado #${ticketId}`,
+        variant: "default"
+      });
     } else {
-      alert("Criando um novo chamado para este alerta");
-      // Em um sistema real, registraríamos no histórico se foi criado manualmente
-      // ticketCreationType: "manual"
+      handleCreateTicket(0); // Parâmetro fictício, não será usado
     }
-  };
-
-  const handleAcknowledge = (alertId: number) => {
-    alert(`Reconhecendo alerta #${alertId}`);
-    // Na implementação real, chamaríamos uma API para reconhecer o alerta
-    // que atualizaria o status para "acknowledged" e definiria isAcknowledged = true
-    
-    // Após reconhecer um alerta, não é mais possível criar um chamado para ele
-    // Quando o alerta é reconhecido, isso é registrado no histórico para fins de auditoria
   };
 
   return (
