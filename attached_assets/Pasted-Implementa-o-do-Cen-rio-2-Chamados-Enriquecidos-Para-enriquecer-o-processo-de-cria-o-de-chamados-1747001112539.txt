@@ -1,0 +1,38 @@
+Implementação do Cenário 2: Chamados Enriquecidos
+Para enriquecer o processo de criação de chamados:
+
+Modificar o formulário de criação de chamados:
+
+Localizar o componente que gerencia a criação de chamados (possivelmente em client/src/components/tickets/TicketForm.tsx)
+Adicionar um novo hook useEffect que é acionado quando o ativo é selecionado
+Este hook chamará o serviço de monitoramento para obter dados complementares
+Pré-preenchimento inteligente:
+
+Desenvolver uma função generateTechnicalDescription() que formata os dados de monitoramento em texto
+Implementar lógica para preencher campos existentes com informações adicionais sem sobrescrever entradas do usuário
+Adicionar pequenos ícones "info" que mostram de onde vieram os dados automáticos
+Sistema de anexos e links:
+
+Adicionar uma seção "Informações Técnicas" ao formulário de chamados
+Esta seção renderizará links diretos para o sistema de monitoramento
+Implementar função para capturar e anexar estado atual dos gráficos como imagens
+Todas essas alterações serão implementadas como adições ao formulário existente, sem alterar o comportamento básico de criação de chamados.
+
+Implementação do Cenário 3: Visualização de Detalhes do Ativo
+Para criar o painel de monitoramento na página de detalhes do ativo:
+
+Adicionar um novo componente na página de detalhes:
+
+Localizar a página de detalhes do ativo (provavelmente em client/src/pages/AssetDetails.tsx)
+Criar um novo componente MonitoringPanel que será adicionado à lista de cartões já existentes
+Este componente será condicional e só aparecerá se houver configuração de monitoramento para o ativo
+Desenvolvimento dos indicadores visuais:
+
+Criar um conjunto de componentes pequenos e reutilizáveis para diferentes métricas
+Implementar mini-gráficos utilizando uma biblioteca leve compatível com o React (como recharts)
+Garantir que todos os elementos visuais tenham estados de carregamento e erro
+Implementação das ações contextuais:
+
+Adicionar um componente de menu de ações que oferece operações relacionadas ao monitoramento
+Estas ações utilizarão os mesmos padrões visuais dos botões já existentes no sistema
+As ações terão verificações de permissão para garantir que funcionem apenas quando apropriado
