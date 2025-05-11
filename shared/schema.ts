@@ -1,4 +1,4 @@
-import { pgTable, text, serial, integer, boolean, timestamp, varchar, numeric } from "drizzle-orm/pg-core";
+import { pgTable, text, serial, integer, boolean, timestamp, varchar, numeric, json } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -143,6 +143,7 @@ export const assetMatrices = pgTable("asset_matrices", {
   support_n1_phone: text("support_n1_phone"),
   support_n1_schedule: text("support_n1_schedule"),
   support_n1_response_time: text("support_n1_response_time"),
+  support_n1_availability_type: text("support_n1_availability_type"), // "24x7", "comercial", "unificado", "sem_equipe"
   
   // Suporte N2
   support_n2_name: text("support_n2_name"),
@@ -150,6 +151,7 @@ export const assetMatrices = pgTable("asset_matrices", {
   support_n2_phone: text("support_n2_phone"),
   support_n2_schedule: text("support_n2_schedule"),
   support_n2_response_time: text("support_n2_response_time"),
+  support_n2_availability_type: text("support_n2_availability_type"), // "24x7", "comercial", "unificado", "sem_equipe"
   
   // Suporte N3
   support_n3_name: text("support_n3_name"),
@@ -157,12 +159,32 @@ export const assetMatrices = pgTable("asset_matrices", {
   support_n3_phone: text("support_n3_phone"),
   support_n3_schedule: text("support_n3_schedule"),
   support_n3_response_time: text("support_n3_response_time"),
+  support_n3_availability_type: text("support_n3_availability_type"), // "24x7", "comercial", "unificado", "sem_equipe"
+  
+  // Plantão unificado
+  unified_support_name: text("unified_support_name"),
+  unified_support_email: text("unified_support_email"),
+  unified_support_phone: text("unified_support_phone"),
+  unified_support_schedule: text("unified_support_schedule"),
+  
+  // Contato de emergência
+  emergency_contact_name: text("emergency_contact_name"),
+  emergency_contact_phone: text("emergency_contact_phone"),
+  emergency_contact_email: text("emergency_contact_email"),
+  emergency_instructions: text("emergency_instructions"),
   
   // Dados do dono do ativo
   asset_owner_name: text("asset_owner_name"),
   asset_owner_email: text("asset_owner_email"),
   asset_owner_phone: text("asset_owner_phone"),
   asset_owner_department: text("asset_owner_department"),
+  
+  // Responsáveis de negócio
+  business_contact_name: text("business_contact_name"),
+  business_contact_email: text("business_contact_email"),
+  business_contact_phone: text("business_contact_phone"),
+  business_contact_hours: text("business_contact_hours"),
+  business_contact_position: text("business_contact_position"),
   
   // Dados de monitoramento
   monitoring_tool: text("monitoring_tool"),
@@ -174,6 +196,12 @@ export const assetMatrices = pgTable("asset_matrices", {
   onsite_support_address: text("onsite_support_address"),
   onsite_support_contact: text("onsite_support_contact"),
   onsite_support_schedule: text("onsite_support_schedule"),
+  
+  // Matriz de criticidade - Armazenada como string JSON
+  criticality_matrix: text("criticality_matrix"),
+  
+  // Regras de escalação - Armazenada como string JSON
+  escalation_rules: text("escalation_rules"),
   
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
