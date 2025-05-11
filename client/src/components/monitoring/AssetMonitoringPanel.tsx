@@ -34,7 +34,61 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
     queryFn: () => MonitoringService.getAssetMonitoringState(assetId, true),
     staleTime: 30000, // 30 segundos
     refetchInterval: 60000, // Atualizar a cada 1 minuto
+    enabled: false // Desabilitando temporariamente para testarmos com dados estáticos
   });
+  
+  // Usando dados estáticos para testes
+  const mockData: AssetMonitoringState = {
+    assetId: assetId,
+    assetName: `Asset-${assetId}`,
+    status: 'up',
+    lastUpdated: new Date().toISOString(),
+    metrics: {
+      cpu: {
+        usage: 45,
+        trend: 'stable',
+        history: [42, 44, 47, 45, 43, 45]
+      },
+      memory: {
+        total: 16384,
+        used: 8192,
+        percentage: 50,
+        trend: 'up'
+      },
+      disk: {
+        total: 1024000,
+        used: 512000,
+        percentage: 50,
+        trend: 'stable'
+      },
+      network: {
+        inbound: 75,
+        outbound: 25,
+        errors: 0
+      },
+      uptime: 604800, // 7 dias em segundos
+      lastCheck: new Date().toISOString(),
+      relatedIssues: 1
+    },
+    monitoringSystem: {
+      name: "Zabbix",
+      url: "https://zabbix.example.com",
+      assetUrl: "https://zabbix.example.com/asset/" + assetId
+    },
+    activeAlerts: [
+      {
+        id: "1",
+        severity: "average",
+        status: "active",
+        startTime: new Date().toISOString(),
+        description: "Alta utilização de CPU",
+        hostName: `Asset-${assetId}`
+      }
+    ]
+  };
+  
+  // Usar dados estáticos em vez de dados da API para testes
+  const displayData = mockData;
 
   // Formatar unidades de armazenamento
   const formatStorage = (value: number): string => {
@@ -139,52 +193,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
     );
   };
 
-  if (isLoading) {
-    return (
-      <Card className={className}>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl flex items-center">
-            <Activity className="h-5 w-5 mr-2 text-blue-600" />
-            Monitoramento do Ativo
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center justify-center h-48">
-            <div className="flex flex-col items-center">
-              <RefreshCcw className="h-8 w-8 text-blue-500 animate-spin" />
-              <p className="mt-4 text-sm text-gray-500">Carregando dados de monitoramento...</p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  if (isError || !data) {
-    return (
-      <Card className={className}>
-        <CardHeader className="pb-2">
-          <CardTitle className="text-xl flex items-center">
-            <Activity className="h-5 w-5 mr-2 text-blue-600" />
-            Monitoramento do Ativo
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="bg-gray-50 p-4 rounded-md text-center">
-            <Server className="h-8 w-8 mx-auto text-gray-400 mb-2" />
-            <h3 className="text-lg font-medium text-gray-500 mb-1">Monitoramento não disponível</h3>
-            <p className="text-sm text-gray-500 mb-3">
-              Não foi possível acessar os dados de monitoramento para este ativo.
-            </p>
-            <Button size="sm" onClick={() => refetch()}>
-              <RefreshCcw className="h-4 w-4 mr-2" />
-              Tentar novamente
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-    );
-  }
+  // Removendo os estados de loading e error para testes com dados estáticos
 
   return (
     <Card className={className}>
@@ -196,12 +205,12 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
           </div>
           <div className="flex items-center space-x-2">
             <Badge 
-              className={`${getAssetStatusColor(data.status)} text-white px-2 py-1`}
+              className={`${getAssetStatusColor(displayData.status)} text-white px-2 py-1`}
             >
-              {data.status === 'up' ? 'Online' : 
-               data.status === 'down' ? 'Offline' : 
-               data.status === 'warning' ? 'Atenção' : 
-               data.status === 'maintenance' ? 'Manutenção' : 'Desconhecido'}
+              {displayData.status === 'up' ? 'Online' : 
+               displayData.status === 'down' ? 'Offline' : 
+               displayData.status === 'warning' ? 'Atenção' : 
+               displayData.status === 'maintenance' ? 'Manutenção' : 'Desconhecido'}
             </Badge>
             <TooltipProvider>
               <Tooltip>
@@ -212,7 +221,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Abrir no {data.monitoringSystem.name}</p>
+                  <p>Abrir no {displayData.monitoringSystem.name}</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
@@ -241,17 +250,17 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <Cpu className="h-4 w-4 text-blue-600 mr-2" />
                   <h3 className="text-sm font-medium">Processador</h3>
                 </div>
-                <div className="text-2xl font-bold">{data.metrics.cpu?.usage || 0}%</div>
+                <div className="text-2xl font-bold">{displayData.metrics.cpu?.usage || 0}%</div>
                 <Progress 
-                  value={data.metrics.cpu?.usage || 0} 
-                  className={getStatusColor(data.metrics.cpu?.usage || 0)} 
+                  value={displayData.metrics.cpu?.usage || 0} 
+                  className={getStatusColor(displayData.metrics.cpu?.usage || 0)} 
                 />
-                {data.metrics.cpu?.trend && (
+                {displayData.metrics.cpu?.trend && (
                   <div className="text-xs text-gray-500 mt-1 flex items-center">
                     Tendência: 
                     <span className="ml-1">
-                      {data.metrics.cpu.trend === 'up' ? '↗️ Subindo' : 
-                       data.metrics.cpu.trend === 'down' ? '↘️ Descendo' : 
+                      {displayData.metrics.cpu.trend === 'up' ? '↗️ Subindo' : 
+                       displayData.metrics.cpu.trend === 'down' ? '↘️ Descendo' : 
                        '➡️ Estável'}
                     </span>
                   </div>
@@ -263,14 +272,14 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <MemoryStick className="h-4 w-4 text-purple-600 mr-2" />
                   <h3 className="text-sm font-medium">Memória</h3>
                 </div>
-                <div className="text-2xl font-bold">{data.metrics.memory?.percentage || 0}%</div>
+                <div className="text-2xl font-bold">{displayData.metrics.memory?.percentage || 0}%</div>
                 <Progress 
-                  value={data.metrics.memory?.percentage || 0} 
-                  className={getStatusColor(data.metrics.memory?.percentage || 0)} 
+                  value={displayData.metrics.memory?.percentage || 0} 
+                  className={getStatusColor(displayData.metrics.memory?.percentage || 0)} 
                 />
                 <div className="text-xs text-gray-500 mt-1">
-                  {data.metrics.memory ? 
-                    `${formatStorage(data.metrics.memory.used)} de ${formatStorage(data.metrics.memory.total)}` : 
+                  {displayData.metrics.memory ? 
+                    `${formatStorage(displayData.metrics.memory.used)} de ${formatStorage(displayData.metrics.memory.total)}` : 
                     'Dados não disponíveis'}
                 </div>
               </div>
@@ -280,14 +289,14 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <HardDrive className="h-4 w-4 text-amber-600 mr-2" />
                   <h3 className="text-sm font-medium">Disco</h3>
                 </div>
-                <div className="text-2xl font-bold">{data.metrics.disk?.percentage || 0}%</div>
+                <div className="text-2xl font-bold">{displayData.metrics.disk?.percentage || 0}%</div>
                 <Progress 
-                  value={data.metrics.disk?.percentage || 0} 
-                  className={getStatusColor(data.metrics.disk?.percentage || 0)} 
+                  value={displayData.metrics.disk?.percentage || 0} 
+                  className={getStatusColor(displayData.metrics.disk?.percentage || 0)} 
                 />
                 <div className="text-xs text-gray-500 mt-1">
-                  {data.metrics.disk ? 
-                    `${formatStorage(data.metrics.disk.used)} de ${formatStorage(data.metrics.disk.total)}` : 
+                  {displayData.metrics.disk ? 
+                    `${formatStorage(displayData.metrics.disk.used)} de ${formatStorage(displayData.metrics.disk.total)}` : 
                     'Dados não disponíveis'}
                 </div>
               </div>
@@ -300,7 +309,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <Server className="h-4 w-4 text-gray-500 mt-0.5 mr-2" />
                   <div>
                     <div className="text-xs text-gray-500">Sistema</div>
-                    <div className="text-sm font-medium">{data.monitoringSystem.name}</div>
+                    <div className="text-sm font-medium">{displayData.monitoringSystem.name}</div>
                   </div>
                 </div>
                 
@@ -309,7 +318,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <div>
                     <div className="text-xs text-gray-500">Tempo Ativo</div>
                     <div className="text-sm font-medium">
-                      {data.metrics.uptime ? formatUptime(data.metrics.uptime) : 'N/A'}
+                      {displayData.metrics.uptime ? formatUptime(displayData.metrics.uptime) : 'N/A'}
                     </div>
                   </div>
                 </div>
@@ -319,8 +328,8 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <div>
                     <div className="text-xs text-gray-500">Último check</div>
                     <div className="text-sm font-medium">
-                      {data.metrics.lastCheck ? 
-                        new Date(data.metrics.lastCheck).toLocaleTimeString('pt-BR') : 
+                      {displayData.metrics.lastCheck ? 
+                        new Date(displayData.metrics.lastCheck).toLocaleTimeString('pt-BR') : 
                         'N/A'}
                     </div>
                   </div>
@@ -331,7 +340,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                   <div>
                     <div className="text-xs text-gray-500">Alertas relacionados</div>
                     <div className="text-sm font-medium">
-                      {data.metrics.relatedIssues || 0}
+                      {displayData.metrics.relatedIssues || 0}
                     </div>
                   </div>
                 </div>
@@ -342,7 +351,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
           <TabsContent value="details">
             <ScrollArea className="h-64">
               <div className="space-y-4 px-1">
-                {data.metrics.cpu && (
+                {displayData.metrics.cpu && (
                   <MetricWithProgress
                     label="CPU"
                     value={data.metrics.cpu.usage}
