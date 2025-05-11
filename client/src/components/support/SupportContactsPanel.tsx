@@ -159,33 +159,7 @@ export default function SupportContactsPanel({
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
-          <div className="flex items-center">
-            <h3 className="text-lg font-medium">Contatos de Suporte</h3>
-            
-            {/* Status do alerta com mesma lógica da tabela de alertas ativos */}
-            <div className="ml-4 flex items-center">
-              {alertStatus === "Reconhecido" && (
-                <Badge className="bg-green-100 text-green-700">Reconhecido</Badge>
-              )}
-              
-              {alertStatus === "Aberto" && (
-                <Badge className="bg-yellow-100 text-yellow-700">Aberto</Badge>
-              )}
-              
-              {alertStatus === "Pendente" && (
-                <div className="flex items-center">
-                  <Badge className="bg-blue-100 text-blue-700">Pendente</Badge>
-                  {getTimeWithoutActionIndicator(time)}
-                </div>
-              )}
-              
-              {wouldAutoCreateTicket && (
-                <div className="ml-2">
-                  <Badge className="bg-purple-100 text-purple-700">Chamado automático</Badge>
-                </div>
-              )}
-            </div>
-          </div>
+          <h3 className="text-lg font-medium">Contatos de Suporte</h3>
           
           {/* Indicador de disponibilidade */}
           {has24x7Support && (

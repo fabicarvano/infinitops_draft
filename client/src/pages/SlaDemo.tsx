@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { addHours, addMinutes } from "date-fns";
-import { AlertTriangle, Info, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { AlertTriangle, Info, HelpCircle, ChevronDown, ChevronUp, Clock } from "lucide-react";
 import {
   Tooltip,
   TooltipContent,
@@ -17,6 +17,7 @@ import PriorityMatrix from "@/components/sla/PriorityMatrix";
 import EffectiveSlaCard from "@/components/sla/EffectiveSlaCard";
 import MonitoringStatusPanel from "@/components/monitoring/MonitoringStatusPanel";
 import MonitoringStatusHistory from "@/components/monitoring/MonitoringStatusHistory";
+import EnhancedMonitoringHistory from "@/components/monitoring/EnhancedMonitoringHistory";
 import SlaRiskIndicator from "@/components/sla/SlaRiskIndicator";
 import SupportContactsPanel from "@/components/support/SupportContactsPanel";
 import PriorityBadge from "@/components/sla/PriorityBadge";
@@ -85,6 +86,17 @@ export default function SlaDemo() {
   const [acknowledged, setAcknowledged] = useState<number[]>([]);
   const [createdTickets, setCreatedTickets] = useState<number[]>([]);
   const [expandedAlerts, setExpandedAlerts] = useState<number[]>([]);
+  
+  // Estado para registro de histórico de ações
+  const [alertHistory, setAlertHistory] = useState<{
+    [alertId: number]: {
+      id: number;
+      timestamp: string;
+      action: "created" | "acknowledged" | "ticketAutoCreated" | "ticketManualCreated" | "resolved";
+      user?: string;
+      duration?: string;
+    }[];
+  }>({});
   
   // Mapear alertas para alertas com SLA
   const demoAlerts: DemoAlert[] = (alerts || []).map(alert => {
@@ -295,6 +307,55 @@ export default function SlaDemo() {
     );
   };
   
+  // Função para calcular indicador de tempo para alertas pendentes
+  const getTimeWithoutActionIndicator = (timeString?: string) => {
+    if (!timeString) return null;
+    
+    // Extrair a informação de tempo do formato "Xm atrás" ou "Xh Ym atrás"
+    let minutes = 0;
+    
+    if (timeString.includes('h') && timeString.includes('m')) {
+      // Formato "Xh Ym atrás"
+      const hourPart = parseInt(timeString.split('h')[0]);
+      const minutePart = parseInt(timeString.split('h')[1].split('m')[0].trim());
+      minutes = hourPart * 60 + minutePart;
+    } else if (timeString.includes('h')) {
+      // Formato "Xh atrás"
+      const hours = parseInt(timeString.split('h')[0]);
+      minutes = hours * 60;
+    } else if (timeString.includes('m')) {
+      // Formato "Xm atrás"
+      minutes = parseInt(timeString.split('m')[0]);
+    }
+    
+    // Baseado no tempo, retornamos um indicador diferente
+    if (minutes >= 10) {
+      return (
+        <div className="flex items-center ml-2 text-red-600">
+          <Clock className="h-3 w-3 mr-1" />
+          <span className="text-xs font-medium">+10min</span>
+        </div>
+      );
+    } else if (minutes >= 5) {
+      return (
+        <div className="flex items-center ml-2 text-orange-600">
+          <Clock className="h-3 w-3 mr-1" />
+          <span className="text-xs font-medium">+5min</span>
+        </div>
+      );
+    } else if (minutes >= 2) {
+      return (
+        <div className="flex items-center ml-2 text-yellow-600">
+          <Clock className="h-3 w-3 mr-1" />
+          <span className="text-xs font-medium">+2min</span>
+        </div>
+      );
+    }
+    
+    // Menos de 2 minutos, não mostramos indicador
+    return null;
+  };
+  
   return (
     <div className="container py-8">
       <div className="mb-8">
@@ -406,7 +467,10 @@ export default function SlaDemo() {
                       ) : (
                         <div className="flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
                           <AlertTriangle className="h-4 w-4 mr-1" />
-                          Pendente
+                          <span className="flex items-center">
+                            Pendente
+                            {getTimeWithoutActionIndicator(alert.time)}
+                          </span>
                         </div>
                       )}
                     </div>
