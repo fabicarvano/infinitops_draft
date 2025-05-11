@@ -345,7 +345,7 @@ export default function AssetMatrixEditor({
   };
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 h-full flex flex-col overflow-hidden">
       <Card className="w-full">
         <CardContent className="p-4">
           <div className="flex flex-col md:flex-row justify-between gap-4 mb-2">
@@ -396,7 +396,7 @@ export default function AssetMatrixEditor({
         </CardContent>
       </Card>
       
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="flex-1 flex flex-col overflow-hidden">
         <TabsList className="grid grid-cols-2 md:grid-cols-4 mb-4">
           <TabsTrigger value="general" className="flex items-center gap-2">
             <FilePlus className="h-4 w-4" />
@@ -417,7 +417,7 @@ export default function AssetMatrixEditor({
         </TabsList>
         
         {/* Aba de Dados Gerais */}
-        <TabsContent value="general">
+        <TabsContent value="general" className="flex-1 overflow-auto pb-8">
           <Card>
             <CardContent className="p-6 space-y-6">
               {/* Informações Básicas */}
@@ -662,7 +662,7 @@ export default function AssetMatrixEditor({
         </TabsContent>
         
         {/* Aba de Matriz de Criticidade */}
-        <TabsContent value="criticality">
+        <TabsContent value="criticality" className="flex-1 overflow-auto pb-8">
           <CriticalityMatrix
             initialMatrix={criticalityMatrix}
             onSave={handleSaveCriticalityMatrix}
@@ -671,7 +671,7 @@ export default function AssetMatrixEditor({
         </TabsContent>
         
         {/* Aba de Equipes de Suporte */}
-        <TabsContent value="support">
+        <TabsContent value="support" className="flex-1 overflow-auto pb-8">
           <SupportTeamsConfig
             initialData={supportTeams}
             onSave={handleSaveSupportTeams}
@@ -680,7 +680,7 @@ export default function AssetMatrixEditor({
         </TabsContent>
         
         {/* Aba de Regras de Escalação */}
-        <TabsContent value="escalation">
+        <TabsContent value="escalation" className="flex-1 overflow-auto pb-8">
           <EscalationRulesConfig
             initialRules={escalationRules}
             onSave={handleSaveEscalationRules}

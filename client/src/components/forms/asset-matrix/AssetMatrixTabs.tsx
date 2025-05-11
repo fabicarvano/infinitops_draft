@@ -36,7 +36,7 @@ export function AssetMatrixTabs({
   };
   
   return (
-    <div className="h-[90vh] flex flex-col overflow-hidden">
+    <div className="h-full flex flex-col overflow-hidden">
       <AssetMatrixEditor
         contractId={contractId}
         contractName={contractName}
