@@ -197,7 +197,7 @@ export default function AssetMatrixTable({
 
       {/* Modal de criação/edição da matriz de ativos */}
       <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-        <DialogContent className="max-w-[95vw] w-full h-[85vh] p-0 overflow-hidden">
+        <DialogContent className="max-w-[95vw] w-full h-[90vh] p-0 overflow-hidden flex flex-col">
           {selectedContractId && (
             <AssetMatrixTabs 
               contractId={selectedContractId}
