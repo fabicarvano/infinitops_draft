@@ -12,6 +12,7 @@ import EffectiveSlaCard from "@/components/sla/EffectiveSlaCard";
 import MonitoringStatusPanel from "@/components/monitoring/MonitoringStatusPanel";
 import MonitoringStatusHistory from "@/components/monitoring/MonitoringStatusHistory";
 import SlaRiskIndicator from "@/components/sla/SlaRiskIndicator";
+import SupportContactsPanel from "@/components/support/SupportContactsPanel";
 
 // Tipos para nossa demonstração
 type AlertSeverity = "critical" | "high" | "medium" | "low";
@@ -85,7 +86,7 @@ export default function SlaDemo() {
     
     // Determinar criticidade técnica
     let technicalCriticality: TechnicalCriticality;
-    switch (alert.status) {
+    switch (alert.status as AlertSeverity) {
       case "critical":
         technicalCriticality = "Disaster";
         break;
@@ -104,16 +105,17 @@ export default function SlaDemo() {
     
     // Determinar prioridade final baseada na matriz
     let finalPriority: PriorityLevel;
-    if (alert.status === "critical") {
+    const status = alert.status as AlertSeverity;
+    if (status === "critical") {
       if (businessCriticality === 0) finalPriority = "Crítica";
       else if (businessCriticality <= 2) finalPriority = "Muito Alta";
       else finalPriority = "Alta";
-    } else if (alert.status === "high") {
+    } else if (status === "high") {
       if (businessCriticality === 0) finalPriority = "Muito Alta";
       else if (businessCriticality <= 2) finalPriority = "Alta";
       else if (businessCriticality <= 4) finalPriority = "Média";
       else finalPriority = "Baixa";
-    } else if (alert.status === "medium") {
+    } else if (status === "medium") {
       if (businessCriticality <= 1) finalPriority = "Alta";
       else if (businessCriticality <= 3) finalPriority = "Média";
       else finalPriority = "Baixa";
@@ -204,11 +206,11 @@ export default function SlaDemo() {
     }
     
     // Criar tempos de SLA e prazos
-    const ticketCreatedAt = alert.ticketId 
-      ? alert.ticketCreatedAt 
+    const ticketCreatedAt: string = alert.ticketId 
+      ? (alert.ticketCreatedAt || new Date().toISOString())
       : createdTickets.includes(alert.id) 
         ? new Date().toISOString() 
-        : alert.createdAt;
+        : (alert.createdAt || new Date().toISOString());
         
     const ticketCreatedDate = new Date(ticketCreatedAt);
     const firstResponseDeadline = addMinutes(ticketCreatedDate, firstResponseTime).toISOString();
@@ -420,6 +422,17 @@ export default function SlaDemo() {
                           </div>
                         </>
                       )}
+                      
+                      {/* Contatos de Suporte - sempre exibir, independente do status do ticket */}
+                      <div>
+                        <h4 className="text-lg font-medium mb-3">Contatos para Acionamento</h4>
+                        <SupportContactsPanel 
+                          assetId={alert.assetId}
+                          assetType={alert.asset}
+                          serviceLevel={alert.serviceLevel}
+                          serviceHours={alert.serviceHours}
+                        />
+                      </div>
                     </div>
                   )}
                   
