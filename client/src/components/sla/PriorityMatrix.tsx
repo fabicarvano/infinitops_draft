@@ -5,6 +5,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import PriorityBadge from '@/components/sla/PriorityBadge';
 
 // Tipos para as matrizes
 type TechnicalCriticality = "Information" | "Warning" | "Average" | "High" | "Disaster";
@@ -164,9 +165,7 @@ export default function PriorityMatrix({
                     key={`${technical}-${business}`}
                     className={`p-2 text-center border-t ${isHighlighted ? 'ring-2 ring-blue-500' : ''}`}
                   >
-                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${PRIORITY_COLORS[priority]}`}>
-                      {priority}
-                    </span>
+                    <PriorityBadge priority={priority} />
                   </td>
                 );
               })}
@@ -179,10 +178,8 @@ export default function PriorityMatrix({
       <div className="p-3 border-t bg-slate-50">
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-xs font-medium text-gray-500">Legenda:</span>
-          {Object.entries(PRIORITY_COLORS).map(([priority, colorClass]) => (
-            <span key={priority} className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${colorClass}`}>
-              {priority}
-            </span>
+          {Object.entries(PRIORITY_COLORS).map(([priority]) => (
+            <PriorityBadge key={priority} priority={priority as PriorityLevel} />
           ))}
         </div>
       </div>

@@ -13,6 +13,7 @@ import MonitoringStatusPanel from "@/components/monitoring/MonitoringStatusPanel
 import MonitoringStatusHistory from "@/components/monitoring/MonitoringStatusHistory";
 import SlaRiskIndicator from "@/components/sla/SlaRiskIndicator";
 import SupportContactsPanel from "@/components/support/SupportContactsPanel";
+import PriorityBadge from "@/components/sla/PriorityBadge";
 
 // Tipos para nossa demonstração
 type AlertSeverity = "critical" | "high" | "medium" | "low";
@@ -327,9 +328,10 @@ export default function SlaDemo() {
                           alert.status === "high" ? "Alto" : 
                           alert.status === "medium" ? "Médio" : "Baixo"}
                         </Button>
-                        <Button variant="outline" size="sm" className={PRIORITY_COLORS[alert.finalPriority]}>
-                          {alert.finalPriority}
-                        </Button>
+                        <PriorityBadge 
+                          priority={alert.finalPriority} 
+                          asButton={true}
+                        />
                       </div>
                       <h3 className="text-lg font-bold">{alert.message}</h3>
                       <p className="text-sm text-gray-500 mt-1">

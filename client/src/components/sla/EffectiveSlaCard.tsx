@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
+import PriorityBadge from '@/components/sla/PriorityBadge';
 
 type TechnicalCriticality = "Information" | "Warning" | "Average" | "High" | "Disaster";
 type BusinessCriticality = 0 | 1 | 2 | 3 | 4 | 5;
@@ -141,9 +142,7 @@ export default function EffectiveSlaCard({
             <div className="text-sm text-gray-500 mb-1">Prioridade Final</div>
             <div className="flex items-center">
               <Tag className="h-4 w-4 mr-2 text-gray-700" />
-              <Badge variant="outline" className={PRIORITY_COLORS[finalPriority]}>
-                {finalPriority}
-              </Badge>
+              <PriorityBadge priority={finalPriority} />
             </div>
           </div>
         </div>
