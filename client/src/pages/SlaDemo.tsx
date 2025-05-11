@@ -87,54 +87,6 @@ export default function SlaDemo() {
   const [createdTickets, setCreatedTickets] = useState<number[]>([]);
   const [expandedAlerts, setExpandedAlerts] = useState<number[]>([]);
   
-  // Estado para registro de histórico de ações
-  const [alertHistory, setAlertHistory] = useState<{
-    [alertId: number]: {
-      id: number;
-      timestamp: string;
-      action: "created" | "acknowledged" | "ticketAutoCreated" | "ticketManualCreated" | "resolved";
-      user?: string;
-      duration?: string;
-    }[];
-  }>({});
-  
-  // Inicializar histórico de alertas (executado apenas uma vez)
-  React.useEffect(() => {
-    if (alerts && alerts.length > 0) {
-      // Para cada alerta, criamos uma entrada inicial "created"
-      const initialHistory: {[alertId: number]: any[]} = {};
-      
-      alerts.forEach(alert => {
-        // Adicionar entrada "created" para cada alerta
-        initialHistory[alert.id] = [{
-          id: Date.now() - Math.floor(Math.random() * 1000), // ID único
-          timestamp: alert.createdAt,
-          action: "created",
-          user: "Sistema de Monitoramento"
-        }];
-        
-        // Se o alerta já tem status de alta severidade, adicionar entrada de chamado automático
-        const alertStatus = alert.status as string;
-        if ((alertStatus === "critical" || alertStatus === "high") && alert.ticketId) {
-          initialHistory[alert.id].push({
-            id: Date.now() - Math.floor(Math.random() * 1000), // ID único
-            timestamp: alert.ticketCreatedAt || new Date(Date.parse(alert.createdAt) + 60000).toISOString(),
-            action: "ticketAutoCreated",
-            user: "Sistema",
-            duration: "1m" // Duração simulada
-          });
-        }
-      });
-      
-      // Atualizar o histórico apenas se ainda não tiver sido inicializado
-      setAlertHistory(prev => {
-        if (Object.keys(prev).length === 0) {
-          return initialHistory;
-        }
-        return prev;
-      });
-    }
-  }, [alerts]);
   
   // Mapear alertas para alertas com SLA
   const demoAlerts: DemoAlert[] = (alerts || []).map(alert => {
@@ -303,28 +255,7 @@ export default function SlaDemo() {
     };
   });
   
-  // Helper para adicionar entrada no histórico
-  const addHistoryEntry = (alertId: number, action: "created" | "acknowledged" | "ticketAutoCreated" | "ticketManualCreated" | "resolved", user: string = "Operador NOC") => {
-    setAlertHistory(prev => {
-      const alertEntries = prev[alertId] || [];
-      return {
-        ...prev,
-        [alertId]: [
-          ...alertEntries,
-          {
-            id: Date.now(), // Usar timestamp como ID único
-            timestamp: new Date().toISOString(),
-            action,
-            user,
-            // Poderíamos calcular a duração se tivermos uma entrada anterior
-            duration: alertEntries.length > 0 
-              ? calcDuration(new Date(alertEntries[alertEntries.length - 1].timestamp), new Date()) 
-              : undefined
-          }
-        ]
-      };
-    });
-  };
+
   
   // Calcular duração entre duas datas
   const calcDuration = (start: Date, end: Date): string => {
