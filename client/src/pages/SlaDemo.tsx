@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAlerts } from "@/hooks/use-alerts";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -97,6 +97,43 @@ export default function SlaDemo() {
       duration?: string;
     }[];
   }>({});
+  
+  // Inicializar histórico de alertas (executado apenas uma vez)
+  React.useEffect(() => {
+    if (alerts && alerts.length > 0) {
+      // Para cada alerta, criamos uma entrada inicial "created"
+      const initialHistory: {[alertId: number]: any[]} = {};
+      
+      alerts.forEach(alert => {
+        // Adicionar entrada "created" para cada alerta
+        initialHistory[alert.id] = [{
+          id: Date.now() - Math.floor(Math.random() * 1000), // ID único
+          timestamp: alert.createdAt,
+          action: "created",
+          user: "Sistema de Monitoramento"
+        }];
+        
+        // Se o alerta já tem status de alta severidade, adicionar entrada de chamado automático
+        if ((alert.status === "critical" || alert.status === "high") && alert.ticketId) {
+          initialHistory[alert.id].push({
+            id: Date.now() - Math.floor(Math.random() * 1000), // ID único
+            timestamp: alert.ticketCreatedAt || new Date(Date.parse(alert.createdAt) + 60000).toISOString(),
+            action: "ticketAutoCreated",
+            user: "Sistema",
+            duration: "1m" // Duração simulada
+          });
+        }
+      });
+      
+      // Atualizar o histórico apenas se ainda não tiver sido inicializado
+      setAlertHistory(prev => {
+        if (Object.keys(prev).length === 0) {
+          return initialHistory;
+        }
+        return prev;
+      });
+    }
+  }, [alerts]);
   
   // Mapear alertas para alertas com SLA
   const demoAlerts: DemoAlert[] = (alerts || []).map(alert => {
@@ -265,6 +302,42 @@ export default function SlaDemo() {
     };
   });
   
+  // Helper para adicionar entrada no histórico
+  const addHistoryEntry = (alertId: number, action: "created" | "acknowledged" | "ticketAutoCreated" | "ticketManualCreated" | "resolved", user: string = "Operador NOC") => {
+    setAlertHistory(prev => {
+      const alertEntries = prev[alertId] || [];
+      return {
+        ...prev,
+        [alertId]: [
+          ...alertEntries,
+          {
+            id: Date.now(), // Usar timestamp como ID único
+            timestamp: new Date().toISOString(),
+            action,
+            user,
+            // Poderíamos calcular a duração se tivermos uma entrada anterior
+            duration: alertEntries.length > 0 
+              ? calcDuration(new Date(alertEntries[alertEntries.length - 1].timestamp), new Date()) 
+              : undefined
+          }
+        ]
+      };
+    });
+  };
+  
+  // Calcular duração entre duas datas
+  const calcDuration = (start: Date, end: Date): string => {
+    const diffMs = end.getTime() - start.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHrs = Math.floor(diffMins / 60);
+    
+    if (diffHrs > 0) {
+      return `${diffHrs}h ${diffMins % 60}m`;
+    } else {
+      return `${diffMins}m`;
+    }
+  };
+  
   // Handler para reconhecer alertas
   const handleAcknowledge = (alertId: number) => {
     // Encontrar o alerta
@@ -281,6 +354,10 @@ export default function SlaDemo() {
     }
     
     setAcknowledged(prev => [...prev, alertId]);
+    
+    // Adicionar entrada no histórico
+    addHistoryEntry(alertId, "acknowledged");
+    
     toast({
       title: "Alerta reconhecido",
       description: `Alerta #${alertId} foi reconhecido com sucesso.`,
@@ -291,6 +368,15 @@ export default function SlaDemo() {
   // Handler para criar chamados
   const handleCreateTicket = (alertId: number) => {
     setCreatedTickets(prev => [...prev, alertId]);
+    
+    // Verificar se o alerta é de alta severidade (crítico ou alto)
+    const alert = demoAlerts.find(a => a.id === alertId);
+    const isHighSeverity = alert && (alert.status === "critical" || alert.status === "high");
+    
+    // Adicionar entrada no histórico (automático ou manual)
+    addHistoryEntry(alertId, isHighSeverity ? "ticketAutoCreated" : "ticketManualCreated", 
+      isHighSeverity ? "Sistema" : "Operador NOC");
+    
     toast({
       title: "Chamado criado",
       description: `Chamado para o alerta #${alertId} foi criado com sucesso.`,
@@ -538,8 +624,16 @@ export default function SlaDemo() {
                           </div>
                           
                           <div>
-                            <h4 className="text-lg font-medium mb-3">Histórico de Status</h4>
-                            <MonitoringStatusHistory alertId={alert.id} />
+                            <h4 className="text-lg font-medium mb-3">Histórico Detalhado</h4>
+                            <EnhancedMonitoringHistory 
+                              alertId={alert.id}
+                              createdAt={alert.createdAt}
+                              // Obter histórico específico deste alerta ou um array vazio
+                              history={alertHistory[alert.id] || []}
+                              hasTicket={!!alert.ticketId}
+                              isAcknowledged={alert.monitoringStatus === "reconhecido"}
+                              isResolved={alert.monitoringStatus === "normalizado"}
+                            />
                           </div>
                         </>
                       )}
