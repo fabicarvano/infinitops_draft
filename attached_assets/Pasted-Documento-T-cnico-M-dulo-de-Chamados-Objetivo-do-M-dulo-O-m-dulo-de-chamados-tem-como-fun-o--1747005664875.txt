@@ -1,0 +1,50 @@
+Documento Técnico - Módulo de Chamados
+🎯 Objetivo do Módulo
+O módulo de chamados tem como função registrar, acompanhar, escalar e resolver incidentes operacionais de forma estruturada, com base na integração entre SLA, criticidade do ativo, plano de escalonamento e papéis de resposta.
+🧱 Componentes do Módulo Chamado
+🔁 Fluxo de Lógica e Integração com SLA e Escalonamento
+1. Pode ser aberto das seguintes formas:
+- Automaticamente quando as serveridade seja alta conforme a lógica já definida nos alertas
+- manual atráves do botação criar chamado na pagina chamado
+- manual com base no alerta, com botão criar chamado no alerta
+- todos os dados de enriquecimento já devems er atribuidos ao chamado
+- Calculam-se os prazos (atendimento, resposta, solução, escalonamento)
+
+2. Escalonamento:
+- Baseado no `escalonamento_id`, nível inicial é iniciado
+- Contatos disponíveis são listados com base na criticidade, dia e hora
+- O sistema programa a data de `tempo_proximo_escalonamento` baseado nos SLA
+- Se não houver interação/resposta, escala automaticamente ao próximo nível.
+
+3. O chamado pode ser:
+- Aberto – Quando está sendo tratato pela equipe de operação, SLA corre conforme as logicas já definas
+- Aguardado resposta do cliente – SLA e parada, porém conta o tempo que esta nesse estágio para auditora
+- Aguardando Janela – Deve ter uma tarega atrelada coomo data de execução, plano de mudanaça e informações relavantes.
+- Resolvido  dentro do SLA
+- Resolvido for a do SLA 
+👤 Papéis e Respondentes
+- Um chamado possui papéis atribuíveis:
+  - Responsável aortal  (responsável direto)
+  - Comandante do incidente
+  - Suporte técnico ou analistas – Baseado no tipo de ativo e incidente, será faturamento Criado um banco com especialias de cada vertical.
+  - Gestor (observador): pode acompanhar o chamado, sem interferir diretamente, com permissões de visualização.
+
+- Os respondentes  ou acompanhantes podem ser inscritos manualmente ou definidos por perfil dinâmico via escalonamento, os chamados só podem ser enviados para respondents criados dentro do contrato, atrelado ao alerta, ou seja, os chamados só serão enviados e pode haver a opção de incluir novos respondentes ou acompanhantes no portal, deve ter um cadastro para esse papeis, que não precisam ser usuários do Sistema.
+💬 Interações e Privacidade  (estudar como implementar esse lógica)
+- Toda interação registrada no chamado deve ser marcada como pública ou interna (estudar como implementar esse lógica) ail).
+  - Pública: visível por todos os envolvidos, inclusive usuários externos (clientes, terceiros).
+
+- O sistema define se o usuário é interno ou externo com base no domínio do e-mail:
+  - Se o domínio for da empresa, é usuário interno.
+  - Se for diferente, é usuário externo.
+
+- Interações geradas automaticamente via API devem ser registradas como internas por padrão, incluindo chamadas telefônicas integradas via API de PABX.
+
+- Deve existir um botão para enviar Status Report:
+  - Interno (somente equipe técnica e gestores internos)
+  - Externo (clientes, parceiros)
+⚙️ Ações Avançadas no Chamado
+- Executar automações (botão dedicado): integração com scripts ou fluxos configuráveis com inciar algum processo pre definido.
+- Mesclar dois chamados: opção de consolidação quando múltiplos chamados estiverem relacionados ao mesmo incidente
+- Criar um botção de acão que gere relatórios sobre tudo histórico do que foi feito, dando opção de ser técnico ou executive, ser interno ou externo.
+-Chamados antigos do mesmo ativo
