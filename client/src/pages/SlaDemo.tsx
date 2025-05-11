@@ -343,16 +343,24 @@ export default function SlaDemo() {
                           Chamado #{alert.ticketId}
                         </div>
                       )}
-                      <div className={`flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-                        alert.monitoringStatus === "ativo" ? "bg-red-100 text-red-800" :
-                        alert.monitoringStatus === "normalizado" ? "bg-green-100 text-green-800" :
-                        alert.monitoringStatus === "flapping" ? "bg-amber-100 text-amber-800" :
-                        alert.monitoringStatus === "reconhecido" ? "bg-blue-100 text-blue-800" :
-                        "bg-gray-100 text-gray-800"
-                      }`}>
-                        <AlertTriangle className="h-4 w-4 mr-1" />
-                        {alert.monitoringStatus}
-                      </div>
+                      
+                      {/* Status do alerta com a mesma lógica da tabela de alertas ativos */}
+                      {alert.monitoringStatus === "reconhecido" ? (
+                        <div className="flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-700">
+                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          Reconhecido
+                        </div>
+                      ) : alert.ticketId ? (
+                        <div className="flex items-center px-3 py-1 rounded-full text-sm font-medium bg-yellow-100 text-yellow-700">
+                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          Aberto
+                        </div>
+                      ) : (
+                        <div className="flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-700">
+                          <AlertTriangle className="h-4 w-4 mr-1" />
+                          Pendente
+                        </div>
+                      )}
                     </div>
                   </div>
                   
@@ -371,11 +379,12 @@ export default function SlaDemo() {
                     <div className="mt-4 pt-4 border-t border-gray-200 space-y-6">
                       {/* Status de Monitoramento */}
                       <div>
-                        <h4 className="text-lg font-medium mb-3">Status de Monitoramento</h4>
+                        <h4 className="text-lg font-medium mb-3">Status do Alerta</h4>
                         <MonitoringStatusPanel 
                           status={alert.monitoringStatus}
                           source={alert.monitoringSource}
                           monitoringId={alert.monitoringId}
+                          ticketId={alert.ticketId}
                         />
                       </div>
                       

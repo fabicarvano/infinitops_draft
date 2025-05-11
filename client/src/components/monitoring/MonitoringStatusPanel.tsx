@@ -8,38 +8,36 @@ interface MonitoringStatusPanelProps {
   source: string;
   monitoringId?: string;
   lastUpdated?: string;
+  ticketId?: number;
 }
 
-// Mapping of monitoring status to visual components
-const STATUS_CONFIG = {
-  ativo: {
-    icon: <AlertTriangle className="h-5 w-5 text-red-500" />,
-    title: "Alerta Ativo",
-    description: "O problema ainda está ocorrendo no monitoramento",
-    color: "border-red-300 bg-red-50 text-red-800"
-  },
-  normalizado: {
-    icon: <AlertTriangle className="h-5 w-5 text-green-500" />,
-    title: "Normalizado",
-    description: "O problema foi resolvido no monitoramento",
-    color: "border-green-300 bg-green-50 text-green-800"
-  },
-  flapping: {
-    icon: <AlertTriangle className="h-5 w-5 text-amber-500" />,
-    title: "Flapping",
-    description: "O alerta está oscilando entre ativo e normalizado",
-    color: "border-amber-300 bg-amber-50 text-amber-800"
-  },
-  reconhecido: {
+// Mapping do status de monitoramento para status de alerta
+type AlertStatusType = "Pendente" | "Aberto" | "Reconhecido" | "Resolvido";
+
+// Configuração dos status de alerta seguindo o padrão da tabela de alertas ativos
+const ALERT_STATUS_CONFIG = {
+  Pendente: {
     icon: <AlertTriangle className="h-5 w-5 text-blue-500" />,
-    title: "Reconhecido",
-    description: "O alerta foi reconhecido por um operador",
+    title: "Alerta Pendente",
+    description: "O alerta está aguardando ação do operador",
     color: "border-blue-300 bg-blue-50 text-blue-800"
   },
-  suprimido: {
+  Aberto: {
+    icon: <AlertTriangle className="h-5 w-5 text-yellow-500" />,
+    title: "Alerta Aberto",
+    description: "Um chamado foi criado para este alerta",
+    color: "border-yellow-300 bg-yellow-50 text-yellow-800"
+  },
+  Reconhecido: {
+    icon: <AlertTriangle className="h-5 w-5 text-green-500" />,
+    title: "Alerta Reconhecido",
+    description: "O alerta foi reconhecido por um operador",
+    color: "border-green-300 bg-green-50 text-green-800"
+  },
+  Resolvido: {
     icon: <AlertTriangle className="h-5 w-5 text-gray-500" />,
-    title: "Suprimido",
-    description: "O alerta foi suprimido e não gerará novos alertas",
+    title: "Alerta Resolvido",
+    description: "O problema foi resolvido e o alerta encerrado",
     color: "border-gray-300 bg-gray-50 text-gray-800"
   }
 };
@@ -48,9 +46,23 @@ export default function MonitoringStatusPanel({
   status, 
   source, 
   monitoringId, 
-  lastUpdated 
+  lastUpdated,
+  ticketId
 }: MonitoringStatusPanelProps) {
-  const config = STATUS_CONFIG[status];
+  // Mapear status de monitoramento para status de alerta
+  let alertStatus: AlertStatusType;
+  
+  if (status === "reconhecido") {
+    alertStatus = "Reconhecido";
+  } else if (status === "normalizado") {
+    alertStatus = "Resolvido";
+  } else if (ticketId) {
+    alertStatus = "Aberto";
+  } else {
+    alertStatus = "Pendente";
+  }
+  
+  const config = ALERT_STATUS_CONFIG[alertStatus];
   
   return (
     <Card className={`border ${config.color.includes('border') ? config.color.split(' ')[0] : ''}`}>
@@ -65,8 +77,8 @@ export default function MonitoringStatusPanel({
               <p className="text-sm text-gray-500">{config.description}</p>
             </div>
           </div>
-          <Badge variant="outline" className="capitalize">
-            {status}
+          <Badge variant="outline" className={`${config.color}`}>
+            {alertStatus}
           </Badge>
         </div>
         
@@ -92,6 +104,13 @@ export default function MonitoringStatusPanel({
               <span className="ml-1 font-medium text-gray-800">{lastUpdated}</span>
             </div>
           )}
+          
+          {/* Detalhes adicionais sobre o status de monitoramento */}
+          <div className="flex items-center text-sm text-gray-500">
+            <InfoIcon className="mr-2 h-4 w-4" />
+            <span>Status no Monitoramento: </span>
+            <span className="ml-1 font-medium text-gray-800 capitalize">{status}</span>
+          </div>
         </div>
       </CardContent>
     </Card>
