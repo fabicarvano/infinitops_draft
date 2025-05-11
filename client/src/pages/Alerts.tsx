@@ -2,8 +2,9 @@ import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Card, CardContent } from "@/components/ui/card";
 import { useLocation } from "wouter";
+import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
   Filter, 
@@ -17,8 +18,26 @@ import {
   Clock,
   FileText,
   Info,
-  X
+  X,
+  HelpCircle,
+  ChevronDown,
+  ChevronUp
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+
+// Importar componentes do sistema de SLA
+import PriorityMatrix from "@/components/sla/PriorityMatrix";
+import EffectiveSlaCard from "@/components/sla/EffectiveSlaCard";
+import MonitoringStatusPanel from "@/components/monitoring/MonitoringStatusPanel";
+import SimpleAlertHistory from "@/components/monitoring/SimpleAlertHistory";
+import SlaRiskIndicator from "@/components/sla/SlaRiskIndicator";
+import SupportContactsPanel from "@/components/support/SupportContactsPanel";
+import PriorityBadge from "@/components/sla/PriorityBadge";
 
 // Tipos para a API de alertas
 type ApiSeverity = "0" | "1" | "2" | "3" | "4" | "5";
@@ -27,6 +46,21 @@ type SystemSeverity = "nao_classificado" | "informativo" | "aviso" | "medio" | "
 type AlertStatus = "open" | "acknowledged" | "resolved";
 type TicketStatus = "aberto" | "pendente" | "reconhecido" | "resolvido";
 type TicketCreationType = "automatico" | "manual"; // apenas para histórico interno
+
+// Tipos necessários para o SLA-Demo
+type SlaDemoSeverity = "critical" | "high" | "medium" | "low";
+type MonitoringStatus = "ativo" | "normalizado" | "flapping" | "reconhecido" | "suprimido";
+type TechnicalCriticality = "Information" | "Warning" | "Average" | "High" | "Disaster";
+type BusinessCriticality = 0 | 1 | 2 | 3 | 4 | 5;
+type PriorityLevel = "Crítica" | "Muito Alta" | "Alta" | "Média" | "Baixa" | "Muito Baixa";
+
+// Cores para os status de alertas
+const STATUS_COLORS = {
+  critical: "border-red-200 text-red-700 hover:bg-red-50",
+  high: "border-orange-200 text-orange-700 hover:bg-orange-50",
+  medium: "border-yellow-200 text-yellow-700 hover:bg-yellow-50",
+  low: "border-blue-200 text-blue-700 hover:bg-blue-50"
+};
 
 interface Alert {
   id: number;
@@ -47,10 +81,49 @@ interface Alert {
 // Tipo para os filtros disponíveis
 type FilterType = "critical" | "open" | "pending" | null;
 
+// Interface para alertas formatados para o SLA-Demo
+interface DemoAlert {
+  id: number;
+  status: SlaDemoSeverity;
+  client: string;
+  asset: string;
+  assetId: number;
+  message: string;
+  time: string;
+  createdAt: string;
+  // Campos de monitoramento
+  monitoringStatus: MonitoringStatus;
+  monitoringSource: string;
+  monitoringId?: string;
+  // Campos de SLA
+  ticketId?: number;
+  ticketCreatedAt?: string;
+  finalPriority: PriorityLevel;
+  serviceLevel: string;
+  technicalCriticality: TechnicalCriticality;
+  businessCriticality: BusinessCriticality;
+  // Tempos e prazos de SLA
+  firstResponseTime: number;
+  resolutionTime: number;
+  firstResponseDeadline: string;
+  resolutionDeadline: string;
+  serviceHours: string;
+  adjustmentFactor: number;
+  isAdjustmentEnabled: boolean;
+  slaPaused: boolean;
+  slaViolated: boolean;
+}
+
 export default function Alerts() {
   const [location] = useLocation();
   const [searchTerm, setSearchTerm] = useState("");
   const [activeFilter, setActiveFilter] = useState<FilterType>(null);
+  const { toast } = useToast();
+  
+  // Estado para controlar quais alertas estão expandidos, reconhecidos ou com chamados
+  const [expandedAlerts, setExpandedAlerts] = useState<number[]>([]);
+  const [acknowledged, setAcknowledged] = useState<number[]>([]);
+  const [createdTickets, setCreatedTickets] = useState<number[]>([]);
 
   // Função para extrair parâmetros da URL
   const getURLParameter = (paramName: string): string | null => {
