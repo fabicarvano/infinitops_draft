@@ -38,6 +38,7 @@ import SimpleAlertHistory from "@/components/monitoring/SimpleAlertHistory";
 import SlaRiskIndicator from "@/components/sla/SlaRiskIndicator";
 import SupportContactsPanel from "@/components/support/SupportContactsPanel";
 import PriorityBadge from "@/components/sla/PriorityBadge";
+import AlertMonitoringInfo from "@/components/monitoring/AlertMonitoringInfo";
 
 // Tipos para a API de alertas
 type ApiSeverity = "0" | "1" | "2" | "3" | "4" | "5";
@@ -879,6 +880,17 @@ export default function Alerts() {
                             />
                           </div>
                         </>
+                        
+                        {/* Dados de Monitoramento */}
+                        <div>
+                          <h4 className="text-lg font-medium mb-3">Dados de Monitoramento</h4>
+                          <div className="bg-white rounded-xl border border-gray-100 p-4 shadow-sm">
+                            <AlertMonitoringInfo 
+                              alertId={alert.id} 
+                              assetId={alert.assetId} 
+                            />
+                          </div>
+                        </div>
                         
                         {/* Contatos de Suporte - sempre exibir, independente do status do ticket */}
                         <div>
