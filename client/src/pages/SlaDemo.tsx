@@ -4,7 +4,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { addHours, addMinutes } from "date-fns";
-import { AlertTriangle, Info } from "lucide-react";
+import { AlertTriangle, Info, HelpCircle, ChevronDown, ChevronUp } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 // Importar componentes do sistema de SLA
 import PriorityMatrix from "@/components/sla/PriorityMatrix";
@@ -249,6 +255,19 @@ export default function SlaDemo() {
   
   // Handler para reconhecer alertas
   const handleAcknowledge = (alertId: number) => {
+    // Encontrar o alerta
+    const alert = demoAlerts.find(a => a.id === alertId);
+    
+    // Verificar se o alerta está pendente (sem chamado e não reconhecido)
+    if (!alert || alert.ticketId || alert.monitoringStatus === "reconhecido") {
+      toast({
+        title: "Ação não permitida",
+        description: "Apenas alertas pendentes podem ser reconhecidos.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setAcknowledged(prev => [...prev, alertId]);
     toast({
       title: "Alerta reconhecido",
@@ -313,7 +332,8 @@ export default function SlaDemo() {
         <div className="space-y-6">
           {demoAlerts.map(alert => {
             const isExpanded = expandedAlerts.includes(alert.id);
-            const canAcknowledge = alert.monitoringStatus === "ativo" || alert.monitoringStatus === "flapping";
+            // Apenas alertas pendentes (sem chamado e não reconhecidos) podem ser reconhecidos
+            const canAcknowledge = !alert.ticketId && alert.monitoringStatus !== "reconhecido" && alert.monitoringStatus !== "normalizado";
             const canCreateTicket = !alert.ticketId;
             
             return (
@@ -323,11 +343,37 @@ export default function SlaDemo() {
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex space-x-2 mb-2">
-                        <Button variant="outline" size="sm" className={STATUS_COLORS[alert.status]}>
-                          {alert.status === "critical" ? "Crítico" : 
-                          alert.status === "high" ? "Alto" : 
-                          alert.status === "medium" ? "Médio" : "Baixo"}
-                        </Button>
+                        <TooltipProvider>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button variant="outline" size="sm" className={STATUS_COLORS[alert.status]}>
+                                <span className="flex items-center">
+                                  {alert.status === "critical" ? "Crítico" : 
+                                  alert.status === "high" ? "Alto" : 
+                                  alert.status === "medium" ? "Médio" : "Baixo"}
+                                  <HelpCircle className="ml-1 h-3.5 w-3.5" />
+                                </span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent className="w-64 p-3">
+                              <div className="space-y-2">
+                                <p className="font-medium text-sm">Severidade do Alerta</p>
+                                <p className="text-xs text-gray-600">
+                                  {alert.status === "critical" ? 
+                                    "Situação crítica que requer ação imediata. Impacto severo em serviços essenciais." : 
+                                  alert.status === "high" ? 
+                                    "Problema de alto impacto que afeta múltiplos usuários ou processos críticos." :
+                                  alert.status === "medium" ? 
+                                    "Problema de médio impacto. Afeta funções importantes, mas existem alternativas." :
+                                    "Problema de baixo impacto. Afeta funções secundárias ou não-críticas."}
+                                </p>
+                                <p className="text-xs text-gray-500">
+                                  Definida pelo sistema de monitoramento com base nos limiares configurados.
+                                </p>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <PriorityBadge 
                           priority={alert.finalPriority} 
                           asButton={true}
@@ -456,8 +502,19 @@ export default function SlaDemo() {
                     <Button
                       variant="ghost"
                       onClick={() => toggleExpandAlert(alert.id)}
+                      className="flex items-center space-x-1"
                     >
-                      {isExpanded ? 'Recolher' : 'Expandir'}
+                      {isExpanded ? (
+                        <>
+                          <ChevronUp className="h-4 w-4" />
+                          <span>Recolher</span>
+                        </>
+                      ) : (
+                        <>
+                          <ChevronDown className="h-4 w-4" />
+                          <span>Expandir</span>
+                        </>
+                      )}
                     </Button>
                     
                     <div className="flex space-x-2">
