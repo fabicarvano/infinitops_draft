@@ -3,7 +3,7 @@ import {
   Activity, 
   Server, 
   HardDrive, 
-  MemoryStick as Memory, 
+  MemoryStick, 
   Cpu, 
   Network, 
   Info, 
@@ -260,7 +260,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
               
               <div className="bg-gray-50 rounded-lg p-3">
                 <div className="flex items-center mb-2">
-                  <Memory className="h-4 w-4 text-purple-600 mr-2" />
+                  <MemoryStick className="h-4 w-4 text-purple-600 mr-2" />
                   <h3 className="text-sm font-medium">Memória</h3>
                 </div>
                 <div className="text-2xl font-bold">{data.metrics.memory?.percentage || 0}%</div>
@@ -359,7 +359,7 @@ export function AssetMonitoringPanel({ assetId, className }: AssetMonitoringPane
                     value={data.metrics.memory.used}
                     max={data.metrics.memory.total}
                     unit="MB"
-                    icon={<Memory className="h-4 w-4 text-purple-600" />}
+                    icon={<MemoryStick className="h-4 w-4 text-purple-600" />}
                     additionalInfo="Memória RAM em uso"
                   />
                 )}

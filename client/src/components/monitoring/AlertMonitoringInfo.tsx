@@ -4,7 +4,7 @@ import {
   ExternalLink, 
   Server, 
   Cpu, 
-  Memory, 
+  MemoryStick, 
   HardDrive, 
   ArrowUpRight,
   RefreshCcw,
@@ -157,7 +157,7 @@ export function AlertMonitoringInfo({ alertId, assetId, className }: AlertMonito
             
             {data.metrics.memory && (
               <MiniMetric 
-                icon={<Memory className="h-4 w-4" />}
+                icon={<MemoryStick className="h-4 w-4" />}
                 label="Memória"
                 value={data.metrics.memory.percentage}
                 unit="%"
@@ -210,7 +210,7 @@ export function AlertMonitoringInfo({ alertId, assetId, className }: AlertMonito
                 
                 {data.metrics.memory?.trend && (
                   <div className="flex items-center">
-                    <Memory className="h-3.5 w-3.5 text-gray-500 mr-1" />
+                    <MemoryStick className="h-3.5 w-3.5 text-gray-500 mr-1" />
                     <span className="text-xs">
                       Memória: {getTrendIcon(data.metrics.memory.trend)}
                     </span>
