@@ -351,9 +351,7 @@ export default function AssetDetails() {
             </div>
             
             {/* Painel de Monitoramento - a integração principal */}
-            {asset?.monitoring_tool && asset?.monitoring_url && (
-              <AssetMonitoringPanel assetId={assetId} />
-            )}
+            <AssetMonitoringPanel assetId={assetId} />
           </TabsContent>
           
           <TabsContent value="history" className="space-y-4">

@@ -35,8 +35,8 @@ function Router() {
           <Route path="/clientes" component={Clients} />
           <Route path="/contratos" component={Contracts} />
           <Route path="/ativos" component={Assets} />
-          <Route path="/ativos/:id" component={AssetDetails} />
           <Route path="/ativos/matriz" component={AssetMatrix} />
+          <Route path="/ativos/:id" component={AssetDetails} />
           <Route path="/alertas" component={Alerts} />
           <Route path="/chamados" component={Tickets} />
           <Route path="/configuracoes" component={Settings} />

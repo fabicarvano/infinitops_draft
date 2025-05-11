@@ -313,6 +313,7 @@ export default function AssetsCollapsibleList() {
                         variant="ghost"
                         size="sm"
                         className="text-blue-600 hover:text-blue-800 hover:bg-blue-50"
+                        onClick={() => window.location.href = `/ativos/${asset.id}`}
                       >
                         <ArrowUpRight className="mr-1 h-4 w-4" />
                         Detalhes
