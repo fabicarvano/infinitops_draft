@@ -17,7 +17,7 @@ import PriorityMatrix from "@/components/sla/PriorityMatrix";
 import EffectiveSlaCard from "@/components/sla/EffectiveSlaCard";
 import MonitoringStatusPanel from "@/components/monitoring/MonitoringStatusPanel";
 import MonitoringStatusHistory from "@/components/monitoring/MonitoringStatusHistory";
-import EnhancedMonitoringHistory from "@/components/monitoring/EnhancedMonitoringHistory";
+import SimpleAlertHistory from "@/components/monitoring/SimpleAlertHistory";
 import SlaRiskIndicator from "@/components/sla/SlaRiskIndicator";
 import SupportContactsPanel from "@/components/support/SupportContactsPanel";
 import PriorityBadge from "@/components/sla/PriorityBadge";
@@ -114,7 +114,8 @@ export default function SlaDemo() {
         }];
         
         // Se o alerta já tem status de alta severidade, adicionar entrada de chamado automático
-        if ((alert.status === "critical" || alert.status === "high") && alert.ticketId) {
+        const alertStatus = alert.status as string;
+        if ((alertStatus === "critical" || alertStatus === "high") && alert.ticketId) {
           initialHistory[alert.id].push({
             id: Date.now() - Math.floor(Math.random() * 1000), // ID único
             timestamp: alert.ticketCreatedAt || new Date(Date.parse(alert.createdAt) + 60000).toISOString(),
@@ -625,14 +626,19 @@ export default function SlaDemo() {
                           
                           <div>
                             <h4 className="text-lg font-medium mb-3">Histórico Detalhado</h4>
-                            <EnhancedMonitoringHistory 
+                            <SimpleAlertHistory 
                               alertId={alert.id}
                               createdAt={alert.createdAt}
-                              // Obter histórico específico deste alerta ou um array vazio
-                              history={alertHistory[alert.id] || []}
+                              status={alert.monitoringStatus}
                               hasTicket={!!alert.ticketId}
-                              isAcknowledged={alert.monitoringStatus === "reconhecido"}
-                              isResolved={alert.monitoringStatus === "normalizado"}
+                              ticketType={alert.ticketId ? "automático" : undefined}
+                              ticketCreatedAt={alert.ticketCreatedAt}
+                              acknowledgedAt={alert.monitoringStatus === "reconhecido" ? 
+                                new Date(Date.parse(alert.createdAt) + 5 * 60000).toISOString() : 
+                                undefined}
+                              resolvedAt={alert.monitoringStatus === "normalizado" ? 
+                                new Date(Date.parse(alert.createdAt) + 25 * 60000).toISOString() : 
+                                undefined}
                             />
                           </div>
                         </>
