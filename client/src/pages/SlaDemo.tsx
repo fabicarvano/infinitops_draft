@@ -287,8 +287,7 @@ export default function SlaDemo() {
     
     setAcknowledged(prev => [...prev, alertId]);
     
-    // Adicionar entrada no histórico
-    addHistoryEntry(alertId, "acknowledged");
+    // Entrada no histórico é gerenciada pelo componente SimpleAlertHistory
     
     toast({
       title: "Alerta reconhecido",
@@ -305,9 +304,7 @@ export default function SlaDemo() {
     const alert = demoAlerts.find(a => a.id === alertId);
     const isHighSeverity = alert && (alert.status === "critical" || alert.status === "high");
     
-    // Adicionar entrada no histórico (automático ou manual)
-    addHistoryEntry(alertId, isHighSeverity ? "ticketAutoCreated" : "ticketManualCreated", 
-      isHighSeverity ? "Sistema" : "Operador NOC");
+    // Entrada no histórico é gerenciada pelo componente SimpleAlertHistory
     
     toast({
       title: "Chamado criado",
