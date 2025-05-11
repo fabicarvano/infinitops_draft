@@ -275,6 +275,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.get("/api/alerts/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const alert = await storage.getAlert(id);
+      if (!alert) {
+        return res.status(404).json({ message: "Alerta não encontrado" });
+      }
+      res.json(alert);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar alerta" });
+    }
+  });
+
   app.post("/api/alerts", async (req, res) => {
     try {
       const validatedData = insertAlertSchema.parse(req.body);
