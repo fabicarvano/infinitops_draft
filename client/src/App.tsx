@@ -14,6 +14,7 @@ import Tickets from "@/pages/Tickets.new";
 import Settings from "@/pages/Settings";
 import SlaDemo from "@/pages/SlaDemo";
 import SlaConfiguration from "@/pages/SlaConfiguration";
+import LocationsPage from "@/pages/LocationsPage";
 import BasicLayout from "@/components/layout/BasicLayout";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -40,6 +41,7 @@ function Router() {
           <Route path="/ativos/:id" component={AssetDetails} />
           <Route path="/alertas" component={Alerts} />
           <Route path="/chamados" component={Tickets} />
+          <Route path="/localizacoes" component={LocationsPage} />
           <Route path="/configuracoes" component={Settings} />
           <Route path="/sla-demo" component={SlaDemo} />
           <Route path="/sla-configuration" component={SlaConfiguration} />

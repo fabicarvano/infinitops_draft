@@ -11,6 +11,7 @@ import {
   ChevronLeft, 
   ChevronRight,
   User,
+  MapPin,
 } from "lucide-react";
 
 // Componente simplificado de navegação para evitar problemas de refresh
