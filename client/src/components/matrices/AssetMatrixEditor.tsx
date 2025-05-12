@@ -228,15 +228,7 @@ export default function AssetMatrixEditor({
     }));
   };
   
-  // Atualizar dados de contato de negócio
-  const updateBusinessContact = (field: string, value: any) => {
-    if (readonly) return;
-    
-    setData(prev => ({
-      ...prev,
-      [`business_contact_${field}`]: value
-    }));
-  };
+  // Função updateBusinessContact removida
   
   // Atualizar dados de dono do ativo
   const updateAssetOwner = (field: string, value: any) => {
@@ -248,15 +240,7 @@ export default function AssetMatrixEditor({
     }));
   };
   
-  // Atualizar dados de monitoramento
-  const updateMonitoring = (field: string, value: any) => {
-    if (readonly) return;
-    
-    setData(prev => ({
-      ...prev,
-      [`monitoring_${field}`]: value
-    }));
-  };
+  // Função updateMonitoring removida
   
   // Atualizar dados de suporte presencial
   const updateOnsiteSupport = (field: string, value: any) => {
