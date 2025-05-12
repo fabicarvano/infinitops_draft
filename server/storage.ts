@@ -931,6 +931,25 @@ export class DatabaseStorage implements IStorage {
     const [newMatrix] = await db.insert(assetMatrices).values(assetMatrix).returning();
     return newMatrix;
   }
+  
+  // Implementação dos métodos de Localizações
+  async getLocations(): Promise<Location[]> {
+    return await db.select().from(locations);
+  }
+  
+  async getLocation(id: number): Promise<Location | undefined> {
+    const [location] = await db.select().from(locations).where(eq(locations.id, id));
+    return location;
+  }
+  
+  async getLocationsByClient(clientId: number): Promise<Location[]> {
+    return await db.select().from(locations).where(eq(locations.client_id, clientId));
+  }
+  
+  async createLocation(location: InsertLocation): Promise<Location> {
+    const [newLocation] = await db.insert(locations).values(location).returning();
+    return newLocation;
+  }
 }
 
 // Usando o armazenamento em memória para desenvolvimento
