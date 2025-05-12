@@ -175,7 +175,7 @@ const LocationDetails: React.FC<LocationDetailsProps> = ({
             {location.has_onsite_support ? (
               <>
                 <div className="flex items-center mb-2">
-                  <Badge variant="success" className="mr-2">Disponível</Badge>
+                  <Badge className="bg-green-500 text-white mr-2">Disponível</Badge>
                   {location.onsite_support_hours && (
                     <div className="flex items-center">
                       <Clock className="h-4 w-4 mr-1 text-gray-500" />
@@ -192,7 +192,7 @@ const LocationDetails: React.FC<LocationDetailsProps> = ({
               </>
             ) : (
               <div className="flex items-center">
-                <Badge variant="outline" className="mr-2">Não Disponível</Badge>
+                <Badge className="bg-gray-200 text-gray-700 mr-2">Não Disponível</Badge>
                 <span className="text-gray-500">Sem suporte local nesta localização</span>
               </div>
             )}

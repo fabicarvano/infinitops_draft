@@ -464,6 +464,113 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Rotas de Localização (Locations)
+  app.get("/api/locations", async (req, res) => {
+    try {
+      const locations = await storage.getLocations();
+      res.json(locations);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar localizações" });
+    }
+  });
+
+  app.get("/api/locations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const location = await storage.getLocation(id);
+      
+      if (!location) {
+        return res.status(404).json({ message: "Localização não encontrada" });
+      }
+      
+      res.json(location);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar localização" });
+    }
+  });
+
+  app.get("/api/locations/client/:clientId", async (req, res) => {
+    try {
+      const clientId = parseInt(req.params.clientId);
+      const locations = await storage.getLocationsByClient(clientId);
+      
+      res.json(locations);
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao buscar localizações do cliente" });
+    }
+  });
+
+  app.post("/api/locations", async (req, res) => {
+    try {
+      const locationData = insertLocationSchema.parse(req.body);
+      const newLocation = await storage.createLocation(locationData);
+      
+      res.status(201).json(newLocation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      }
+      
+      res.status(500).json({ message: "Erro ao criar localização" });
+    }
+  });
+
+  app.put("/api/locations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const location = await storage.getLocation(id);
+      
+      if (!location) {
+        return res.status(404).json({ message: "Localização não encontrada" });
+      }
+      
+      // Validar dados de entrada
+      const locationData = insertLocationSchema.parse(req.body);
+      
+      // Como estamos usando armazenamento em memória, podemos simplesmente
+      // criar uma nova localização com o mesmo ID para substituir a antiga
+      // O tipo insertLocationSchema não inclui 'id', então precisamos fazer um cast
+      const updatedLocation = await storage.createLocation({
+        ...locationData
+      } as any);
+      
+      res.json(updatedLocation);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ 
+          message: "Dados inválidos", 
+          errors: error.errors 
+        });
+      }
+      
+      res.status(500).json({ message: "Erro ao atualizar localização" });
+    }
+  });
+
+  app.delete("/api/locations/:id", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      // Como estamos usando armazenamento em memória, implementaremos
+      // essa funcionalidade quando migrarmos para um banco de dados
+      // Por enquanto, apenas verificamos se a localização existe
+      const location = await storage.getLocation(id);
+      
+      if (!location) {
+        return res.status(404).json({ message: "Localização não encontrada" });
+      }
+      
+      // Se migrarmos para banco de dados:
+      // await storage.deleteLocation(id);
+      
+      res.status(204).send();
+    } catch (error) {
+      res.status(500).json({ message: "Erro ao excluir localização" });
+    }
+  });
+
   // Create HTTP server
   const httpServer = createServer(app);
 

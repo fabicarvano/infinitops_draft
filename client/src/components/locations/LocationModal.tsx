@@ -38,16 +38,10 @@ const LocationModal: React.FC<LocationModalProps> = ({
     mutationFn: async (data: any) => {
       if (isEditing) {
         // Se estiver editando, envia PUT request
-        return apiRequest(`/api/locations/${location.id}`, {
-          method: 'PUT',
-          body: JSON.stringify(data),
-        });
+        return apiRequest(`/api/locations/${location.id}`, 'PUT', data);
       } else {
         // Senão, envia POST request para criar nova localização
-        return apiRequest('/api/locations', {
-          method: 'POST',
-          body: JSON.stringify(data),
-        });
+        return apiRequest('/api/locations', 'POST', data);
       }
     },
     onSuccess: () => {
