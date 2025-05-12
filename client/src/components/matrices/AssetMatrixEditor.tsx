@@ -502,102 +502,11 @@ export default function AssetMatrixEditor({
                 </div>
               </div>
               
-              {/* Dados do Responsável de Negócio */}
-              <div>
-                <h3 className="text-lg font-medium mb-4 flex items-center">
-                  <Users className="h-5 w-5 mr-2 text-green-600" />
-                  Responsável de Negócio
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-gray-50 rounded-md">
-                  <div className="space-y-2">
-                    <Label htmlFor="business-contact-name">Nome</Label>
-                    <Input 
-                      id="business-contact-name" 
-                      placeholder="Nome do responsável de negócio"
-                      value={data.business_contact_name || ""}
-                      onChange={(e) => updateBusinessContact("name", e.target.value)}
-                      disabled={readonly}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="business-contact-position">Cargo/Função</Label>
-                    <Input 
-                      id="business-contact-position" 
-                      placeholder="Cargo ou função"
-                      value={data.business_contact_position || ""}
-                      onChange={(e) => updateBusinessContact("position", e.target.value)}
-                      disabled={readonly}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="business-contact-email">Email</Label>
-                    <Input 
-                      id="business-contact-email" 
-                      placeholder="Email de contato"
-                      value={data.business_contact_email || ""}
-                      onChange={(e) => updateBusinessContact("email", e.target.value)}
-                      disabled={readonly}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="business-contact-phone">Telefone</Label>
-                    <Input 
-                      id="business-contact-phone" 
-                      placeholder="Telefone de contato"
-                      value={data.business_contact_phone || ""}
-                      onChange={(e) => updateBusinessContact("phone", e.target.value)}
-                      disabled={readonly}
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label htmlFor="business-contact-hours">Horário para Contato</Label>
-                    <Input 
-                      id="business-contact-hours" 
-                      placeholder="Ex: Dias úteis, 9h às 18h"
-                      value={data.business_contact_hours || ""}
-                      onChange={(e) => updateBusinessContact("hours", e.target.value)}
-                      disabled={readonly}
-                    />
-                  </div>
-                </div>
-              </div>
+              {/* Seção de Responsável de Negócio removida */}
               
-              {/* Monitoramento e Suporte */}
+              {/* Seção de Monitoramento e Suporte */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Ferramenta de Monitoramento */}
-                <div>
-                  <h3 className="text-lg font-medium mb-4 flex items-center">
-                    <Database className="h-5 w-5 mr-2 text-purple-600" />
-                    Monitoramento
-                  </h3>
-                  <div className="space-y-4 p-4 bg-gray-50 rounded-md">
-                    <div className="space-y-2">
-                      <Label htmlFor="monitoring-tool">Ferramenta de Monitoramento</Label>
-                      <Input 
-                        id="monitoring-tool" 
-                        placeholder="Ex: Zabbix, Nagios, etc."
-                        value={data.monitoring_tool || ""}
-                        onChange={(e) => updateMonitoring("tool", e.target.value)}
-                        disabled={readonly}
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <Label htmlFor="monitoring-url">URL de Acesso</Label>
-                      <Input 
-                        id="monitoring-url" 
-                        placeholder="URL da ferramenta de monitoramento"
-                        value={data.monitoring_url || ""}
-                        onChange={(e) => updateMonitoring("url", e.target.value)}
-                        disabled={readonly}
-                      />
-                    </div>
-                  </div>
-                </div>
+                {/* Seção de Monitoramento removida */}
                 
                 {/* Suporte Presencial */}
                 <div>
