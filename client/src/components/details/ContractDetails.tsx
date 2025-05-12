@@ -96,11 +96,16 @@ export default function ContractDetails({ open, onOpenChange, contractId }: Cont
       // Buscar dados da API
       const fetchContractData = async () => {
         try {
-          // Obter dados do contrato
-          const contractResponse = await fetch(`/api/contracts`).then(res => res.json());
-          const contractData = Array.isArray(contractResponse) 
-            ? contractResponse.find(c => c.id === contractId) 
-            : null;
+          // Obter dados do contrato diretamente pela API específica
+          const contractResponse = await fetch(`/api/contracts/${contractId}`).then(res => {
+            if (!res.ok) {
+              throw new Error(`Erro ao buscar contrato: ${res.status}`);
+            }
+            return res.json();
+          });
+          
+          // Verificar se os dados foram retornados corretamente
+          const contractData = contractResponse;
           
           if (!contractData) {
             console.error('Contrato não encontrado:', contractId);

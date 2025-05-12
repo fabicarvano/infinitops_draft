@@ -19,14 +19,27 @@ export function useWebSocket() {
       try {
         // Obter o protocolo (ws ou wss) e construir URL corretamente
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-        // Usando pathname para garantir que a URL seja montada corretamente
-        const hostname = window.location.host;
-        const wsUrl = `${protocol}//${hostname}/ws`;
+        // Usando hostname completo (incluindo porta) para garantir conexão correta
+        const wsUrl = `${protocol}//${window.location.host}/ws`;
         console.log('Conectando ao WebSocket:', wsUrl);
         
-        // Criar conexão WebSocket
-        const socket = new WebSocket(wsUrl);
-        socketRef.current = socket;
+        // Criar conexão WebSocket com tratamento de erros adequado
+        try {
+          const socket = new WebSocket(wsUrl);
+          socketRef.current = socket;
+        } catch (err) {
+          console.error('Erro ao inicializar WebSocket:', err);
+          // Se falhar na inicialização do WebSocket, pelo menos não quebra a aplicação
+          toast({
+            title: 'Erro de conexão',
+            description: 'Não foi possível conectar ao servidor em tempo real. Algumas funcionalidades podem estar limitadas.',
+            variant: 'destructive',
+          });
+          
+          // Tentar reconectar após um tempo
+          setTimeout(connectWebSocket, 5000);
+          return;
+        }
 
         // Manipuladores de eventos
         socket.onopen = () => {
