@@ -74,6 +74,11 @@ export default function Sidebar() {
       notification: 5
     },
     { 
+      path: "/localizacoes", 
+      name: "Localizações", 
+      icon: MapPin
+    },
+    { 
       path: "/configuracoes", 
       name: "Configurações", 
       icon: Settings 
