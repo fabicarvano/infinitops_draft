@@ -51,6 +51,18 @@ export const assets = pgTable("assets", {
   criticality: text("criticality").notNull().default("medium"), // Criticidade técnica (herdada do alerta)
   business_criticality: text("business_criticality").notNull().default("3"), // Criticidade de negócio (0-5, onde 0 é crítico)
   status: text("status").notNull().default("active"),
+  
+  // Campos de localização física
+  location: text("location"), // Descrição geral da localização
+  data_center: text("data_center"), // Nome do data center
+  building: text("building"), // Nome do prédio
+  telecom_room: text("telecom_room"), // Identificação da sala
+  rack: text("rack"), // Identificação do rack
+  rack_position: text("rack_position"), // Posição em unidades (U)
+  floor: text("floor"), // Andar do prédio
+  address: text("address"), // Endereço completo
+  branch: text("branch"), // Identificação da filial/matriz
+  
   zabbix_id: text("zabbix_id"),
   created_at: timestamp("created_at").notNull().defaultNow(),
   updated_at: timestamp("updated_at").notNull().defaultNow(),
@@ -131,6 +143,41 @@ export const integrations = pgTable("integrations", {
   updated_at: timestamp("updated_at").notNull().defaultNow(),
 });
 
+// Tabela para gerenciar localizações físicas
+export const locations = pgTable("locations", {
+  id: serial("id").primaryKey(),
+  client_id: integer("client_id").notNull().references(() => clients.id),
+  name: text("name").notNull(),
+  description: text("description"),
+  
+  // Detalhes da localização
+  address: text("address"),
+  city: text("city"),
+  state: text("state"),
+  country: text("country").notNull().default("Brasil"),
+  postal_code: text("postal_code"),
+  
+  // Tipo de localidade
+  location_type: text("location_type").notNull(), // matriz, filial, datacenter, etc.
+  
+  // Contatos
+  primary_contact_name: text("primary_contact_name"),
+  primary_contact_email: text("primary_contact_email"),
+  primary_contact_phone: text("primary_contact_phone"),
+  
+  emergency_contact_name: text("emergency_contact_name"),
+  emergency_contact_email: text("emergency_contact_email"),
+  emergency_contact_phone: text("emergency_contact_phone"),
+  
+  // Dados de suporte local
+  has_onsite_support: boolean("has_onsite_support").notNull().default(false),
+  onsite_support_hours: text("onsite_support_hours"),
+  onsite_support_details: text("onsite_support_details"),
+  
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+});
+
 export const assetMatrices = pgTable("asset_matrices", {
   id: serial("id").primaryKey(),
   contract_id: integer("contract_id").notNull().references(() => contracts.id).unique(),
@@ -179,17 +226,9 @@ export const assetMatrices = pgTable("asset_matrices", {
   asset_owner_phone: text("asset_owner_phone"),
   asset_owner_department: text("asset_owner_department"),
   
-  // Responsáveis de negócio
-  business_contact_name: text("business_contact_name"),
-  business_contact_email: text("business_contact_email"),
-  business_contact_phone: text("business_contact_phone"),
-  business_contact_hours: text("business_contact_hours"),
-  business_contact_position: text("business_contact_position"),
+  // Campos removidos: Responsáveis de negócio (business_contact_*)
   
-  // Dados de monitoramento
-  monitoring_tool: text("monitoring_tool"),
-  monitoring_url: text("monitoring_url"),
-  monitoring_credentials: text("monitoring_credentials"),
+  // Campos removidos: Dados de monitoramento (monitoring_*)
   
   // Dados de atendimento presencial
   onsite_support_available: boolean("onsite_support_available"),
@@ -255,6 +294,12 @@ export const insertIntegrationSchema = createInsertSchema(integrations).omit({
   updated_at: true
 });
 
+export const insertLocationSchema = createInsertSchema(locations).omit({
+  id: true,
+  created_at: true,
+  updated_at: true
+});
+
 export const insertAssetMatrixSchema = createInsertSchema(assetMatrices).omit({
   id: true,
   created_at: true,
@@ -288,3 +333,6 @@ export type Integration = typeof integrations.$inferSelect;
 
 export type InsertAssetMatrix = z.infer<typeof insertAssetMatrixSchema>;
 export type AssetMatrix = typeof assetMatrices.$inferSelect;
+
+export type InsertLocation = z.infer<typeof insertLocationSchema>;
+export type Location = typeof locations.$inferSelect;

@@ -121,15 +121,9 @@ interface AssetMatrixData {
   asset_owner_phone?: string;
   asset_owner_department?: string;
   
-  business_contact_name?: string;
-  business_contact_email?: string;
-  business_contact_phone?: string;
-  business_contact_hours?: string;
-  business_contact_position?: string;
+  // Campos removidos: business_contact_*
   
-  // Dados de monitoramento
-  monitoring_tool?: string;
-  monitoring_url?: string;
+  // Campos removidos: monitoring_*
   
   // Dados de atendimento presencial
   onsite_support_available?: boolean;
