@@ -7,7 +7,8 @@ import {
   tickets, type Ticket, type InsertTicket,
   activities, type Activity, type InsertActivity,
   integrations, type Integration, type InsertIntegration,
-  assetMatrices, type AssetMatrix, type InsertAssetMatrix
+  assetMatrices, type AssetMatrix, type InsertAssetMatrix,
+  locations, type Location, type InsertLocation
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and, desc } from "drizzle-orm";
@@ -69,6 +70,12 @@ export interface IStorage {
   getAssetMatrix(id: number): Promise<AssetMatrix | undefined>; 
   getAssetMatrixByContract(contractId: number): Promise<AssetMatrix | undefined>;
   createAssetMatrix(assetMatrix: InsertAssetMatrix): Promise<AssetMatrix>;
+  
+  // Localizações
+  getLocations(): Promise<Location[]>;
+  getLocation(id: number): Promise<Location | undefined>;
+  getLocationsByClient(clientId: number): Promise<Location[]>;
+  createLocation(location: InsertLocation): Promise<Location>;
 }
 
 export class MemStorage implements IStorage {
@@ -81,6 +88,7 @@ export class MemStorage implements IStorage {
   private activities: Map<number, Activity>;
   private integrations: Map<number, Integration>;
   private assetMatrices: Map<number, AssetMatrix>;
+  private locations: Map<number, Location>;
   
   private userId: number;
   private clientId: number;
@@ -91,6 +99,7 @@ export class MemStorage implements IStorage {
   private activityId: number;
   private integrationId: number;
   private assetMatrixId: number;
+  private locationId: number;
 
   constructor() {
     this.users = new Map();
@@ -102,6 +111,7 @@ export class MemStorage implements IStorage {
     this.activities = new Map();
     this.integrations = new Map();
     this.assetMatrices = new Map();
+    this.locations = new Map();
     
     this.userId = 1;
     this.clientId = 1;
@@ -112,6 +122,7 @@ export class MemStorage implements IStorage {
     this.assetMatrixId = 1;
     this.activityId = 1;
     this.integrationId = 1;
+    this.locationId = 1;
     
     // Inserir alguns dados de demonstração
     this.setupMockData();
@@ -736,6 +747,31 @@ export class MemStorage implements IStorage {
     };
     this.assetMatrices.set(id, newAssetMatrix);
     return newAssetMatrix;
+  }
+  
+  // Métodos para gerenciamento de localizações
+  async getLocations(): Promise<Location[]> {
+    return Array.from(this.locations.values());
+  }
+  
+  async getLocation(id: number): Promise<Location | undefined> {
+    return this.locations.get(id);
+  }
+  
+  async getLocationsByClient(clientId: number): Promise<Location[]> {
+    return Array.from(this.locations.values()).filter(location => location.client_id === clientId);
+  }
+  
+  async createLocation(location: InsertLocation): Promise<Location> {
+    const id = this.locationId++;
+    const newLocation: Location = { 
+      ...location, 
+      id,
+      created_at: new Date(),
+      updated_at: new Date() 
+    };
+    this.locations.set(id, newLocation);
+    return newLocation;
   }
 }
 
