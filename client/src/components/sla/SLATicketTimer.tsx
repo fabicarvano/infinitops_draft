@@ -306,8 +306,8 @@ export function SLATicketTimer({
                 <TooltipTrigger asChild>
                   <Progress 
                     value={responsePercentage} 
-                    className="h-2 w-full" 
-                    indicatorClassName={getProgressColor(responsePercentage, "response")}
+                    className="h-2 w-full"
+                    // O indicador precisa ser estilizado via CSS
                   />
                 </TooltipTrigger>
                 <TooltipContent side="top">
@@ -344,8 +344,8 @@ export function SLATicketTimer({
               <TooltipTrigger asChild>
                 <Progress 
                   value={resolutionPercentage} 
-                  className="h-2 w-full" 
-                  indicatorClassName={getProgressColor(resolutionPercentage, "resolution")}
+                  className="h-2 w-full"
+                  // O indicador precisa ser estilizado via CSS
                 />
               </TooltipTrigger>
               <TooltipContent side="top">
