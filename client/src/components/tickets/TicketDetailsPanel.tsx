@@ -410,7 +410,7 @@ export function TicketDetailsPanel({
                     placeholder="Digite sua mensagem aqui..." 
                     value={newComment}
                     onChange={(e) => setNewComment(e.target.value)}
-                    className="min-h-[100px]"
+                    className="min-h-[200px]"
                   />
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
@@ -433,7 +433,7 @@ export function TicketDetailsPanel({
               </div>
               
               {/* Lista de Interações */}
-              <ScrollArea className="h-[400px] pr-4">
+              <ScrollArea className="h-[500px] pr-4">
                 <h4 className="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-4">
                   Interações
                 </h4>

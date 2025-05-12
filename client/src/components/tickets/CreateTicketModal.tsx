@@ -139,7 +139,7 @@ export function CreateTicketModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-[90vw] md:max-w-[70vw] lg:max-w-[800px]">
         <DialogHeader>
           <DialogTitle className="text-xl">
             {alertId ? "Criar Chamado a partir de Alerta" : "Criar Novo Chamado"}
@@ -220,7 +220,7 @@ export function CreateTicketModal({
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               placeholder="Descreva o problema em detalhes"
-              className="min-h-[120px]"
+              className="min-h-[200px]"
               required
             />
           </div>

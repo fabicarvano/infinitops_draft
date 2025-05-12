@@ -166,7 +166,7 @@ export function TicketModal({
   
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden flex flex-col p-0">
+      <DialogContent className="max-w-[90vw] md:max-w-[80vw] lg:max-w-[1100px] max-h-[90vh] overflow-hidden flex flex-col p-0">
         <DialogHeader className="px-6 pt-6 pb-0">
           <DialogTitle className="sr-only">Detalhes do Chamado #{ticketId}</DialogTitle>
         </DialogHeader>
