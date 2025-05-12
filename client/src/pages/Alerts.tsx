@@ -40,6 +40,10 @@ import SupportContactsPanel from "@/components/support/SupportContactsPanel";
 import PriorityBadge from "@/components/sla/PriorityBadge";
 import AlertMonitoringInfo from "@/components/monitoring/AlertMonitoringInfo";
 
+// Importar componentes do sistema de tickets
+import { CreateTicketModal, CreateTicketData } from "@/components/tickets/CreateTicketModal";
+import { TicketModal } from "@/components/tickets/TicketModal";
+
 // Tipos para a API de alertas
 type ApiSeverity = "0" | "1" | "2" | "3" | "4" | "5";
 type AlertSeverity = "not_classified" | "information" | "warning" | "average" | "high" | "disaster";
