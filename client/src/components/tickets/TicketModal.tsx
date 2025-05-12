@@ -178,10 +178,90 @@ export function TicketModal({
           </div>
         ) : ticket ? (
           <div className="flex-grow overflow-auto p-0">
-            <TicketDetailsPanel 
+            <EnhancedTicketPanel 
               ticket={ticket} 
               onStatusChange={handleStatusChange}
               onAddComment={handleAddComment}
+              onAssignUser={(ticketId, userId) => {
+                // Em uma aplicação real, isso chamaria o backend
+                console.log(`Atribuindo chamado ${ticketId} para usuário ${userId}`);
+                
+                // Atualiza localmente para teste
+                if (ticket) {
+                  setTicket({
+                    ...ticket,
+                    assignee: {
+                      id: userId,
+                      name: `Técnico ${userId}`,
+                    }
+                  });
+                }
+              }}
+              onEscalate={(ticketId, toLevel, reason) => {
+                // Em uma aplicação real, isso chamaria o backend
+                console.log(`Escalonando chamado ${ticketId} para ${toLevel}: ${reason}`);
+                
+                // Atualiza interações localmente para teste
+                if (ticket) {
+                  setTicket({
+                    ...ticket,
+                    interactions: [
+                      ...(ticket.interactions || []),
+                      {
+                        id: Date.now(),
+                        type: "system",
+                        content: `Chamado escalonado para nível ${toLevel}: ${reason}`,
+                        is_public: false,
+                        created_at: new Date().toISOString()
+                      }
+                    ]
+                  });
+                }
+              }}
+              onPauseSLA={(ticketId, reason) => {
+                // Em uma aplicação real, isso chamaria o backend
+                console.log(`Pausando SLA do chamado ${ticketId}: ${reason}`);
+                
+                // Atualiza localmente para teste
+                if (ticket) {
+                  setTicket({
+                    ...ticket,
+                    sla_paused: true,
+                    interactions: [
+                      ...(ticket.interactions || []),
+                      {
+                        id: Date.now(),
+                        type: "system",
+                        content: `SLA pausado: ${reason}`,
+                        is_public: false,
+                        created_at: new Date().toISOString()
+                      }
+                    ]
+                  });
+                }
+              }}
+              onResumeSLA={(ticketId) => {
+                // Em uma aplicação real, isso chamaria o backend
+                console.log(`Retomando SLA do chamado ${ticketId}`);
+                
+                // Atualiza localmente para teste
+                if (ticket) {
+                  setTicket({
+                    ...ticket,
+                    sla_paused: false,
+                    interactions: [
+                      ...(ticket.interactions || []),
+                      {
+                        id: Date.now(),
+                        type: "system",
+                        content: "SLA retomado",
+                        is_public: false,
+                        created_at: new Date().toISOString()
+                      }
+                    ]
+                  });
+                }
+              }}
               onClose={onClose}
             />
           </div>
