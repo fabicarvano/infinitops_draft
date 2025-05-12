@@ -13,6 +13,7 @@ import Alerts from "@/pages/Alerts.new";
 import Tickets from "@/pages/Tickets.new";
 import Settings from "@/pages/Settings";
 import SlaDemo from "@/pages/SlaDemo";
+import SlaConfiguration from "@/pages/SlaConfiguration";
 import BasicLayout from "@/components/layout/BasicLayout";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -41,6 +42,7 @@ function Router() {
           <Route path="/chamados" component={Tickets} />
           <Route path="/configuracoes" component={Settings} />
           <Route path="/sla-demo" component={SlaDemo} />
+          <Route path="/sla-configuration" component={SlaConfiguration} />
           <Route component={NotFound} />
         </Switch>
       </motion.div>
