@@ -5,7 +5,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { TicketDetailsPanel, TicketDetails } from "./TicketDetailsPanel";
+import { TicketDetails } from "./TicketDetailsPanel";
+import { EnhancedTicketPanel } from "./EnhancedTicketPanel";
 
 interface TicketModalProps {
   ticketId?: number;
