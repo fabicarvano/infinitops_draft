@@ -11,7 +11,8 @@ import {
   insertAlertSchema, 
   insertTicketSchema, 
   insertActivitySchema,
-  insertIntegrationSchema 
+  insertIntegrationSchema,
+  insertLocationSchema
 } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
