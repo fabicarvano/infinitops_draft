@@ -650,31 +650,79 @@ export default function Alerts() {
     });
   };
   
-  // Handler para criar chamados
-  const handleCreateTicket = (alertId: number) => {
-    setCreatedTickets(prev => [...prev, alertId]);
-    
-    // Verificar se o alerta é de alta severidade (crítico ou alto)
+  // Handler para abrir o modal de criação de chamados
+  const handleOpenCreateTicketModal = (alertId: number) => {
     const alert = alerts.find(a => a.id === alertId);
-    const alertIsHighSeverity = alert && (alert.severity === "critico" || alert.severity === "alto");
+    if (!alert) {
+      toast({
+        title: "Erro",
+        description: "Alerta não encontrado.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    // Preparar os dados do alerta para o modal
+    setAlertInfoForTicket({
+      id: alert.id,
+      message: alert.message,
+      severity: alert.severity,
+      asset: {
+        id: alert.assetId,
+        name: alert.asset,
+        type: "Servidor" // Tipo padrão para demonstração
+      },
+      client: {
+        id: parseInt(alert.id.toString() + "00"), // ID fictício para cliente baseado no ID do alerta
+        name: alert.client
+      }
+    });
+    
+    setSelectedAlertId(alertId);
+    setIsCreateTicketModalOpen(true);
+  };
+  
+  // Handler para criar chamados a partir do formulário
+  const handleCreateTicket = (data: CreateTicketData) => {
+    const alertId = selectedAlertId || 0;
+    
+    // Adicionar à lista de alertas com tickets criados
+    if (alertId > 0) {
+      setCreatedTickets(prev => [...prev, alertId]);
+    }
+    
+    // Fechando o modal
+    setIsCreateTicketModalOpen(false);
+    setSelectedAlertId(undefined);
+    setAlertInfoForTicket(undefined);
     
     toast({
       title: "Chamado criado",
-      description: `Chamado para o alerta #${alertId} foi criado com sucesso.`,
+      description: `Chamado '${data.title}' foi criado com sucesso.`,
       variant: "default",
     });
+    
+    // Opcionalmente, podemos abrir o modal do ticket recém-criado
+    // Assumindo que o ID do ticket é baseado no ID do alerta para demonstração
+    const newTicketId = alertId + 1000;
+    setTimeout(() => {
+      handleViewTicket(newTicketId);
+    }, 500);
   };
-
+  
+  // Handler para visualizar um ticket existente
+  const handleViewTicket = (ticketId: number) => {
+    setSelectedTicketId(ticketId);
+    setIsTicketModalOpen(true);
+  };
+  
   // Funções para gerenciar ações nos alertas
   const handleGoToTicket = (ticketId?: number) => {
     if (ticketId) {
-      toast({
-        title: "Redirecionando",
-        description: `Indo para o chamado #${ticketId}`,
-        variant: "default"
-      });
+      handleViewTicket(ticketId);
     } else {
-      handleCreateTicket(0); // Parâmetro fictício, não será usado
+      // Se não há ticket, criar um novo
+      handleOpenCreateTicketModal(0); // Parâmetro fictício, será tratado corretamente pelo handler
     }
   };
 
@@ -962,6 +1010,43 @@ export default function Alerts() {
           </div>
         </div>
       </div>
+      
+      {/* Modal para criação de chamados a partir de alertas */}
+      <CreateTicketModal
+        isOpen={isCreateTicketModalOpen}
+        onClose={() => {
+          setIsCreateTicketModalOpen(false);
+          setSelectedAlertId(undefined);
+          setAlertInfoForTicket(undefined);
+        }}
+        onSubmit={handleCreateTicket}
+        alertId={selectedAlertId}
+        alertInfo={alertInfoForTicket}
+      />
+      
+      {/* Modal para visualização de detalhes do chamado */}
+      <TicketModal
+        ticketId={selectedTicketId}
+        isOpen={isTicketModalOpen}
+        onClose={() => {
+          setIsTicketModalOpen(false);
+          setSelectedTicketId(undefined);
+        }}
+        onStatusChange={(ticketId, newStatus) => {
+          toast({
+            title: "Status Atualizado",
+            description: `O status do chamado #${ticketId} foi alterado para ${newStatus}`,
+            variant: "default",
+          });
+        }}
+        onAddComment={(ticketId, comment, isPublic) => {
+          toast({
+            title: "Comentário Adicionado",
+            description: `${isPublic ? "Comentário público" : "Comentário interno"} adicionado ao chamado #${ticketId}`,
+            variant: "default",
+          });
+        }}
+      />
     </div>
   );
 }
