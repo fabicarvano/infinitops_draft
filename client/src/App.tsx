@@ -10,7 +10,7 @@ import Assets from "@/pages/Assets";
 import AssetDetails from "@/pages/AssetDetails";
 import AssetMatrix from "@/pages/AssetMatrix";
 import Alerts from "@/pages/Alerts";
-import Tickets from "@/pages/Tickets";
+import Tickets from "@/pages/Tickets.new";
 import Settings from "@/pages/Settings";
 import SlaDemo from "@/pages/SlaDemo";
 import BasicLayout from "@/components/layout/BasicLayout";
