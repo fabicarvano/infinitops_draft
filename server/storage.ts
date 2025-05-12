@@ -459,6 +459,41 @@ export class MemStorage implements IStorage {
       createdAt: new Date().toISOString()
     });
     
+    // Criar localizações de exemplo
+    this.createLocation({
+      client_id: 1, // Acme Corp
+      name: "Sede Principal",
+      description: "Sede principal da Acme Corp",
+      location_type: "matriz",
+      address: "Av. Paulista, 1000",
+      city: "São Paulo",
+      state: "SP",
+      postal_code: "01310-100",
+      primary_contact_name: "João Silva",
+      primary_contact_email: "joao@acmecorp.com",
+      primary_contact_phone: "(11) 3333-4444",
+      has_onsite_support: true,
+      onsite_support_hours: "8x5 (9h às 18h)",
+      onsite_support_details: "Suporte técnico disponível em horário comercial"
+    });
+    
+    this.createLocation({
+      client_id: 4, // TechFibra
+      name: "Data Center Principal",
+      description: "Data center principal da TechFibra",
+      location_type: "datacenter",
+      address: "Rua Tecnologia, 500",
+      city: "São Paulo",
+      state: "SP",
+      postal_code: "04542-000",
+      primary_contact_name: "Roberta Técnica",
+      primary_contact_email: "datacenter@techfibra.com",
+      primary_contact_phone: "(11) 4444-5555",
+      has_onsite_support: true,
+      onsite_support_hours: "24x7",
+      onsite_support_details: "Acesso restrito com autorização prévia, técnicos disponíveis em regime 24x7"
+    });
+    
     // Usar o cliente TechFibra existente (ID 4) para adicionar contrato e matriz de ativos completa
     this.getClient(4).then((client) => {
       if (!client) {
