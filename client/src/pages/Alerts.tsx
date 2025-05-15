@@ -129,14 +129,30 @@ export default function Alerts() {
   const [expandedAlerts, setExpandedAlerts] = useState<number[]>([]);
   const [acknowledged, setAcknowledged] = useState<number[]>([]);
   const [createdTickets, setCreatedTickets] = useState<number[]>([]);
+  
+  // Estados para controlar modais de tickets
+  const [isCreateTicketModalOpen, setIsCreateTicketModalOpen] = useState(false);
+  const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
+  const [selectedAlertId, setSelectedAlertId] = useState<number | null>(null);
+  const [selectedTicketId, setSelectedTicketId] = useState<number | null>(null);
+  const [alertInfoForTicket, setAlertInfoForTicket] = useState<CreateTicketData | null>(null);
 
   // Função para expandir/recolher alertas
   const toggleExpandAlert = (alertId: number) => {
-    setExpandedAlerts(prev => 
-      prev.includes(alertId)
-        ? prev.filter(id => id !== alertId)
-        : [...prev, alertId]
-    );
+    try {
+      setExpandedAlerts(prev => {
+        // Se já estiver expandido, remover do array
+        if (prev.includes(alertId)) {
+          return prev.filter(id => id !== alertId);
+        } 
+        // Caso contrário, adicionar ao array
+        return [...prev, alertId];
+      });
+    } catch (error) {
+      console.error("Erro ao expandir/recolher alerta:", error);
+      // Em caso de erro, garantir que o estado continue estável
+      setExpandedAlerts(prev => [...prev]);
+    }
   };
 
   // Mapeia a severidade do sistema para a severidade do SLA-Demo
@@ -879,24 +895,26 @@ export default function Alerts() {
                     {/* Conteúdo expandido */}
                     {isExpanded && (
                       <div className="mt-4 pt-4 border-t border-gray-100 space-y-8">
-                        <>
+                        {/* Envolvendo o conteúdo em um tratamento de erro */}
+                        <div>
                           <div>
                             <h4 className="text-lg font-medium mb-3">SLA & Priorização</h4>
                             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                              {/* Adicionando verificações para props opcionais */}
                               <EffectiveSlaCard 
-                                firstResponseTime={alert.firstResponseTime}
-                                resolutionTime={alert.resolutionTime}
-                                firstResponseDeadline={alert.firstResponseDeadline}
-                                resolutionDeadline={alert.resolutionDeadline}
-                                serviceHours={alert.serviceHours}
-                                adjustmentFactor={alert.adjustmentFactor}
-                                isAdjustmentEnabled={alert.isAdjustmentEnabled}
-                                slaPaused={alert.slaPaused}
-                                slaViolated={alert.slaViolated}
-                                ticketCreatedAt={alert.ticketCreatedAt!}
-                                serviceLevel={alert.serviceLevel}
-                                technicalCriticality={alert.technicalCriticality}
-                                businessCriticality={alert.businessCriticality}
+                                firstResponseTime={alert.firstResponseTime || 0}
+                                resolutionTime={alert.resolutionTime || 0}
+                                firstResponseDeadline={alert.firstResponseDeadline || new Date().toISOString()}
+                                resolutionDeadline={alert.resolutionDeadline || new Date().toISOString()}
+                                serviceHours={alert.serviceHours || "8x5"}
+                                adjustmentFactor={alert.adjustmentFactor || 1.0}
+                                isAdjustmentEnabled={alert.isAdjustmentEnabled || false}
+                                slaPaused={alert.slaPaused || false}
+                                slaViolated={alert.slaViolated || false}
+                                ticketCreatedAt={alert.ticketCreatedAt || new Date().toISOString()}
+                                serviceLevel={alert.serviceLevel || "Standard"}
+                                technicalCriticality={alert.technicalCriticality || "Average"}
+                                businessCriticality={alert.businessCriticality || 1}
                                 finalPriority={alert.finalPriority}
                               />
                               
