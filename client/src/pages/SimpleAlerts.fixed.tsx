@@ -7,21 +7,50 @@ import { Progress } from "@/components/ui/progress";
 import { useToast } from "@/hooks/use-toast";
 import { 
   Search, 
-  AlertTriangle, 
   Clock,
   ChevronDown,
   ChevronUp,
-  AlertOctagon,
-  AlertCircle,
-  Info,
-  FileText,
-  CheckCircle,
-  Cpu,
-  MemoryStick,
-  HardDrive,
-  ArrowUpRight,
-  BarChart3
+  CheckCircle
 } from "lucide-react";
+
+// Ícones modernos da biblioteca react-icons
+import { 
+  FiCpu, 
+  FiHardDrive, 
+  FiSearch, 
+  FiClock, 
+  FiActivity 
+} from "react-icons/fi";
+import { 
+  MdOutlineMemory, 
+  MdOutlineAssignmentTurnedIn, 
+  MdPriorityHigh, 
+  MdOutlineMonitorHeart,
+  MdOutlineHistoryToggleOff
+} from "react-icons/md";
+import { 
+  BiSolidError, 
+  BiErrorAlt, 
+  BiSolidErrorCircle, 
+  BiInfoCircle, 
+  BiCheckCircle, 
+  BiTimeFive,
+  BiListCheck,
+  BiUserCheck
+} from "react-icons/bi";
+import { 
+  BsShieldFillExclamation, 
+  BsFillFileEarmarkTextFill, 
+  BsGraphUp, 
+  BsPersonBadge,
+  BsFillLightningChargeFill
+} from "react-icons/bs";
+import { 
+  TbServerBolt,
+  TbProgressBolt,
+  TbReportAnalytics
+} from "react-icons/tb";
+import { FaServer, FaNetworkWired, FaDatabase } from "react-icons/fa";
 
 // Tipos enriquecidos
 type AlertSeverity = "critical" | "high" | "medium" | "low";
@@ -327,17 +356,17 @@ export default function SimpleAlertsFixed() {
     alert.message.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Obter ícone com base na severidade
+  // Obter ícone com base na severidade - versão modernizada
   const getSeverityIcon = (severity: AlertSeverity) => {
     switch (severity) {
       case "critical":
-        return <AlertOctagon className="h-5 w-5 text-red-600" />;
+        return <BiSolidError className="h-6 w-6 text-red-600" />;
       case "high":
-        return <AlertTriangle className="h-5 w-5 text-orange-600" />;
+        return <BsShieldFillExclamation className="h-5 w-5 text-orange-600" />;
       case "medium":
-        return <AlertCircle className="h-5 w-5 text-yellow-600" />;
+        return <BiSolidErrorCircle className="h-5 w-5 text-yellow-600" />;
       default:
-        return <Info className="h-5 w-5 text-blue-600" />;
+        return <BiInfoCircle className="h-5 w-5 text-blue-600" />;
     }
   };
 
@@ -407,23 +436,23 @@ export default function SimpleAlertsFixed() {
                     
                     <div className="flex flex-col space-y-3">
                       <div className="flex items-center text-gray-500 text-sm">
-                        <Clock className="h-4 w-4 mr-1" />
+                        <FiClock className="h-4 w-4 mr-1" />
                         {alert.time}
                       </div>
                       
                       {alert.ticketId ? (
                         <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-300">
-                          <FileText className="h-3.5 w-3.5 mr-1" />
+                          <BsFillFileEarmarkTextFill className="h-3.5 w-3.5 mr-1" />
                           Chamado #{alert.ticketId}
                         </Badge>
                       ) : isRecognized ? (
                         <Badge variant="outline" className="bg-green-100 text-green-800 border-green-300">
-                          <CheckCircle className="h-3.5 w-3.5 mr-1" />
+                          <BiCheckCircle className="h-3.5 w-3.5 mr-1" />
                           Reconhecido
                         </Badge>
                       ) : (
                         <Badge variant="outline" className="bg-orange-100 text-orange-800 border-orange-300">
-                          <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                          <MdPriorityHigh className="h-3.5 w-3.5 mr-1" />
                           Pendente
                         </Badge>
                       )}
@@ -456,45 +485,128 @@ export default function SimpleAlertsFixed() {
                           <div className="bg-gray-50 p-4 rounded-lg">
                             <h4 className="font-medium mb-3">Dados de Monitoramento</h4>
                             <div className="grid grid-cols-3 gap-3 mb-3">
-                              <div className="p-2 bg-white rounded shadow-sm">
+                              <div className="p-3 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                 <div className="flex items-center">
-                                  <Cpu className="h-4 w-4 mr-2 text-slate-600" />
+                                  <div className="p-1.5 bg-red-50 rounded-md mr-2">
+                                    <FiCpu className="h-4 w-4 text-red-500" />
+                                  </div>
                                   <span className="text-xs font-medium">CPU</span>
                                 </div>
-                                <div className="mt-1">
-                                  <Progress value={alert.monitoring.metrics.cpu} className="h-2 w-full" />
-                                  <span className="text-xs mt-1 text-gray-600">{alert.monitoring.metrics.cpu}%</span>
+                                <div className="mt-2">
+                                  <Progress 
+                                    value={alert.monitoring.metrics.cpu} 
+                                    className={`h-2 w-full rounded-full ${
+                                      alert.monitoring.metrics.cpu > 90 ? "bg-red-200" : 
+                                      alert.monitoring.metrics.cpu > 70 ? "bg-orange-200" : 
+                                      "bg-green-200"
+                                    }`} 
+                                  />
+                                  <div className="flex justify-between mt-1">
+                                    <span className="text-xs font-medium text-gray-700">{alert.monitoring.metrics.cpu}%</span>
+                                    <span className="text-[10px] text-gray-500">Max: 100%</span>
+                                  </div>
                                 </div>
                               </div>
                               
-                              <div className="p-2 bg-white rounded shadow-sm">
+                              <div className="p-3 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                 <div className="flex items-center">
-                                  <MemoryStick className="h-4 w-4 mr-2 text-slate-600" />
+                                  <div className="p-1.5 bg-blue-50 rounded-md mr-2">
+                                    <MdOutlineMemory className="h-4 w-4 text-blue-500" />
+                                  </div>
                                   <span className="text-xs font-medium">Memória</span>
                                 </div>
-                                <div className="mt-1">
-                                  <Progress value={alert.monitoring.metrics.memory} className="h-2 w-full" />
-                                  <span className="text-xs mt-1 text-gray-600">{alert.monitoring.metrics.memory}%</span>
+                                <div className="mt-2">
+                                  <Progress 
+                                    value={alert.monitoring.metrics.memory} 
+                                    className={`h-2 w-full rounded-full ${
+                                      alert.monitoring.metrics.memory > 90 ? "bg-red-200" : 
+                                      alert.monitoring.metrics.memory > 70 ? "bg-orange-200" : 
+                                      "bg-blue-200"
+                                    }`} 
+                                  />
+                                  <div className="flex justify-between mt-1">
+                                    <span className="text-xs font-medium text-gray-700">{alert.monitoring.metrics.memory}%</span>
+                                    <span className="text-[10px] text-gray-500">Max: 100%</span>
+                                  </div>
                                 </div>
                               </div>
                               
-                              <div className="p-2 bg-white rounded shadow-sm">
+                              <div className="p-3 bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
                                 <div className="flex items-center">
-                                  <HardDrive className="h-4 w-4 mr-2 text-slate-600" />
+                                  <div className="p-1.5 bg-purple-50 rounded-md mr-2">
+                                    <FiHardDrive className="h-4 w-4 text-purple-500" />
+                                  </div>
                                   <span className="text-xs font-medium">Disco</span>
                                 </div>
-                                <div className="mt-1">
-                                  <Progress value={alert.monitoring.metrics.disk} className="h-2 w-full" />
-                                  <span className="text-xs mt-1 text-gray-600">{alert.monitoring.metrics.disk}%</span>
+                                <div className="mt-2">
+                                  <Progress 
+                                    value={alert.monitoring.metrics.disk} 
+                                    className={`h-2 w-full rounded-full ${
+                                      alert.monitoring.metrics.disk > 90 ? "bg-red-200" : 
+                                      alert.monitoring.metrics.disk > 70 ? "bg-orange-200" : 
+                                      "bg-purple-200"
+                                    }`} 
+                                  />
+                                  <div className="flex justify-between mt-1">
+                                    <span className="text-xs font-medium text-gray-700">{alert.monitoring.metrics.disk}%</span>
+                                    <span className="text-[10px] text-gray-500">Max: 100%</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                             
-                            <div className="text-xs space-y-1">
-                              <p><strong>Origem:</strong> {alert.monitoring.source}</p>
-                              <p><strong>ID na Origem:</strong> {alert.monitoring.sourceId}</p>
-                              <p><strong>Último Check:</strong> {alert.monitoring.lastCheck}</p>
-                              <p><strong>Histórico:</strong> {alert.monitoring.occurrences} ocorrências recentes</p>
+                            <div className="flex flex-col gap-2 bg-white p-3 rounded-lg shadow-sm border border-gray-100 mt-1">
+                              <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-indigo-50 rounded-md">
+                                  <TbServerBolt className="h-4 w-4 text-indigo-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-xs font-medium">Origem</span>
+                                    <span className="text-xs bg-gray-100 px-2 py-0.5 rounded-full">{alert.monitoring.source}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-blue-50 rounded-md">
+                                  <FaNetworkWired className="h-3 w-3 text-blue-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-xs font-medium">ID na Origem</span>
+                                    <span className="text-xs font-mono bg-blue-50 px-2 py-0.5 rounded-full text-blue-700">{alert.monitoring.sourceId}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-yellow-50 rounded-md">
+                                  <BiTimeFive className="h-3 w-3 text-yellow-600" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-xs font-medium">Último Check</span>
+                                    <span className="text-xs text-gray-600">{alert.monitoring.lastCheck}</span>
+                                  </div>
+                                </div>
+                              </div>
+                              
+                              <div className="flex items-center gap-2">
+                                <div className="p-1.5 bg-orange-50 rounded-md">
+                                  <MdOutlineHistoryToggleOff className="h-3 w-3 text-orange-500" />
+                                </div>
+                                <div className="flex-1">
+                                  <div className="flex justify-between items-center">
+                                    <span className="text-xs font-medium">Ocorrências</span>
+                                    <div className="flex items-center">
+                                      <span className="text-xs px-2 py-0.5 bg-orange-100 text-orange-800 rounded-full">
+                                        {alert.monitoring.occurrences} recentes
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
                             </div>
                           </div>
                         )}
