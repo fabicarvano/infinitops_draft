@@ -895,37 +895,21 @@ export default function Alerts() {
                     {/* Conteúdo expandido */}
                     {isExpanded && (
                       <div className="mt-4 pt-4 border-t border-gray-100 space-y-8">
-                        {/* Envolvendo o conteúdo em um tratamento de erro */}
                         <div>
-                          <div>
-                            <h4 className="text-lg font-medium mb-3">SLA & Priorização</h4>
-                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                              {/* Adicionando verificações para props opcionais */}
-                              <EffectiveSlaCard 
-                                firstResponseTime={alert.firstResponseTime || 0}
-                                resolutionTime={alert.resolutionTime || 0}
-                                firstResponseDeadline={alert.firstResponseDeadline || new Date().toISOString()}
-                                resolutionDeadline={alert.resolutionDeadline || new Date().toISOString()}
-                                serviceHours={alert.serviceHours || "8x5"}
-                                adjustmentFactor={alert.adjustmentFactor || 1.0}
-                                isAdjustmentEnabled={alert.isAdjustmentEnabled || false}
-                                slaPaused={alert.slaPaused || false}
-                                slaViolated={alert.slaViolated || false}
-                                ticketCreatedAt={alert.ticketCreatedAt || new Date().toISOString()}
-                                serviceLevel={alert.serviceLevel || "Standard"}
-                                technicalCriticality={alert.technicalCriticality || "Average"}
-                                businessCriticality={alert.businessCriticality || 1}
-                                finalPriority={alert.finalPriority}
-                              />
-                              
-                              <div>
-                                <Card>
-                                  <CardContent className="p-4">
-                                    <h5 className="text-sm font-medium mb-2">Matriz de Prioridade</h5>
-                                    <PriorityMatrix
-                                      highlightTechnical={alert.technicalCriticality}
-                                      highlightBusiness={alert.businessCriticality}
-                                    />
+                          <h4 className="text-lg font-medium mb-3">Detalhes do Alerta</h4>
+                          <div className="bg-white p-4 border rounded-lg">
+                            <h5 className="font-medium text-base mb-2">Informações Principais</h5>
+                            <div className="space-y-2">
+                              <p className="text-sm"><strong>ID:</strong> {alert.id}</p>
+                              <p className="text-sm"><strong>Cliente:</strong> {alert.client}</p>
+                              <p className="text-sm"><strong>Ativo:</strong> {alert.asset}</p>
+                              <p className="text-sm"><strong>Detectado:</strong> {alert.time}</p>
+                              <p className="text-sm"><strong>Mensagem:</strong> {alert.message}</p>
+                              <p className="text-sm"><strong>Severidade:</strong> {alert.status}</p>
+                              <p className="text-sm"><strong>Prioridade:</strong> {alert.finalPriority}</p>
+                            </div>
+                          </div>
+                        </div>
                                   </CardContent>
                                 </Card>
                               </div>
