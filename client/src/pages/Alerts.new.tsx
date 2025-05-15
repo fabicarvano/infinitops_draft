@@ -551,8 +551,12 @@ export default function Alerts() {
   };
   
   // Verificar se o alerta é de severidade alta ou crítica
-  const isHighSeverity = (status: SlaDemoSeverity): boolean => {
-    return status === "critical" || status === "high";
+  const isHighSeverity = (severity: any): boolean => {
+    if (typeof severity === 'string') {
+      if (severity === "critical" || severity === "high") return true;
+      if (severity === "critico" || severity === "alto") return true;
+    }
+    return false;
   };
   
   // Handler para reconhecer alertas manualmente
@@ -867,17 +871,8 @@ export default function Alerts() {
                           <div>
                             <h4 className="text-lg font-medium mb-3">Dados de Monitoramento</h4>
                             <AlertMonitoringInfo
-                              id={alert.id}
+                              alertId={alert.id}
                               assetId={alert.assetId}
-                              assetName={alert.asset}
-                              status={alert.monitoringStatus}
-                              serviceLevel={alert.serviceLevel}
-                              serviceHours={alert.serviceHours}
-                              ticketId={alert.ticketId}
-                              source={alert.monitoringSource}
-                              sourceId={alert.monitoringId}
-                              time={alert.time}
-                              severity={alert.severity as SystemSeverity}
                             />
                           </div>
                         </div>
