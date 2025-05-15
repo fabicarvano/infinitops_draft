@@ -9,7 +9,7 @@ import Contracts from "@/pages/Contracts";
 import Assets from "@/pages/Assets";
 import AssetDetails from "@/pages/AssetDetails";
 import AssetMatrix from "@/pages/AssetMatrix";
-import Alerts from "@/pages/SimpleAlerts";
+import Alerts from "@/pages/Alerts.new";
 import Tickets from "@/pages/Tickets.new";
 import Settings from "@/pages/Settings";
 import SlaDemo from "@/pages/SlaDemo";
