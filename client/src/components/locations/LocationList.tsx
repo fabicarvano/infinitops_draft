@@ -60,7 +60,7 @@ const LocationList: React.FC<LocationListProps> = ({
        location.address.toLowerCase().includes(searchTerm.toLowerCase()));
       
     const matchesType = 
-      filterType === '' || 
+      filterType === 'todos' || filterType === '' || 
       location.location_type.toLowerCase() === filterType.toLowerCase();
       
     return matchesSearch && matchesType;
@@ -111,7 +111,7 @@ const LocationList: React.FC<LocationListProps> = ({
               <SelectValue placeholder="Filtrar por tipo" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Todos os tipos</SelectItem>
+              <SelectItem value="todos">Todos os tipos</SelectItem>
               <SelectItem value="matriz">Matriz</SelectItem>
               <SelectItem value="filial">Filial</SelectItem>
               <SelectItem value="datacenter">Data Center</SelectItem>
