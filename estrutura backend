@@ -1,26 +1,30 @@
 InfinitOps/
 └── backend/
-    ├── alembic/                  # Migrações de banco de dados (inicialmente vazio)
+    ├── alembic/                  # Migrações de banco de dados
     ├── app/
     │   ├── api/
     │   │   └── v1/
     │   │       ├── endpoints/
-    │   │       │   └── users.py         # Primeiro recurso: usuários
-    │   │       └── router.py           # Agrupador de rotas da versão v1
+    │   │       │   ├── auth.py       # Login/autenticação
+    │   │       │   ├── users.py      # CRUD de usuários
+    │   │       │   └── tickets.py    # (a criar futuramente)
+    │   │       └── router.py         # Agrupador de rotas da v1
     │   ├── core/
-    │   │   ├── config.py           # Variáveis globais, leitura de .env
-    │   │   ├── security.py         # Geração/validação de token JWT
-    │   │   └── auth.py             # Login/autenticação
+    │   │   ├── auth.py               # Controle de login
+    │   │   ├── security.py           # JWT e hash de senhas
+    │   │   └── config.py             # Leitura de .env e config globais
     │   ├── db/
-    │   │   ├── base.py             # Base declarativa do SQLAlchemy
-    │   │   └── session.py          # Sessão de banco
+    │   │   ├── session.py            # Conexão com banco
+    │   │   └── base.py               # Base declarativa SQLAlchemy
     │   ├── models/
-    │   │   └── user.py             # Modelo User (SQLAlchemy)
+    │   │   ├── user.py               # Modelo User + Role
+    │   │   └── entities.py           # Demais entidades (Ticket, Client...)
     │   ├── schemas/
-    │   │   └── user.py             # Esquema User (Pydantic)
-    │   └── services/
-    │       └── user_service.py     # Regras de negócio para usuários
-    ├── tests/
-    ├── .env                      # Variáveis de ambiente
-    ├── main.py                   # Entrypoint do FastAPI
-    └── requirements.txt          # Dependências
+    │   │   ├── user.py               # Pydantic User e UserCreate
+    │   │   └── token.py              # Esquemas para login/token
+    │   └── services/                 # (a preencher com regras de negócio)
+    ├── tests/                        # Testes automatizados (a criar)
+    ├── init_db.py                    # Inicialização e admin default
+    ├── main.py                       # Entrypoint FastAPI
+    ├── .env                          # Variáveis de ambiente
+    └── requirements.txt              # Dependências do projeto
