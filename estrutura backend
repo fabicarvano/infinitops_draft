@@ -1,0 +1,26 @@
+InfinitOps/
+└── backend/
+    ├── alembic/                  # Migrações de banco de dados (inicialmente vazio)
+    ├── app/
+    │   ├── api/
+    │   │   └── v1/
+    │   │       ├── endpoints/
+    │   │       │   └── users.py         # Primeiro recurso: usuários
+    │   │       └── router.py           # Agrupador de rotas da versão v1
+    │   ├── core/
+    │   │   ├── config.py           # Variáveis globais, leitura de .env
+    │   │   ├── security.py         # Geração/validação de token JWT
+    │   │   └── auth.py             # Login/autenticação
+    │   ├── db/
+    │   │   ├── base.py             # Base declarativa do SQLAlchemy
+    │   │   └── session.py          # Sessão de banco
+    │   ├── models/
+    │   │   └── user.py             # Modelo User (SQLAlchemy)
+    │   ├── schemas/
+    │   │   └── user.py             # Esquema User (Pydantic)
+    │   └── services/
+    │       └── user_service.py     # Regras de negócio para usuários
+    ├── tests/
+    ├── .env                      # Variáveis de ambiente
+    ├── main.py                   # Entrypoint do FastAPI
+    └── requirements.txt          # Dependências
